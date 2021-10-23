@@ -1,0 +1,311 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.0.0"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Anter_Termite_Mayhem",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20,
+						21,
+						22,
+						23,
+						24,
+						25,
+						26,
+						27,
+						28
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Anter_Termite_Mayhem::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Anter_Termite_Mayhem-Debug-e00edfd2d01d5c099f80.json",
+					"name" : "Anter_Termite_Mayhem",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Continuous::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Continuous-Debug-6908355c7edd2f597746.json",
+					"name" : "Continuous",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousBuild::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousBuild-Debug-cd2a91025098e821e97b.json",
+					"name" : "ContinuousBuild",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousConfigure::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousConfigure-Debug-544fd8faf93be5b556ac.json",
+					"name" : "ContinuousConfigure",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousCoverage::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousCoverage-Debug-e653e015e7a9cc6c4da1.json",
+					"name" : "ContinuousCoverage",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousMemCheck::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousMemCheck-Debug-16aa78114fa91d3cd980.json",
+					"name" : "ContinuousMemCheck",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousStart::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousStart-Debug-f232e4891435ad2b504c.json",
+					"name" : "ContinuousStart",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousSubmit::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousSubmit-Debug-d3d28d58e9da27e5a7da.json",
+					"name" : "ContinuousSubmit",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousTest-Debug-426955637424d6989f14.json",
+					"name" : "ContinuousTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ContinuousUpdate::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ContinuousUpdate-Debug-b5a94d4e2839750b5799.json",
+					"name" : "ContinuousUpdate",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Experimental::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Experimental-Debug-141532cb7aefb2a40308.json",
+					"name" : "Experimental",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalBuild::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalBuild-Debug-eed8c2a97e496df1cfdb.json",
+					"name" : "ExperimentalBuild",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalConfigure::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalConfigure-Debug-2875697d13aba7230110.json",
+					"name" : "ExperimentalConfigure",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalCoverage::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalCoverage-Debug-849508d08aa2c6679b56.json",
+					"name" : "ExperimentalCoverage",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalMemCheck::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalMemCheck-Debug-9d9bdfde3c0a38f92e51.json",
+					"name" : "ExperimentalMemCheck",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalStart::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalStart-Debug-c3d771e73bbea8241722.json",
+					"name" : "ExperimentalStart",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalSubmit::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalSubmit-Debug-f7377380f0c67b31af59.json",
+					"name" : "ExperimentalSubmit",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalTest-Debug-56c64c55eea398828ca6.json",
+					"name" : "ExperimentalTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ExperimentalUpdate::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ExperimentalUpdate-Debug-10bf6ef47ebb8e815fac.json",
+					"name" : "ExperimentalUpdate",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Nightly::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Nightly-Debug-811b3aeb81da17a48241.json",
+					"name" : "Nightly",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyBuild::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyBuild-Debug-e610afa96fbf11a0022d.json",
+					"name" : "NightlyBuild",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyConfigure::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyConfigure-Debug-53a52286e1decacf4f4e.json",
+					"name" : "NightlyConfigure",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyCoverage::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyCoverage-Debug-4496c8ff0ad1c81d1639.json",
+					"name" : "NightlyCoverage",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyMemCheck::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyMemCheck-Debug-a7f858e27cd3828c241d.json",
+					"name" : "NightlyMemCheck",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyMemoryCheck::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyMemoryCheck-Debug-52e24506b4896f41abc3.json",
+					"name" : "NightlyMemoryCheck",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyStart::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyStart-Debug-60d72ff339f2d15f9538.json",
+					"name" : "NightlyStart",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlySubmit::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlySubmit-Debug-c29a89dd43f7527c42bb.json",
+					"name" : "NightlySubmit",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyTest::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyTest-Debug-29a371c3f5c54a4304e7.json",
+					"name" : "NightlyTest",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "NightlyUpdate::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-NightlyUpdate-Debug-60f5afe75c910436658c.json",
+					"name" : "NightlyUpdate",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/matteomazzarini/Documents/Unreal Projects/Anter_Termite_Mayhem/build",
+		"source" : "/Users/matteomazzarini/Documents/Unreal Projects/Anter_Termite_Mayhem"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 0
+	}
+}

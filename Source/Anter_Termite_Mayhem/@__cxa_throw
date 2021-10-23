@@ -1,0 +1,30 @@
+; id = {0x0000041e}, range = [0x00007fff202d80bd-0x00007fff202d812e), mangled="__cxa_throw"
+; Source location: unknown
+7FFF203620BD: 55                         pushq  %rbp
+7FFF203620BE: 48 89 E5                   movq   %rsp, %rbp
+7FFF203620C1: 41 57                      pushq  %r15
+7FFF203620C3: 41 56                      pushq  %r14
+7FFF203620C5: 41 54                      pushq  %r12
+7FFF203620C7: 53                         pushq  %rbx
+7FFF203620C8: 49 89 D6                   movq   %rdx, %r14
+7FFF203620CB: 49 89 F7                   movq   %rsi, %r15
+7FFF203620CE: 48 89 FB                   movq   %rdi, %rbx
+7FFF203620D1: E8 84 D3 FF FF             callq  0x7fff2035f45a  ; __cxa_get_globals
+7FFF203620D6: 49 89 C4                   movq   %rax, %r12
+7FFF203620D9: E8 D2 D6 FF FF             callq  0x7fff2035f7b0  ; std::get_unexpected()
+7FFF203620DE: 48 89 43 A0                movq   %rax, -0x60(%rbx)
+7FFF203620E2: E8 48 D7 FF FF             callq  0x7fff2035f82f  ; std::get_terminate()
+7FFF203620E7: 48 89 43 A8                movq   %rax, -0x58(%rbx)
+7FFF203620EB: 4C 89 7B 90                movq   %r15, -0x70(%rbx)
+7FFF203620EF: 4C 89 73 98                movq   %r14, -0x68(%rbx)
+7FFF203620F3: 48 B8 00 2B 2B 43 47 4E >  movabsq $0x434c4e47432b2b00, %rax  ; imm = 0x434C4E47432B2B00 
+7FFF203620FD: 48 89 43 E0                movq   %rax, -0x20(%rbx)
+7FFF20362101: 48 C7 43 88 01 00 00 00    movq   $0x1, -0x78(%rbx)
+7FFF20362109: 41 FF 44 24 08             incl   0x8(%r12)
+7FFF2036210E: 48 8D 05 19 00 00 00       leaq   0x19(%rip), %rax  ; __cxxabiv1::exception_cleanup_func(_Unwind_Reason_Code, _Unwind_Exception*)
+7FFF20362115: 48 89 43 E8                movq   %rax, -0x18(%rbx)
+7FFF20362119: 4C 8D 73 80                leaq   -0x80(%rbx), %r14
+7FFF2036211D: 48 8D 7B E0                leaq   -0x20(%rbx), %rdi
+7FFF20362121: E8 EC 0E 00 00             callq  0x7fff20363012  ; symbol stub for: _Unwind_RaiseException
+7FFF20362126: 4C 89 F7                   movq   %r14, %rdi
+7FFF20362129: E8 1E 00 00 00             callq  0x7fff2036214c  ; __cxxabiv1::failed_throw(__cxxabiv1::__cxa_exception*)
