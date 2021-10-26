@@ -1,5 +1,3 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #include "FSMState/GameFSMState.h"
 
 UGameFSMState::UGameFSMState()

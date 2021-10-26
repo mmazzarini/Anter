@@ -7,6 +7,7 @@ AnterFSM(nullptr)
 {
     Anter = GetOwner<AAnterPawn>();
     bAutoActivate = true; 
+    AnterFSM = NewObject<UAnterFSM>(this);
 }
 
 UAnterComponent::~UAnterComponent()
