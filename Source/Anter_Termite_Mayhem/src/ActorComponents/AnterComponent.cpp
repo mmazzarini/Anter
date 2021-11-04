@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ActorComponents/AnterComponent.h"
 #include "Pawn/AnterPawn.h"
 

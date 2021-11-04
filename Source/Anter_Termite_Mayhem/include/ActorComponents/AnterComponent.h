@@ -33,9 +33,9 @@ class ANTER_TERMITE_MAYHEM_API UAnterComponent : public UActorComponent
 
     private:
 
-        UPROPERTY()
-        UAnterFSM* AnterFSM;
+    UPROPERTY()
+    UAnterFSM* AnterFSM;
 
-        UPROPERTY()
-        AAnterPawn* Anter;
+    UPROPERTY()
+    AAnterPawn* Anter;
 };

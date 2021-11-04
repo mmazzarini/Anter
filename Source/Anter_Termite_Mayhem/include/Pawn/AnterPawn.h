@@ -18,9 +18,16 @@ class ANTER_TERMITE_MAYHEM_API AAnterPawn : public APawn
 {
     GENERATED_BODY()
 
+protected:
+
+UPROPERTY()
+TSubclassOf<UAnterComponent> AnterComponentClass;
+
 private:
 
 UAnterComponent* AnterComponent;
+
+
 
 };
 
