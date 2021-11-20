@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ActorComponents/AnterComponent.h"
 #include "Pawn/AnterPawn.h"
 
@@ -10,6 +8,10 @@ AnterFSM(nullptr)
     Anter = GetOwner<AAnterPawn>();
     bAutoActivate = true; 
     AnterFSM = NewObject<UAnterFSM>(this);
+    if(AnterFSM != nullptr)
+    {
+        AnterFSM->AnterInitializer(this);
+    }
 }
 
 UAnterComponent::~UAnterComponent()

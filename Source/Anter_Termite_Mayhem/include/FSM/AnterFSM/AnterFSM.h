@@ -21,7 +21,7 @@ public:
 
     GENERATED_BODY()
     //Constructor
-    UAnterFSM();
+    //UAnterFSM(const FObjectInitializer& ObjectInitializer);
  
     void SetupFSMStates() override;
 

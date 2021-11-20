@@ -1,35 +1,49 @@
 #include "ActorComponents/HealthComponent.h"
+#include "GameConstants.h"
+
 #include "Health/HealthContainer.h"
 
-AHealthComponent::AHealthComponent()
-Health(nullptr)
+UHealthComponent::UHealthComponent()
+:
+    Health(nullptr)
 {
 
 }
 
-~AHealthComponent::AHealthComponent()
+UHealthComponent::~UHealthComponent()
 {
 
 }
 
-void AHealthComponent::CreateHealth()
+void UHealthComponent::CreateHealth()
 {
     Health = NewObject<UHealthContainer>(this,HealthContainerClass); 
-    if(Health)
+    if(Health != nullptr)
     {
-        Health->SetHealth(MAX_HEALTH)
+        Health->SetHealth(MaxHealth);
     }
 }
 
-UHealthContainer* AHealthComponent::GetHealth()
+UHealthContainer* UHealthComponent::GetHealthContainer()
 {
-    return Health;
+    if(Health !=nullptr)
+    {   
+       return Health;
+    }
+
 }
 
-/*
-    UPROPERTY(EditAnywhere)
-    TSubclassOf<UHealthContainer> HealthContainerClass;
+UHealthContainer* UHealthComponent::UpdateHealth(int32 InNewHealth)
+{
+    if(Health != nullptr)
+    if(InNewHealth > MaxHealth)
+    {
+        Health->SetHealth(MaxHealth);
+    }
+    else
+    {
+        Health->SetHealth(InNewHealth);
+    }
+}
 
-    UPROPERTY()
-    UHealthContainer* HealthContainer;
-*/
+UHealthContainer* UHealthComponent::GetHealth()

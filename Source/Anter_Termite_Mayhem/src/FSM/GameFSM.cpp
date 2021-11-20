@@ -3,16 +3,27 @@
 #include "FSM/GameFSM.h"
 #include "FSMState/GameFSMState.h"
 
-UGameFSM::UGameFSM()
+/*
+UGameFSM::UGameFSM(const FObjectInitializer& ObjectInitializer)
 {
     //Operations at ctor. 
-    CreateFSMStates();
-    GetFSMStateIdentifiers();
-    SetCurrentState(InitialStateString);
 }
+
 
 UGameFSM::~UGameFSM()
 {
+}
+*/
+
+void UGameFSM::AnterInitializer(UAnterComponent* ContextObject)
+{
+    CreateFSMStates();
+    GetFSMStateIdentifiers();
+    SetCurrentState(InitialStateString);
+    if(ContextObject != nullptr)
+    {
+        OwnerComponent = ContextObject;
+    }
 }
 
 void UGameFSM::SetCurrentState(FString InState)

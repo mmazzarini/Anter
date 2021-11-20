@@ -4,11 +4,13 @@
 #include "UObject/Object.h"
 #include "Containers/Array.h"
 #include "GameFramework/Actor.h"
+#include "Components/ActorComponent.h"
 
 #include "GameFSM.generated.h"
 
 
 class UGameFSMState;
+class UAnterComponent;
 
 USTRUCT()
 struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier 
@@ -36,11 +38,9 @@ class ANTER_TERMITE_MAYHEM_API UGameFSM : public UObject
     GENERATED_BODY()
 
 public:
-    //Constructor
-    UGameFSM();
- 
-    //Destructor
-    virtual ~UGameFSM();
+
+    //Base function initializer
+    virtual void AnterInitializer(UAnterComponent* ContextObject);
 
     //State getter 
     UFUNCTION()
@@ -62,6 +62,8 @@ public:
     UFUNCTION()
     virtual void SetupFSMStates();
 
+
+
 protected:
 
     UPROPERTY()
@@ -80,4 +82,8 @@ protected:
     //Actual Array of FSM States. This is the core property.
     UPROPERTY()
     TArray<FFSMStateSpecifier> InternalArrayOfStates; //array of FSM states
+
+    //Pointer to the actor component that owns this FSM state
+    UPROPERTY()
+    UAnterComponent* OwnerComponent;  
 };
