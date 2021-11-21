@@ -1,12 +1,14 @@
 #include "FSMState/GameFSMState.h"
 
 UGameFSMState::UGameFSMState()
-{
+:
+OwnerFSM(nullptr)
+{   
 }
 
-UGameFSMState::UGameFSMState(UGameFSM* InitOwnerFSM)
-: OwnerFSM(InitOwnerFSM)
-{   
+void UGameFSMState::SetOwnerFSM(UGameFSM* InOwnerFSM)
+{
+    OwnerFSM = InOwnerFSM;
 }
 
 void UGameFSMState::TransitionToState(FString InState)
@@ -15,11 +17,6 @@ void UGameFSMState::TransitionToState(FString InState)
 
 void UGameFSMState::OnActionExecuted()
 {
-}
-
-void UGameFSMState::SetTrialFloat(float InFloat)
-{
-    TrialFloat = InFloat;
 }
 
 FString UGameFSMState::GetFSMStateID()

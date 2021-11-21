@@ -4,40 +4,13 @@
 #include "UObject/Object.h"
 #include "HealthComponent.generated.h"
 
-/*
-*
-* Base class representing the structure of Health.
-*
-*/
-
-UCLASS(Blueprintable)
-class ANTER_TERMITE_MAYHEM_API UHealthContainer : public UObject
-{
-    GENERATED_BODY()
-
-public: 
-    FORCEINLINE UHealthContainer(){}
-
-    FORCEINLINE ~UHealthContainer(){}
-
-    //Public setter and getter for Health Component.
-    void SetHealth(int32 InHealth){CoreHealth = InHealth;}
-
-    int32 GetCoreHealth(){return CoreHealth}
-
-    UPROPERTY(EditDeafultsOnly)
-    int32 MaxHealth;
-
-private:
-
-    int32 CoreHealth = 3.0f;
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathReachedDelegate);
 
 /*
 *
 * Class that defines the basic properties of Health component attached to a Pawn.
-* It uses a Health class to decrease/increase the core health.
-* Both the health class and Health component class can be derived to satisfy the specific behavior of the Pawn class.
+* It uses a CoreHealth variable to repreent health.
+* This class can be derived to satisfy the specific behavior of the Pawn class.
 *
 */
 
@@ -50,31 +23,43 @@ class ANTER_TERMITE_MAYHEM_API UHealthComponent : public UActorComponent
 
         UHealthComponent();
 
-        ~UHealthComponent();
-
         //This function updates the core health of the health container
         UFUNCTION()
-        virtual void UpdateHealth(int32 InNewHealth);
+        virtual void UpdateHealth(float InNewHealth);
 
         //This function is used to calculate the new value of health and change it 
         UFUNCTION()
-        virtual void IncreaseHealth(int32 InIncrease);
+        virtual void IncreaseHealth(float InIncreaseHealth);
+    
+        //Base class reset
+        UFUNCTION()
+        virtual void ResetHealth();
+        
+        UFUNCTION()
+        virtual void CheckDeath(); 
 
-    UHealthContainer* GetHealthContainer();
+        float GetCoreHealth(){return CoreHealth;}
+
+        FOnDeathReachedDelegate* GetDeathReachedDelegate(){return &OnDeathReached;}
 
     protected:
-
-    UPROPERTY(EditAnywhere)
-    TSubclassOf<UHealthContainer> HealthContainerClass;
-
-    UPROPERTY(EditDefaultsOnly)
-    UHealthContainer* Health;
     
     UPROPERTY(EditDefaultsOnly)
-    int32 MaxHealth;
+    float MaxHealth = 10.0f;
+
+    UPROPERTY(EditDefaultsOnly)
+    float StartingHealth = 3.0f;
 
     private:
-    //This function instantiates the health container
-    virtual void CreateHealth();
+
+    // The true core health of the Pawn. 
+    float CoreHealth = 0.0f;
+
+    //Delegate to use to notify other objects (e.g. the owning Pawn about the death event)
+    FOnDeathReachedDelegate OnDeathReached;
+
+    private:
+
+    virtual void SetupHealth();
 
 };

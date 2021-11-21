@@ -7,11 +7,12 @@ AnterFSM(nullptr)
 {
     Anter = GetOwner<AAnterPawn>();
     bAutoActivate = true; 
-    AnterFSM = NewObject<UAnterFSM>(this);
+    /*AnterFSM = CreateDefaultSubobject<UAnterFSM>(this);
     if(AnterFSM != nullptr)
     {
         AnterFSM->AnterInitializer(this);
     }
+    */
 }
 
 UAnterComponent::~UAnterComponent()

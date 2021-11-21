@@ -1,49 +1,49 @@
 #include "ActorComponents/HealthComponent.h"
-#include "GameConstants.h"
-
-#include "Health/HealthContainer.h"
 
 UHealthComponent::UHealthComponent()
-:
-    Health(nullptr)
 {
-
+    SetupHealth();
 }
 
-UHealthComponent::~UHealthComponent()
+void UHealthComponent::SetupHealth()
 {
-
+    CoreHealth = StartingHealth;
 }
 
-void UHealthComponent::CreateHealth()
-{
-    Health = NewObject<UHealthContainer>(this,HealthContainerClass); 
-    if(Health != nullptr)
-    {
-        Health->SetHealth(MaxHealth);
-    }
-}
-
-UHealthContainer* UHealthComponent::GetHealthContainer()
-{
-    if(Health !=nullptr)
-    {   
-       return Health;
-    }
-
-}
-
-UHealthContainer* UHealthComponent::UpdateHealth(int32 InNewHealth)
-{
-    if(Health != nullptr)
+void UHealthComponent::UpdateHealth(float InNewHealth)
+{ 
     if(InNewHealth > MaxHealth)
     {
-        Health->SetHealth(MaxHealth);
+        CoreHealth = MaxHealth;
     }
     else
     {
-        Health->SetHealth(InNewHealth);
+        CoreHealth = InNewHealth;
     }
+    CheckDeath();
 }
 
-UHealthContainer* UHealthComponent::GetHealth()
+void UHealthComponent::IncreaseHealth(float InIncreaseHealth)
+{
+    int32 NewHealth = CoreHealth + InIncreaseHealth;
+    UpdateHealth(NewHealth);
+}
+
+// The base version of this class just exectues a dumb call to the Setup method. But subclass overrides
+// may call more complex methods, such as doing actions before actually restoring health.
+void UHealthComponent::ResetHealth()
+{
+    SetupHealth();
+}
+
+void UHealthComponent::CheckDeath()
+{
+    if (CoreHealth <= 0.0f)
+    {
+        //Notify death reached with a broadcast event
+        if(OnDeathReached.IsBound())
+        {
+            OnDeathReached.Broadcast();
+        }
+    }
+}

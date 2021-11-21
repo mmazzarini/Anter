@@ -20,25 +20,22 @@ class ANTER_TERMITE_MAYHEM_API UGameFSMState : public UObject
 {
 public:
 
-    UGameFSMState();
-
-
     GENERATED_BODY()
     //Constructor
-    UGameFSMState(UGameFSM* InitOwnerFSM);
+    UGameFSMState();
  
   //State getter 
     UFUNCTION()
     UGameFSM* GetOwnerFSM(){return OwnerFSM;}
 
     UFUNCTION()
+    void SetOwnerFSM(UGameFSM* InOwnerFSM);
+
+    UFUNCTION()
     virtual void TransitionToState(FString InState);
 
     UFUNCTION()
     virtual void OnActionExecuted();
-
-    UFUNCTION()
-    void SetTrialFloat(float InFloat);
    
     //Getter function for the identifier of the FSMState
     UFUNCTION()
@@ -54,10 +51,6 @@ protected:
 
     UPROPERTY(BlueprintReadWrite)
     UGameFSM* OwnerFSM = nullptr;
-
-    //DummyTestProperty
-    UPROPERTY(EditDefaultsOnly)
-    float TrialFloat = 0.0f;
 
     UPROPERTY(EditDefaultsOnly)
     FString FSMStateID = "GameFSMStateID"; //GameFSMStateID is the default identifier for the GameFSMStates. For each subclass,

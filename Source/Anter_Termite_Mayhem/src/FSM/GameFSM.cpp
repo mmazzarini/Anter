@@ -60,6 +60,7 @@ void UGameFSM::AddFSMState(const TSubclassOf<UGameFSMState>& InSubclass)
     FFSMStateSpecifier StateSpecifier;
     StateSpecifier.StateID = "";
     StateSpecifier.FSMState = NewObject<UGameFSMState>(this, InSubclass);
+    StateSpecifier.FSMState->SetOwnerFSM(this);
     InternalArrayOfStates.Push(StateSpecifier);
 }
 
