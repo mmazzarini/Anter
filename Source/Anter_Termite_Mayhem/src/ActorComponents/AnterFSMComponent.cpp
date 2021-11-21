@@ -1,21 +1,15 @@
-#include "ActorComponents/AnterComponent.h"
+#include "ActorComponents/AnterFSMComponent.h"
 #include "Pawn/AnterPawn.h"
 
-UAnterComponent::UAnterComponent()
+UAnterFSMComponent::UAnterFSMComponent()
 : 
 AnterFSM(nullptr)
 {
     Anter = GetOwner<AAnterPawn>();
-    bAutoActivate = true; 
     /*AnterFSM = CreateDefaultSubobject<UAnterFSM>(this);
     if(AnterFSM != nullptr)
     {
         AnterFSM->AnterInitializer(this);
     }
     */
-}
-
-UAnterComponent::~UAnterComponent()
-{
-
 }

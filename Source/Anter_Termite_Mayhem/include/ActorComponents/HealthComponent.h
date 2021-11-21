@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathReachedDelegate);
 *
 */
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UHealthComponent : public UActorComponent
 {
     GENERATED_BODY()
@@ -40,7 +40,7 @@ class ANTER_TERMITE_MAYHEM_API UHealthComponent : public UActorComponent
 
         float GetCoreHealth(){return CoreHealth;}
 
-        FOnDeathReachedDelegate* GetDeathReachedDelegate(){return &OnDeathReached;}
+        FOnDeathReachedDelegate GetDeathReachedDelegate(){return OnDeathReached;}
 
     protected:
     

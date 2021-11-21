@@ -15,7 +15,7 @@ UGameFSM::~UGameFSM()
 }
 */
 
-void UGameFSM::AnterInitializer(UAnterComponent* ContextObject)
+void UGameFSM::AnterInitializer(UAnterFSMComponent* ContextObject)
 {
     CreateFSMStates();
     GetFSMStateIdentifiers();

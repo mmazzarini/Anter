@@ -4,7 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Templates/SharedPointer.h"
 
-#include "AnterComponent.generated.h"
+#include "AnterFSMComponent.generated.h"
 
 class AAnterPawn;
 
@@ -17,19 +17,15 @@ class AAnterPawn;
 */
 
 UCLASS(BlueprintType)
-class ANTER_TERMITE_MAYHEM_API UAnterComponent : public UActorComponent
+class ANTER_TERMITE_MAYHEM_API UAnterFSMComponent : public UActorComponent
 {
     GENERATED_BODY()
     public:
 
-        UAnterComponent();
-
-        ~UAnterComponent();
+        UAnterFSMComponent();
 
     UFUNCTION(BlueprintCallable)
     UAnterFSM* GetAnterFSM(){return AnterFSM;}
-
-    
 
     private:
 

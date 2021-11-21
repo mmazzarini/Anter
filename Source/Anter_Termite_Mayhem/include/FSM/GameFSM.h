@@ -10,7 +10,7 @@
 
 
 class UGameFSMState;
-class UAnterComponent;
+class UAnterFSMComponent;
 
 USTRUCT()
 struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier 
@@ -40,7 +40,7 @@ class ANTER_TERMITE_MAYHEM_API UGameFSM : public UObject
 public:
 
     //Base function initializer
-    virtual void AnterInitializer(UAnterComponent* ContextObject);
+    virtual void AnterInitializer(UAnterFSMComponent* ContextObject);
 
     //State getter 
     UFUNCTION()
@@ -85,5 +85,5 @@ protected:
 
     //Pointer to the actor component that owns this FSM state
     UPROPERTY()
-    UAnterComponent* OwnerComponent;  
+    UAnterFSMComponent* OwnerComponent;  
 };

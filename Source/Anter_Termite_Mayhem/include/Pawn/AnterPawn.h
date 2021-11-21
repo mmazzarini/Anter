@@ -2,7 +2,7 @@
 
 //#include "FSM/AnterFSM/AnterFSM.h"
 #include "GameFramework/Pawn.h"
-#include "ActorComponents/AnterComponent.h"
+#include "ActorComponents/AnterFSMComponent.h"
 
 #include "AnterPawn.generated.h"
 
@@ -18,14 +18,26 @@ class ANTER_TERMITE_MAYHEM_API AAnterPawn : public APawn
 {
     GENERATED_BODY()
 
+public:
+
+    AAnterPawn();
+
+    //Basic ticker
+    void Tick(float DeltaTime) override;
+
+    void OnDeathEvent();
+
+    void SetBindings();
+
 protected:
 
-UPROPERTY()
-TSubclassOf<UAnterComponent> AnterComponentClass;
+//UPROPERTY()
+//TSubclassOf<UAnterFSMComponent> AnterFSMComponentClass;
+
 
 private:
 
-UAnterComponent* AnterComponent;
+//UAnterComponent* AnterFSMComponent;
 
 
 
