@@ -1,30 +1,35 @@
-#include "Pawn/AnterPawn.h"
+#include "Pawn/AnterPaperCharacter.h"
 #include "ActorComponents/HealthComponent.h"
 #include "Components/InputComponent.h"
 #include "ActorComponents/AnterMovementComponent.h"
 
-AAnterPawn::AAnterPawn()
+AAnterPaperCharacter::AAnterPaperCharacter()
 {
     SetBindings();
 }
 
-void AAnterPawn::Tick(float DeltaTime)
+void AAnterPaperCharacter::Tick(float DeltaTime)
 {
     const FVector NewLoc;
     SetActorLocation(NewLoc);
 }
 
-void AAnterPawn::OnDeathEvent()
-{
-    Destroy();
-}
-
-void AAnterPawn::SetBindings()
+void AAnterPaperCharacter::OnDeathEvent()
 {
     UHealthComponent* HealthComponent = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
     if(HealthComponent != nullptr)
     {
-        HealthComponent->GetDeathReachedDelegate().AddDynamic(this,&AAnterPawn::OnDeathEvent);
+        HealthComponent->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+    }
+    Destroy();
+}
+
+void AAnterPaperCharacter::SetBindings()
+{
+    UHealthComponent* HealthComponent = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
+    if(HealthComponent != nullptr)
+    {
+        HealthComponent->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
     
     UInputComponent* InputComponent = Cast<UInputComponent>(FindComponentByClass<UInputComponent>());
@@ -33,4 +38,6 @@ void AAnterPawn::SetBindings()
     {
         InputComponent->BindAxis("RightMovement",MovementComponent,&UAnterMovementComponent::HandleRightMovement);
     }
+
+    
 }

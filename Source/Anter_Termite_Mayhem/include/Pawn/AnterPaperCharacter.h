@@ -1,26 +1,27 @@
 #pragma once
 
 //#include "FSM/AnterFSM/AnterFSM.h"
-#include "GameFramework/Pawn.h"
+
+#include "PaperCharacter.h"
 #include "ActorComponents/AnterFSMComponent.h"
 
-#include "AnterPawn.generated.h"
+#include "AnterPaperCharacter.generated.h"
 
 /*
 *
-* Anter Pawn class, representing the entity of the main character in the game
+* Anter Paper Character class, representing the entity of the main character in the game
 * Components are attached and refernced by the Pawn
 *
 */
 
 UCLASS(BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AAnterPawn : public APawn
+class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter
 {
     GENERATED_BODY()
 
 public:
 
-    AAnterPawn();
+    AAnterPaperCharacter();
 
     //Basic ticker
     void Tick(float DeltaTime) override;

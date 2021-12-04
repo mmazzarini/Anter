@@ -3,6 +3,7 @@
 #include "FSM/AnterFSM/AnterFSM.h"
 #include "Components/ActorComponent.h"
 #include "Templates/SharedPointer.h"
+#include "PaperCharacter.h"
 
 #include "AnterFSMComponent.generated.h"
 
@@ -33,5 +34,5 @@ class ANTER_TERMITE_MAYHEM_API UAnterFSMComponent : public UActorComponent
     UAnterFSM* AnterFSM;
 
     UPROPERTY()
-    AAnterPawn* Anter;
+    APaperCharacter* Anter;
 };
