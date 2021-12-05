@@ -2,6 +2,7 @@
 
 #include "ActorComponents/HealthComponent.h"
 #include "UObject/Object.h"
+//#include "Components/SceneComponent.h"
 
 #include "HealthComponent.generated.h"
 

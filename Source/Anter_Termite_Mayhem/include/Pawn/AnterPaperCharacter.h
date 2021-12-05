@@ -9,6 +9,7 @@
 #include "ActorComponents/AnterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/MovementComponent.h"
 
 #include "AnterPaperCharacter.generated.h"
 
@@ -41,11 +42,27 @@ public:
 
     virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
+    void HandleRightMovement(float InAxisValue);
+
+//UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+//UAnterMovementComponent* AnterMovement;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+USpringArmComponent* Spring;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UCameraComponent* Camera;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UStaticMeshComponent* AnterMesh;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UHealthComponent* AnterHealth;
+
 protected:
 
-//UPROPERTY()
-//TSubclassOf<UAnterFSMComponent> AnterFSMComponentClass;
-
+UPROPERTY(EditAnywhere)
+float Multiplier = 100.0f;
 
 private:
 
