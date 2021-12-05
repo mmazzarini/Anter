@@ -4,8 +4,15 @@
 
 #include "PaperCharacter.h"
 #include "ActorComponents/AnterFSMComponent.h"
+#include "ActorComponents/HealthComponent.h"
+#include "ActorComponents/AnterCameraComponent.h"
+#include "ActorComponents/AnterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 #include "AnterPaperCharacter.generated.h"
+
+class UInputComponent;
 
 /*
 *
@@ -28,7 +35,11 @@ public:
 
     void OnDeathEvent();
 
+    virtual void BeginPlay() override;
+
     void SetBindings();
+
+    virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
 protected:
 
@@ -39,8 +50,6 @@ protected:
 private:
 
 //UAnterComponent* AnterFSMComponent;
-
-
 
 };
 

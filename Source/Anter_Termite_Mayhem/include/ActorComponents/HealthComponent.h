@@ -2,6 +2,7 @@
 
 #include "ActorComponents/HealthComponent.h"
 #include "UObject/Object.h"
+
 #include "HealthComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathReachedDelegate);

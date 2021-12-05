@@ -20,4 +20,4 @@ private:
 
     FVector PositionVector = FVector(0.0f,0.0f,0.0f);
 
-};s
+};

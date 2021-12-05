@@ -1,43 +1,59 @@
 #include "Pawn/AnterPaperCharacter.h"
-#include "ActorComponents/HealthComponent.h"
 #include "Components/InputComponent.h"
-#include "ActorComponents/AnterMovementComponent.h"
+#include "ActorComponents/AnterInputComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerControllers/AnterPlayerController.h"
+#include "AnterCameras/AnterCameraActor.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
-    SetBindings();
 }
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
-    const FVector NewLoc;
-    SetActorLocation(NewLoc);
+
 }
 
 void AAnterPaperCharacter::OnDeathEvent()
 {
-    UHealthComponent* HealthComponent = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
-    if(HealthComponent != nullptr)
+    UHealthComponent* Health = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
+    if(Health != nullptr)
     {
-        HealthComponent->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        Health->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
     Destroy();
 }
 
+
+void AAnterPaperCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+    AAnterPlayerController* PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (PlayerController != nullptr) // && (Camera != nullptr))
+    {
+       PlayerController->SetViewTarget(this); 
+    }
+    SetBindings();
+};
+
 void AAnterPaperCharacter::SetBindings()
 {
-    UHealthComponent* HealthComponent = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
-    if(HealthComponent != nullptr)
+    UHealthComponent* Health = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
+    if(Health != nullptr)
     {
-        HealthComponent->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        Health->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
-    
-    UInputComponent* InputComponent = Cast<UInputComponent>(FindComponentByClass<UInputComponent>());
-    UAnterMovementComponent* MovementComponent = Cast<UAnterMovementComponent>(FindComponentByClass<UAnterMovementComponent>());
-    if((InputComponent != nullptr) && (MovementComponent != nullptr))
+}
+
+PRAGMA_DISABLE_OPTIMIZATION
+void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputComponent)
+{   
+    Super::SetupPlayerInputComponent(InputComponent);
+    UAnterMovementComponent* AnterMovement = Cast<UAnterMovementComponent>(FindComponentByClass<UAnterMovementComponent>());
+    if((InputComponent != nullptr) && (AnterMovement != nullptr))
     {
-        InputComponent->BindAxis("RightMovement",MovementComponent,&UAnterMovementComponent::HandleRightMovement);
+        InputComponent->BindAxis("RightMovement",AnterMovement,&UAnterMovementComponent::HandleRightMovement);
     }
 
-    
 }
+PRAGMA_ENABLE_OPTIMIZATION
