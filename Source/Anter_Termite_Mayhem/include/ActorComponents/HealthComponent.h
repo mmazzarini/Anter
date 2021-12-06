@@ -1,8 +1,7 @@
 #pragma once
 
-#include "ActorComponents/HealthComponent.h"
 #include "UObject/Object.h"
-//#include "Components/SceneComponent.h"
+#include "Components/SceneComponent.h"
 
 #include "HealthComponent.generated.h"
 
@@ -17,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathReachedDelegate);
 */
 
 UCLASS(Blueprintable, BlueprintType)
-class ANTER_TERMITE_MAYHEM_API UHealthComponent : public UActorComponent
+class ANTER_TERMITE_MAYHEM_API UHealthComponent : public USceneComponent
 {
     GENERATED_BODY()
 

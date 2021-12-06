@@ -6,10 +6,10 @@
 #include "ActorComponents/AnterFSMComponent.h"
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/AnterCameraComponent.h"
-#include "ActorComponents/AnterMovementComponent.h"
+//#include "ActorComponents/AnterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/MovementComponent.h"
+//#include "GameFramework/MovementComponent.h"
 
 #include "AnterPaperCharacter.generated.h"
 
@@ -44,6 +44,8 @@ public:
 
     void HandleRightMovement(float InAxisValue);
 
+    void HandleJump();
+
 //UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 //UAnterMovementComponent* AnterMovement;
 
@@ -61,8 +63,11 @@ UHealthComponent* AnterHealth;
 
 protected:
 
-UPROPERTY(EditAnywhere)
-float Multiplier = 100.0f;
+UPROPERTY(EditAnywhere, Category = "Movements")
+float MovementMultiplier = 100.0f;
+
+UPROPERTY(EditAnywhere, Category = "Movements")
+float JumpScale = 100.0f;
 
 private:
 
