@@ -6,7 +6,7 @@
 #include "ActorComponents/AnterFSMComponent.h"
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/AnterCameraComponent.h"
-//#include "ActorComponents/AnterMovementComponent.h"
+#include "ActorComponents/AnterMovementSupportComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 //#include "GameFramework/MovementComponent.h"
@@ -40,14 +40,16 @@ public:
 
     void SetBindings();
 
+    void SetupGravity();
+
     virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
     void HandleRightMovement(float InAxisValue);
 
     void HandleJump();
 
-//UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-//UAnterMovementComponent* AnterMovement;
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UAnterMovementSupportComponent* AnterMovementSupport;
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 USpringArmComponent* Spring;
@@ -68,6 +70,9 @@ float MovementMultiplier = 100.0f;
 
 UPROPERTY(EditAnywhere, Category = "Movements")
 float JumpScale = 100.0f;
+
+UPROPERTY(EditAnywhere, Category = "Movements")
+float InputGravityScale = 1.2f;
 
 private:
 

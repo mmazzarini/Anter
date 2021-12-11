@@ -2,7 +2,7 @@
 #include "GameFramework/Character.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "ActorComponents/AnterMovementComponent.h"
+#include "ActorComponents/AnterMovementSupportComponent.h"
 #include "ActorComponents/AnterInputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/AnterPlayerController.h"
@@ -11,12 +11,8 @@
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
 
-    /*
-    //AnterMovement = CreateDefaultSubobject<UAnterMovementComponent>(TEXT("AnterMovement"));
-    UCharacterMovementComponent = Cast<UHealthComponent>(FindComponentByClass<UHealthComponent>());
-    UCharacterMovementComponent* CharMovement = Cast<UCharacterMovementComponent>(AnterMovement);
-    CharMovement->SetupAttachment(RootComponent);
-    */
+    AnterMovementSupport = CreateDefaultSubobject<UAnterMovementSupportComponent>(TEXT("AnterMovementSupport"));
+    AnterMovementSupport->SetupAttachment(RootComponent);
 
     Spring = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring"));
     Spring->SetupAttachment(RootComponent);
@@ -29,7 +25,6 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
     AnterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("AnterHealth"));
     AnterHealth->SetupAttachment(RootComponent);
-
 }
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
@@ -56,6 +51,7 @@ void AAnterPaperCharacter::BeginPlay()
        PlayerController->SetViewTarget(this); 
     }
     SetBindings();
+    SetupGravity();
 };
 
 void AAnterPaperCharacter::SetBindings()
@@ -63,6 +59,15 @@ void AAnterPaperCharacter::SetBindings()
     if(AnterHealth != nullptr)
     {
         AnterHealth->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+    }
+}
+
+void AAnterPaperCharacter::SetupGravity()
+{
+    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+    if(AnterMovement != nullptr)
+    {
+        AnterMovement->GravityScale = InputGravityScale;
     }
 }
 

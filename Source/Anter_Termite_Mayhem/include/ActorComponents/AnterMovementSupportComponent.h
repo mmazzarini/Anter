@@ -2,17 +2,17 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "AnterMovementComponent.generated.h"
+#include "AnterMovementSupportComponent.generated.h"
 
 UCLASS(Blueprintable, BlueprintType)
-class ANTER_TERMITE_MAYHEM_API UAnterMovementComponent : public UCharacterMovementComponent
+class ANTER_TERMITE_MAYHEM_API UAnterMovementSupportComponent : public USceneComponent
 {
 
     GENERATED_BODY()
 
 public:
 
-    UAnterMovementComponent(){}
+    UAnterMovementSupportComponent(){}
 
     void HandleRightMovement(float InMovementAmount);    
 
