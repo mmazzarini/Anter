@@ -7,6 +7,7 @@
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/AnterCameraComponent.h"
 #include "ActorComponents/AnterMovementSupportComponent.h"
+#include "ActorComponents/AnterWeaponComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 //#include "GameFramework/MovementComponent.h"
@@ -48,6 +49,8 @@ public:
 
     void HandleJump();
 
+/* Anter Components */
+
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UAnterMovementSupportComponent* AnterMovementSupport;
 
@@ -63,15 +66,18 @@ UStaticMeshComponent* AnterMesh;
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UHealthComponent* AnterHealth;
 
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UAnterWeaponComponent* AnterWeapon;
+
 protected:
 
-UPROPERTY(EditAnywhere, Category = "Movements")
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
-UPROPERTY(EditAnywhere, Category = "Movements")
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float JumpScale = 100.0f;
 
-UPROPERTY(EditAnywhere, Category = "Movements")
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float InputGravityScale = 1.2f;
 
 private:

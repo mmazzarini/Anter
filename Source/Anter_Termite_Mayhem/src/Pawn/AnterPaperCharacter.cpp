@@ -25,6 +25,11 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
     AnterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("AnterHealth"));
     AnterHealth->SetupAttachment(RootComponent);
+
+    AnterWeapon = CreateDefaultSubobject<UAnterWeaponComponent>(TEXT("AnterWeapon"));
+    AnterWeapon->SetupAttachment(RootComponent);
+
+
 }
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
@@ -80,7 +85,10 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputCompo
     {
         InputComponent->BindAxis("RightMovement",this,&AAnterPaperCharacter::HandleRightMovement);
         InputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
-        //InputComponent->BindAction("RightMovement",IE_Released,this,&AAnterPaperCharacter::HandleRightMovement);
+        if(AnterWeapon != nullptr)
+        {
+            InputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);
+        }
     }
 
 }
@@ -94,21 +102,9 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         FVector MovementVector = FVector(InAxisValue,0.0f,0.0f);
         if(InAxisValue != 0.0f)
         {
-            //MoveRight(InAxisValue*100.0f);
             UE_LOG(LogTemp, Warning,TEXT("Impulse is %f"), MovementVector.X);
             
             AddMovementInput(MovementVector,MovementMultiplier);
-
-            /*
-            Qui: guarda come il character gestisce gli input.
-            Controlla: Se non ci sono collisioni bloccanti tra piano e cubo. 
-            Prima stacca le collisions. E disabilita la gravity.
-            Poi vedo
-
-            JUMP: per fare il salto, sfrutta come il CharacterMovement ha già implementata sta cosa.
-            */
-
-            //AnterMovement->AddImpulse(MovementVector);
         }
     }
 }
