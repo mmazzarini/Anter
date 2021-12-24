@@ -27,5 +27,8 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AAnterFire> LaserSubClass;
 
+    UPROPERTY(EditAnywhere)
+    float WeaponSpawnRange = 30.0f;
+
 };
 

@@ -15,8 +15,16 @@ void UAnterWeaponComponent::ShootLaser()
     {
         FVector AnterPosition = Anter->GetTransform().GetTranslation();
         FRotator AnterRotation = Anter->GetTransform().Rotator();
-        AnterPosition.X = AnterPosition.X + 30.0f;
-        GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,AnterPosition,AnterRotation);
+        AnterPosition.X = AnterPosition.X + WeaponSpawnRange;
+        AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,AnterPosition,AnterRotation);
+        if(Fire != nullptr)
+        {
+            UCharacterMovementComponent* FireMovement = Cast<UCharacterMovementComponent>(Fire->FindComponentByClass<UCharacterMovementComponent>());
+            if(FireMovement != nullptr)
+            {
+                FireMovement->bAutoActivate = true;
+            }
+        }
         //FireShot->SetActorLocation(AnterPosition);
     }
 }

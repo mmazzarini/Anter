@@ -76,7 +76,6 @@ void AAnterPaperCharacter::SetupGravity()
     }
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {   
     Super::SetupPlayerInputComponent(InputComponent);
@@ -92,7 +91,6 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputCompo
     }
 
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 {

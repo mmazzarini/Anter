@@ -3,7 +3,7 @@
 #include "GameFramework/Actor.h"
 //#include "PaperSpriteActor.h"
 #include "PaperCharacter.h"
-
+#include "Components/StaticMeshComponent.h"
 #include "PlayerControllers/AnterPlayerController.h"
 
 #include "AnterFire.generated.h"
@@ -28,7 +28,6 @@ class AAnterFire : public APaperCharacter
 
     protected:
 
-    UPROPERTY(EditDefaultsOnly)
     FVector MovementVector;
 
     UPROPERTY(EditDefaultsOnly, Category="Laser Movement")
@@ -40,6 +39,15 @@ class AAnterFire : public APaperCharacter
     UPROPERTY(EditDefaultsOnly, Category="Laser Movement")
     float MovementZ = 0.0f;
 
+    UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Laser Physics")
+    float EditableMass = 0.0f;
+
     AAnterPlayerController* PlayerController; 
+
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UStaticMeshComponent* FireMesh;
+
+    UPROPERTY(EditAnywhere, Category = "Fire Movement")
+    float MovementMultiplier = 100.0f;
 
 };
