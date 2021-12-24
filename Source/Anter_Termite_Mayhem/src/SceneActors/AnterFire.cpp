@@ -5,7 +5,9 @@
 AAnterFire::AAnterFire()
 {
     FireMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FireMesh"));
-    FireMesh->SetupAttachment(RootComponent);    
+    FireMesh->SetupAttachment(RootComponent);   
+
+    ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 }
 
 void AAnterFire::Tick(float DeltaSeconds)
@@ -27,13 +29,19 @@ void AAnterFire::BeginPlay()
     {
         MovementComponent->bAutoActivate = true;
     }
+    if(ProjectileMovement !=nullptr)
+    {
+        ProjectileMovement->ProjectileGravityScale = false;
+        ProjectileMovement->Velocity.X = EditableVelocityX;
+    }
+
     PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
 void AAnterFire::UpdatePosition()
 {   
     UE_LOG(LogTemp, Warning,TEXT("Fire Impulse is %f"), MovementVector.X);
-    AddMovementInput(MovementVector,MovementMultiplier);
+    AddMovementInput(MovementVector,MovementMultiplier,true);
 }
 
 void AAnterFire::CheckScreenLocation()
@@ -46,7 +54,7 @@ void AAnterFire::CheckScreenLocation()
         //Get the projection of world location on the screen
         FVector2D ScreenPos = FVector2D(0.0f,0.0f);
         PlayerController->ProjectWorldLocationToScreen(GetActorLocation(), ScreenPos);
-        if(ScreenPos.X>ScreenX*0.9 || ScreenPos.X < 0.0f)
+        if(ScreenPos.X>ScreenX*ScreenAppearanceMultiplier || ScreenPos.X < 0.0f)
         {
             Destroy();
         }

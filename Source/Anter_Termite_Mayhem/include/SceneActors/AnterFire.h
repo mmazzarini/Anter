@@ -5,6 +5,7 @@
 #include "PaperCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "PlayerControllers/AnterPlayerController.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 #include "AnterFire.generated.h"
 
@@ -42,12 +43,23 @@ class AAnterFire : public APaperCharacter
     UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Laser Physics")
     float EditableMass = 0.0f;
 
+    UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Projectile Kinematics")
+    float EditableVelocityX = 1000.0f;
+ 
+    UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Laser Visibility")
+    float ScreenAppearanceMultiplier = 1.2f;
+
     AAnterPlayerController* PlayerController; 
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UStaticMeshComponent* FireMesh;
 
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UProjectileMovementComponent* ProjectileMovement;
+
     UPROPERTY(EditAnywhere, Category = "Fire Movement")
     float MovementMultiplier = 100.0f;
+
+
 
 };
