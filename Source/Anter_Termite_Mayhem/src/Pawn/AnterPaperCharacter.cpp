@@ -86,7 +86,8 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputCompo
         InputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
         if(AnterWeapon != nullptr)
         {
-            InputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);
+            InputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
+            InputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
         }
     }
 

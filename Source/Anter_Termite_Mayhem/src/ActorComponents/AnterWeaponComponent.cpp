@@ -2,6 +2,8 @@
 #include "Pawn/AnterPaperCharacter.h"
 
 UAnterWeaponComponent::UAnterWeaponComponent()
+: 
+bCanShoot(true)
 {
     //void at the moment
 }
@@ -13,19 +15,43 @@ void UAnterWeaponComponent::ShootLaser()
     AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(GetOwner());
     if(Anter != nullptr)
     {
-        FVector AnterPosition = Anter->GetTransform().GetTranslation();
-        FRotator AnterRotation = Anter->GetTransform().Rotator();
-        AnterPosition.X = AnterPosition.X + WeaponSpawnRange;
-        AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,AnterPosition,AnterRotation);
-        if(Fire != nullptr)
+        if(bCanShoot == true)
         {
-            UCharacterMovementComponent* FireMovement = Cast<UCharacterMovementComponent>(Fire->FindComponentByClass<UCharacterMovementComponent>());
-            if(FireMovement != nullptr)
+            FVector AnterPosition = Anter->GetTransform().GetTranslation();
+            FRotator AnterRotation = Anter->GetTransform().Rotator();
+            FVector FirePosition = AnterPosition;
+            FirePosition.X = AnterPosition.X + WeaponSpawnRange*MovementDirectionScaleFactor;
+            AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
+            if(Fire != nullptr)
             {
-                FireMovement->bAutoActivate = true;
+                Fire->SetMovementToRight((MovementDirectionScaleFactor > 0.0f));
             }
+            SetCanShoot(false);
+            GetOwner()->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
         }
-        //FireShot->SetActorLocation(AnterPosition);
     }
 }
 PRAGMA_ENABLE_OPTIMIZATION
+
+void UAnterWeaponComponent::SetCanShoot(bool InCanShoot)
+{
+    bCanShoot = InCanShoot;
+}
+
+void UAnterWeaponComponent::OnTimerEnded()
+{
+    GetOwner()->GetWorldTimerManager().ClearTimer(FireTimerHandle);
+    SetCanShoot(true);
+}
+
+void UAnterWeaponComponent::OnOwnerMoving(float InAxisValue)
+{
+    if(InAxisValue > 0.0f)
+    {
+        MovementDirectionScaleFactor = 1.0f;
+    }
+    else if(InAxisValue < 0.0f)
+    {
+        MovementDirectionScaleFactor = -1.0f;
+    }
+}

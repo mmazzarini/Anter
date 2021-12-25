@@ -27,6 +27,8 @@ class AAnterFire : public APaperCharacter
 
     void CheckScreenLocation();
 
+    void SetMovementToRight(bool InIsMovingRight);
+
     protected:
 
     FVector MovementVector;
@@ -60,6 +62,7 @@ class AAnterFire : public APaperCharacter
     UPROPERTY(EditAnywhere, Category = "Fire Movement")
     float MovementMultiplier = 100.0f;
 
-
+    //Right movement correction
+    float RightMovementCorrectionFactor = 1.0f;
 
 };

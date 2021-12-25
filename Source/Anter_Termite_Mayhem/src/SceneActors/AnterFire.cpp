@@ -24,15 +24,17 @@ void AAnterFire::BeginPlay()
     MovementVector.X = MovementX;
     MovementVector.Y = MovementY;
     MovementVector.Z = MovementZ;
+    /*
     UCharacterMovementComponent* MovementComponent = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(MovementComponent != nullptr)
     {
         MovementComponent->bAutoActivate = true;
     }
+    */
     if(ProjectileMovement !=nullptr)
     {
         ProjectileMovement->ProjectileGravityScale = false;
-        ProjectileMovement->Velocity.X = EditableVelocityX;
+        ProjectileMovement->Velocity.X = 0.0f;
     }
 
     PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -40,8 +42,8 @@ void AAnterFire::BeginPlay()
 
 void AAnterFire::UpdatePosition()
 {   
-    UE_LOG(LogTemp, Warning,TEXT("Fire Impulse is %f"), MovementVector.X);
-    AddMovementInput(MovementVector,MovementMultiplier,true);
+    //UE_LOG(LogTemp, Warning,TEXT("Fire Impulse is %f"), MovementVector.X);
+    //AddMovementInput(MovementVector,MovementMultiplier*RightMovementCorrectionFactor,true);
 }
 
 void AAnterFire::CheckScreenLocation()
@@ -60,3 +62,11 @@ void AAnterFire::CheckScreenLocation()
         }
     }
 }
+
+PRAGMA_DISABLE_OPTIMIZATION
+void AAnterFire::SetMovementToRight(bool InIsMovingRight)
+{
+    RightMovementCorrectionFactor = InIsMovingRight? 1.0f : -1.0f;
+    ProjectileMovement->Velocity.X = EditableVelocityX*RightMovementCorrectionFactor;
+}
+PRAGMA_ENABLE_OPTIMIZATION
