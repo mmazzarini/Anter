@@ -10,7 +10,7 @@
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
-//#include "GameFramework/MovementComponent.h"
+#include "Components/BoxComponent.h"
 
 #include "AnterPaperCharacter.generated.h"
 
@@ -49,6 +49,19 @@ public:
 
     void HandleJump();
 
+    UFUNCTION()
+    void OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+    UFUNCTION()
+    void OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+    UFUNCTION()
+    void SetCanJump(bool InCanJump);
+
+    UFUNCTION()
+    void SetIsFalling(bool InIsFalling);
+
+    void AdjustVelocity();
+
 /* Anter Components */
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
@@ -69,6 +82,9 @@ UHealthComponent* AnterHealth;
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UAnterWeaponComponent* AnterWeapon;
 
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UBoxComponent* AnterBox;
+
 protected:
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
@@ -82,7 +98,9 @@ float InputGravityScale = 1.2f;
 
 private:
 
-//UAnterComponent* AnterFSMComponent;
+bool bCanAnterJump = false;
+
+bool bIsFalling = true;
 
 };
 

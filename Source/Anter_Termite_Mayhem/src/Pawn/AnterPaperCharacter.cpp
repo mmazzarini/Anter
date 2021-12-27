@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/AnterPlayerController.h"
 #include "AnterCameras/AnterCameraActor.h"
+#include "Engine/GameEngine.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -29,12 +30,14 @@ AAnterPaperCharacter::AAnterPaperCharacter()
     AnterWeapon = CreateDefaultSubobject<UAnterWeaponComponent>(TEXT("AnterWeapon"));
     AnterWeapon->SetupAttachment(RootComponent);
 
+    AnterBox = CreateDefaultSubobject<UBoxComponent>(TEXT("AnterBox"));
+    AnterBox->SetupAttachment(RootComponent);
 
 }
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
-
+    AdjustVelocity();
 }
 
 void AAnterPaperCharacter::OnDeathEvent()
@@ -42,6 +45,17 @@ void AAnterPaperCharacter::OnDeathEvent()
     if(AnterHealth != nullptr)
     {
         AnterHealth->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+    }
+    if(AnterBox != nullptr)
+    {
+        if(AnterBox->OnComponentBeginOverlap.IsBound())
+        {
+            AnterBox->OnComponentBeginOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderHit);
+        }
+        if(AnterBox->OnComponentEndOverlap.IsBound())
+        {
+            AnterBox->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
+        }
     }
     Destroy();
 }
@@ -51,12 +65,13 @@ void AAnterPaperCharacter::BeginPlay()
 {
     Super::BeginPlay();
     AAnterPlayerController* PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-    if (PlayerController != nullptr) // && (Camera != nullptr))
+    if (PlayerController != nullptr)
     {
        PlayerController->SetViewTarget(this); 
     }
     SetBindings();
     SetupGravity();
+
 };
 
 void AAnterPaperCharacter::SetBindings()
@@ -64,6 +79,12 @@ void AAnterPaperCharacter::SetBindings()
     if(AnterHealth != nullptr)
     {
         AnterHealth->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+    }
+
+    if(AnterBox != nullptr)
+    {
+        AnterBox->OnComponentBeginOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderHit);
+        AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
     }
 }
 
@@ -80,7 +101,7 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputCompo
 {   
     Super::SetupPlayerInputComponent(InputComponent);
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if((InputComponent != nullptr))// && (AnterMovement != nullptr))
+    if((InputComponent != nullptr))
     {
         InputComponent->BindAxis("RightMovement",this,&AAnterPaperCharacter::HandleRightMovement);
         InputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
@@ -114,9 +135,87 @@ void AAnterPaperCharacter::HandleJump()
     if(AnterMovement != nullptr)
     {
         FVector JumpVector = FVector(0.0f,0.0f,JumpScale);
-        //MoveRight(InAxisValue*100.0f);
         UE_LOG(LogTemp, Warning,TEXT("Jump Impulse is %f"), JumpVector.Z);
         AnterMovement->AddImpulse(JumpVector);
-        //AddMovementInput(JumpVector,JumpScale);
+    }
+}
+
+PRAGMA_DISABLE_OPTIMIZATION
+
+void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+    if(OtherActor != nullptr)
+    {
+        if(OtherActor->GetName().Contains("Floor"))
+        {
+            if(GEngine != nullptr)
+            {
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Collision begun"));
+            }
+            //Get distance from platform surface centre to player and compare it with normal
+            FVector PlatformCentre = FVector(0.0f,0.0f,0.0f);
+            FVector PlatformSize = FVector(0.0f,0.0f,0.0f);
+            OtherActor->GetActorBounds(true,PlatformCentre,PlatformSize,false);
+            FVector PlatformSurfaceCentre = PlatformCentre + FVector::UpVector*PlatformSize.Z/2.;
+            FVector Dist = PlatformSurfaceCentre-this->GetActorLocation();            
+            if(FVector::DotProduct(Dist,FVector::UpVector) > 0.0f)
+            {
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::SanitizeFloat(FVector::DotProduct(Dist,FVector::UpVector)));
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,SweepResult.ImpactNormal.ToString());
+                UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+                if(AnterMovement != nullptr)
+                {
+                    SetIsFalling(false);
+                    SetCanJump(true);
+                    AnterMovement->GravityScale = 0.0f;
+                }
+            }   
+        }
+    }
+}
+PRAGMA_ENABLE_OPTIMIZATION
+
+PRAGMA_DISABLE_OPTIMIZATION
+void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+    if(OtherActor != nullptr)
+    {
+        if(OtherActor->GetName().Contains("Floor"))
+        {
+            if(GEngine != nullptr)
+            {
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Collision ended"));
+            }
+             UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+            if(AnterMovement != nullptr)
+            {
+                SetIsFalling(true);
+                SetCanJump(false);
+                AnterMovement->GravityScale = InputGravityScale;
+            }
+        }
+    }
+}
+PRAGMA_ENABLE_OPTIMIZATION
+
+void AAnterPaperCharacter::SetCanJump(bool InCanJump)
+{
+    bCanAnterJump = InCanJump;
+}
+
+void AAnterPaperCharacter::SetIsFalling(bool InIsFalling)
+{
+    bIsFalling = InIsFalling;
+}
+
+void AAnterPaperCharacter::AdjustVelocity()
+{
+    if(bIsFalling == false)
+    {
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if(AnterMovement != nullptr)
+        {
+            AnterMovement->Velocity.Z = 0.0f;   
+        }
     }
 }
