@@ -39,6 +39,8 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
     AdjustVelocity();
+    //Ensure no displacement from Y = 0 plane
+    SetActorLocation(FVector(GetActorLocation().X,0.0f,GetActorLocation().Z));
 }
 
 void AAnterPaperCharacter::OnDeathEvent()
@@ -73,6 +75,11 @@ void AAnterPaperCharacter::BeginPlay()
     SetBindings();
     SetupGravity();
 
+    if(Camera != nullptr)
+    {
+        Camera->ProjectionMode = ECameraProjectionMode::Orthographic;
+    }
+
 };
 
 void AAnterPaperCharacter::SetBindings()
@@ -87,6 +94,7 @@ void AAnterPaperCharacter::SetBindings()
         AnterBox->OnComponentBeginOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderHit);
         AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
     }
+
 }
 
 void AAnterPaperCharacter::SetupGravity()
@@ -128,7 +136,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         }
         else
         {
-            if(abs(AnterMovement->Velocity.X) >= 0.1f)
+            if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
             {
                 AddMovementInput(-1.0f*FVector::XAxisVector*AnterMovement->Velocity.X*FrictionScale);
             }
@@ -168,7 +176,8 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
             FVector PlatformSize = FVector(0.0f,0.0f,0.0f);
             OtherActor->GetActorBounds(true,PlatformCentre,PlatformSize,false);
             FVector PlatformSurfaceCentre = PlatformCentre + FVector::UpVector*PlatformSize.Z/2.;
-            FVector Dist = this->GetActorLocation()-PlatformSurfaceCentre;            
+            FVector Dist = this->GetActorLocation()-PlatformSurfaceCentre;     
+            FVector Height = FVector::UpVector*(GetActorLocation().Z - PlatformSurfaceCentre.Z);         
             if(FVector::DotProduct(Dist,FVector::UpVector) > VerticalTolerance)
             {
                 GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::SanitizeFloat(FVector::DotProduct(Dist,FVector::UpVector)));
@@ -182,6 +191,12 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
                     SetCanJump(true);
                     AnterMovement->GravityScale = 0.0f;
                 }
+                FVector AnterSize = FVector(0.0f,0.0f,0.0f);
+                FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
+                this->GetActorBounds(true,AnterCentre,AnterSize,false);
+                
+                FVector NewLocation = FVector(GetActorLocation().X,GetActorLocation().Y,PlatformSurfaceCentre.Z + (FVector::UpVector*AnterSize.Z/2.5f).Z);
+                SetActorLocation(NewLocation);
             }   
         }
     }

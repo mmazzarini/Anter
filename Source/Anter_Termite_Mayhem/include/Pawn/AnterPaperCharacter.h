@@ -99,6 +99,9 @@ UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float FrictionScale = 0.5f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
+float VelocityThreshold = 0.1f;
+
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float InputGravityScale = 1.2f;
 
 private:
