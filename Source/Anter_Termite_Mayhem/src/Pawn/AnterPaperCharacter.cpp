@@ -8,6 +8,7 @@
 #include "PlayerControllers/AnterPlayerController.h"
 #include "AnterCameras/AnterCameraActor.h"
 #include "Engine/GameEngine.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -123,8 +124,18 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         if(InAxisValue != 0.0f)
         {
             UE_LOG(LogTemp, Warning,TEXT("Impulse is %f"), MovementVector.X);
-            
             AddMovementInput(MovementVector,MovementMultiplier);
+        }
+        else
+        {
+            if(abs(AnterMovement->Velocity.X) >= 0.1f)
+            {
+                AddMovementInput(-1.0f*FVector::XAxisVector*AnterMovement->Velocity.X*FrictionScale);
+            }
+            else
+            {
+                AnterMovement->Velocity.X = 0.0f;
+            }
         }
     }
 }
@@ -157,10 +168,12 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
             FVector PlatformSize = FVector(0.0f,0.0f,0.0f);
             OtherActor->GetActorBounds(true,PlatformCentre,PlatformSize,false);
             FVector PlatformSurfaceCentre = PlatformCentre + FVector::UpVector*PlatformSize.Z/2.;
-            FVector Dist = PlatformSurfaceCentre-this->GetActorLocation();            
-            if(FVector::DotProduct(Dist,FVector::UpVector) > 0.0f)
+            FVector Dist = this->GetActorLocation()-PlatformSurfaceCentre;            
+            if(FVector::DotProduct(Dist,FVector::UpVector) > VerticalTolerance)
             {
                 GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,FString::SanitizeFloat(FVector::DotProduct(Dist,FVector::UpVector)));
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,PlatformCentre.ToString());
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,PlatformSurfaceCentre.ToString());
                 GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,SweepResult.ImpactNormal.ToString());
                 UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
                 if(AnterMovement != nullptr)

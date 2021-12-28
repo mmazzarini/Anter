@@ -47,6 +47,8 @@ public:
 
     void HandleRightMovement(float InAxisValue);
 
+    void HandleStop();
+
     void HandleJump();
 
     UFUNCTION()
@@ -94,6 +96,9 @@ UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float JumpScale = 100.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
+float FrictionScale = 0.5f;
+
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float InputGravityScale = 1.2f;
 
 private:
@@ -101,6 +106,9 @@ private:
 bool bCanAnterJump = false;
 
 bool bIsFalling = true;
+
+UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
+float VerticalTolerance = 0.0f;
 
 };
 
