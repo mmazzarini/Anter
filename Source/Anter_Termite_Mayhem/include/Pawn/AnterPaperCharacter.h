@@ -51,6 +51,10 @@ public:
 
     void HandleJump();
 
+    void SetLeftMovementFree(bool InUnlocked){bIsLeftUnlocked = InUnlocked;}
+
+    void SetRightMovementFree(bool InUnlocked){bIsRightUnlocked = InUnlocked;}
+
     UFUNCTION()
     void OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
     UFUNCTION()
@@ -61,6 +65,15 @@ public:
 
     UFUNCTION()
     void SetIsFalling(bool InIsFalling);
+
+    UFUNCTION()
+    void RegisterPlatformCollision(AActor* InPlatformToAdd, bool IsVerticallyColliding);
+
+    UFUNCTION()
+    void DeregisterPlatformCollision(AActor* InPlatformToRemove);
+
+    UFUNCTION()
+    bool FindAnyVerticalCollision();
 
     void AdjustVelocity();
 
@@ -110,8 +123,21 @@ bool bCanAnterJump = false;
 
 bool bIsFalling = true;
 
+UPROPERTY(EditAnywhere, Category = "Platform collision")
+float VerticalImpenetrabilityFactor = 3.0f;
+
 UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
 float VerticalTolerance = 0.0f;
+
+UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
+float HorizontalTolerance = 0.0f;
+
+bool bIsLeftUnlocked = true;
+
+bool bIsRightUnlocked = true;
+
+//Array of information about vertical collisions with platforms
+TArray<TPair<AActor*,bool>> RegisteredVerticalPlatformCollisions;
 
 };
 
