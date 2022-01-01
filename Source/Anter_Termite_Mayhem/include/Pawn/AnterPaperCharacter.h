@@ -16,6 +16,14 @@
 
 class UInputComponent;
 
+UENUM(BlueprintType)
+enum class EPlatformCollisionType : uint8
+{
+    IsVeritcallyColliding,
+    IsCollidingFromRight,
+    IsCollidingFromLeft
+};
+
 /*
 *
 * Anter Paper Character class, representing the entity of the main character in the game
@@ -63,17 +71,21 @@ public:
     UFUNCTION()
     void SetCanJump(bool InCanJump);
 
+    bool GetCanJump(){return bCanAnterJump;}
+
+    void ConstrainJump();
+
     UFUNCTION()
     void SetIsFalling(bool InIsFalling);
 
     UFUNCTION()
-    void RegisterPlatformCollision(AActor* InPlatformToAdd, bool IsVerticallyColliding);
+    void RegisterPlatformCollision(AActor* InPlatformToAdd, EPlatformCollisionType InPlatformCollisionType);
 
     UFUNCTION()
     void DeregisterPlatformCollision(AActor* InPlatformToRemove);
 
     UFUNCTION()
-    bool FindAnyVerticalCollision();
+    bool FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind);
 
     void AdjustVelocity();
 
@@ -105,7 +117,7 @@ protected:
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
+UPROPERTY(EditAnywhere, Category = "Anter Jump")
 float JumpScale = 100.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
@@ -117,11 +129,8 @@ float VelocityThreshold = 0.1f;
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float InputGravityScale = 1.2f;
 
-private:
-
-bool bCanAnterJump = false;
-
-bool bIsFalling = true;
+UPROPERTY(EditAnywhere, Category = "Anter Jump")
+float ZVelocityThresholdToJump = -1.0f;
 
 UPROPERTY(EditAnywhere, Category = "Platform collision")
 float VerticalImpenetrabilityFactor = 3.0f;
@@ -132,12 +141,19 @@ float VerticalTolerance = 0.0f;
 UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
 float HorizontalTolerance = 0.0f;
 
+private:
+
+bool bCanAnterJump = false;
+
+bool bIsFalling = true;
+
+
 bool bIsLeftUnlocked = true;
 
 bool bIsRightUnlocked = true;
 
 //Array of information about vertical collisions with platforms
-TArray<TPair<AActor*,bool>> RegisteredVerticalPlatformCollisions;
+TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
 
 };
 

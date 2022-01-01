@@ -41,6 +41,7 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     AdjustVelocity();
     //Ensure no displacement from Y = 0 plane
     SetActorLocation(FVector(GetActorLocation().X,0.0f,GetActorLocation().Z));
+    ConstrainJump();
 }
 
 void AAnterPaperCharacter::OnDeathEvent()
@@ -163,11 +164,12 @@ PRAGMA_ENABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleJump()
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if(AnterMovement != nullptr)
+    if(AnterMovement != nullptr && bCanAnterJump == true)
     {
         FVector JumpVector = FVector(0.0f,0.0f,JumpScale);
         UE_LOG(LogTemp, Warning,TEXT("Jump Impulse is %f"), JumpVector.Z);
         AnterMovement->AddImpulse(JumpVector);
+        SetCanJump(false);
     }
 }
 
@@ -184,20 +186,33 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
                 GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Collision begun"));
             }
             //Get distance from platform surface centre to player and compare it with normal
+
+            //Platform geometrical references
             FVector PlatformCentre = FVector(0.0f,0.0f,0.0f);
             FVector PlatformSize = FVector(0.0f,0.0f,0.0f);
-            OtherActor->GetActorBounds(true,PlatformCentre,PlatformSize,false);
-            FVector PlatformSurfaceCentre = PlatformCentre + FVector::UpVector*PlatformSize.Z/2.;
-            FVector Dist = this->GetActorLocation()-PlatformSurfaceCentre;     
-            FVector Height = FVector::UpVector*(GetActorLocation().Z - PlatformSurfaceCentre.Z);  
+            OtherActor->GetActorBounds(false,PlatformCentre,PlatformSize,false);
+            FVector PlatformSurfaceCentre = PlatformCentre + FVector::UpVector*PlatformSize.Z; // /.2
+            FVector PlatformBottomCentre =  PlatformCentre - FVector::UpVector*PlatformSize.Z; // /.2
+            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform Surface Centre: ") + PlatformSurfaceCentre.ToString());
+            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform Centre: ") + PlatformCentre.ToString());
+            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform Bottom  Centre: ") + PlatformBottomCentre.ToString());
+            
 
+
+            //Pawn geometrical references
+            FVector AnterSize = FVector(0.0f,0.0f,0.0f);
+            FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
+            this->GetActorBounds(true,AnterCentre,AnterSize,false);
+            //FVector Dist = (AnterCentre-FVector::UpVector*AnterSize.Z/4.f)-PlatformSurfaceCentre;     
+            FVector TopDist = this->GetActorLocation()-PlatformSurfaceCentre;
+            FVector BottomDist = this->GetActorLocation()-PlatformBottomCentre;
             //Check geometry of collision to decide which impact       
-            if(FVector::DotProduct(Dist,FVector::UpVector) > VerticalTolerance)
+            if(FVector::DotProduct(TopDist,FVector::UpVector) >= VerticalTolerance)
             {
                 /* Impact was from top: pawn is standing on platform. */ 
 
                 //Register impact with vertical colliding platform
-                RegisterPlatformCollision(OtherActor,true);
+                RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsVeritcallyColliding);
 
                 UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
                 if(AnterMovement != nullptr)
@@ -207,43 +222,48 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
                     AnterMovement->GravityScale = 0.0f;
                 }
                 //Floor impenetrability condition
-                FVector AnterSize = FVector(0.0f,0.0f,0.0f);
-                FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
-                this->GetActorBounds(true,AnterCentre,AnterSize,false);
                 FVector NewLocation = FVector(GetActorLocation().X,GetActorLocation().Y,PlatformSurfaceCentre.Z + (FVector::UpVector*AnterSize.Z/VerticalImpenetrabilityFactor).Z);
                 SetActorLocation(NewLocation);
                 GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter new location: ") + NewLocation.ToString());
             } 
             else
             {
-                /* Impact was from side or bottom. */
-
-                //Register impact with vertical colliding platform
-                RegisterPlatformCollision(OtherActor,false);
-
-                /* Impact was from side or bottom */
-                FVector PlatformRightSideCentre = PlatformCentre + FVector::XAxisVector*PlatformSize.X/2.;
-                FVector PlatformLeftSideCentre = PlatformCentre - FVector::XAxisVector*PlatformSize.X/2.;
-                FVector RightDist = this->GetActorLocation()-PlatformCentre;
-                FVector LeftDist = this->GetActorLocation()-PlatformCentre;
-                if(RightDist.X > 0.0f)
+                if(FVector::DotProduct(BottomDist,FVector::DownVector) < VerticalTolerance)
                 {
-                    if((FVector::DotProduct(RightDist,FVector::XAxisVector) > HorizontalTolerance))
+
+                    /* Impact was from side or bottom */
+                    FVector PlatformRightSideCentre = PlatformCentre + FVector::XAxisVector*PlatformSize.X; // /2.
+                    FVector PlatformLeftSideCentre = PlatformCentre - FVector::XAxisVector*PlatformSize.X;  // /2.
+                    FVector RightDist = this->GetActorLocation()-PlatformCentre;
+                    FVector LeftDist = this->GetActorLocation()-PlatformCentre;
+                    if(RightDist.X > 0.0f)
                     {
-                        SetLeftMovementFree(false);
+                        //Impact coming from right
+                        if((FVector::DotProduct(RightDist,FVector::XAxisVector) > HorizontalTolerance))
+                        {
+                            SetLeftMovementFree(false);
+                            //Impenetrability
+                            //SetActorLocation(FVector(PlatformRightSideCentre.X+AnterSize.X/2., GetActorLocation().Y,GetActorLocation().Z));
+                            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform RIGHT correction: ") + PlatformBottomCentre.ToString());
+                            RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromRight);
+                        }
                     }
-                }
-                else if(LeftDist.X < 0.0f)
-                {
-                    if((FVector::DotProduct(LeftDist,-FVector::XAxisVector) > HorizontalTolerance))
+                    else if(LeftDist.X < 0.0f)
                     {
-                        SetRightMovementFree(false);
+                        //Impact coming from left
+                        if((FVector::DotProduct(LeftDist,-FVector::XAxisVector) > HorizontalTolerance))
+                        {
+                            SetRightMovementFree(false);
+                            RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromLeft);
+                            //Impenetrability
+                            //SetActorLocation(FVector(PlatformLeftSideCentre.X-AnterSize.X/2., GetActorLocation().Y,GetActorLocation().Z));
+                        }
                     }
                 }
             }
         }
     }
-}
+}   
 PRAGMA_ENABLE_OPTIMIZATION
 
 PRAGMA_DISABLE_OPTIMIZATION
@@ -265,15 +285,22 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
             if(AnterMovement != nullptr)
             {
                 //If there is no vertically colliding platform in the registered platforms array, then free fall
-                if(FindAnyVerticalCollision() == false)
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVeritcallyColliding) == false)
                 {
                     SetIsFalling(true);
-                    SetCanJump(false);
+                    //SetCanJump(false);
                     AnterMovement->GravityScale = InputGravityScale;
                 }
                 
-                SetLeftMovementFree(true);
-                SetRightMovementFree(true);
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
+                {
+                    SetRightMovementFree(true);                    
+                }
+
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
+                {
+                    SetLeftMovementFree(true);
+                }
             }
         }
     }
@@ -285,6 +312,17 @@ void AAnterPaperCharacter::SetCanJump(bool InCanJump)
     bCanAnterJump = InCanJump;
 }
 
+void AAnterPaperCharacter::ConstrainJump()
+{
+    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+    if(AnterMovement != nullptr)
+    {
+        if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
+        {
+            SetCanJump(false);
+        }
+    }
+}
 
 void AAnterPaperCharacter::SetIsFalling(bool InIsFalling)
 {
@@ -293,9 +331,9 @@ void AAnterPaperCharacter::SetIsFalling(bool InIsFalling)
 
 
 PRAGMA_DISABLE_OPTIMIZATION
-void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, bool IsVerticallyColliding)
+void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, EPlatformCollisionType InPlatformCollisionType)
 {
-    TPair<AActor*,bool> PlatformToAdd = TPair<AActor*,bool>(InPlatformToAdd,IsVerticallyColliding);
+    TPair<AActor*,EPlatformCollisionType> PlatformToAdd = TPair<AActor*,EPlatformCollisionType>(InPlatformToAdd,InPlatformCollisionType);
     RegisteredVerticalPlatformCollisions.Add(PlatformToAdd);
 }
 PRAGMA_ENABLE_OPTIMIZATION
@@ -303,7 +341,7 @@ PRAGMA_ENABLE_OPTIMIZATION
 PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemove)
 {
-    auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToRemove](TPair <AActor*,bool> PlatformPair)
+    auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToRemove](TPair <AActor*,EPlatformCollisionType> PlatformPair)
     {
         return PlatformPair.Key == InPlatformToRemove;
     }
@@ -317,11 +355,11 @@ void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemov
 PRAGMA_ENABLE_OPTIMIZATION
 
 PRAGMA_DISABLE_OPTIMIZATION
-bool AAnterPaperCharacter::FindAnyVerticalCollision()
+bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind)
 {
-    TPair <AActor*,bool>* PlatformToFind = RegisteredVerticalPlatformCollisions.FindByPredicate([](TPair <AActor*,bool> PlatformPair)
+    TPair <AActor*,EPlatformCollisionType>* PlatformToFind = RegisteredVerticalPlatformCollisions.FindByPredicate([=](TPair <AActor*,EPlatformCollisionType> PlatformPair)
     {
-        return PlatformPair.Value == true;
+        return PlatformPair.Value == InPlatformCollisionTypeToFind;
     }
     );
     return (PlatformToFind != nullptr);
