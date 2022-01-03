@@ -24,6 +24,14 @@ enum class EPlatformCollisionType : uint8
     IsCollidingFromLeft
 };
 
+//Little structure to be referenced by Pawn in order to impose its local geometry while moving
+
+struct FGeometron
+{
+    float X = 1.0f;
+    float Z = 0.0f;
+};
+
 /*
 *
 * Anter Paper Character class, representing the entity of the main character in the game
@@ -88,6 +96,10 @@ public:
     bool FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind);
 
     void AdjustVelocity();
+
+    void ImposeGeometry(float InAngle);
+
+    void ResetGeometron();
 
 /* Anter Components */
 
@@ -154,6 +166,8 @@ bool bIsRightUnlocked = true;
 
 //Array of information about vertical collisions with platforms
 TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
+
+FGeometron AnterGeometron;
 
 };
 
