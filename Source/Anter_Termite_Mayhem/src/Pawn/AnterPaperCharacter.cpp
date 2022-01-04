@@ -123,37 +123,53 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputCompo
 
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(AnterMovement != nullptr)
     {
-        FVector MovementVector = FVector(InAxisValue*AnterGeometron.X,0.0f,InAxisValue*AnterGeometron.Z);
+        FVector MovementVectorX = FVector(InAxisValue*AnterGeometron.X,0.0f,0.0f);
+        FVector MovementVectorZ = FVector(0.0f,0.0f,InAxisValue*AnterGeometron.Z);
         if(InAxisValue != 0.0f)
         {
-            UE_LOG(LogTemp, Warning,TEXT("Impulse is %f"), MovementVector.X);
             if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked))
             {
-                AddMovementInput(MovementVector,MovementMultiplier);
+                AddMovementInput(MovementVectorX,MovementMultiplier);
+                AddMovementInput(MovementVectorZ,ZMultiplier);
+                AnterMovement->AddImpulse(MovementVectorZ*ZMultiplier);
             }
             else
             {
                 AnterMovement->Velocity.X = 0.0f;
+                if(AnterGeometron.Z != 0.0f)
+                {
+                    AnterMovement->Velocity.Z = 0.0f;
+                }
             }           
         }
         else
         {
             if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
             {
-                AddMovementInput(-1.0f*FVector::XAxisVector*AnterMovement->Velocity.X*FrictionScale);
+                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale,0.0f,0.0f));
+                if(AnterGeometron.Z != 0.0f)
+                {
+                    AddMovementInput(FVector(0.0f,0.0f,-1.0f*AnterMovement->Velocity.Z*FrictionScale));  
+                }
             }
             else
             {
                 AnterMovement->Velocity.X = 0.0f;
+                if(AnterGeometron.Z != 0.0f)
+                {
+                    AnterMovement->Velocity.Z = 0.0f;
+                }
             }
         }
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::HandleJump()
 {
@@ -223,12 +239,15 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
                     SetIsFalling(false);
                     SetCanJump(true);
                     AnterMovement->GravityScale = 0.0f;
-                    //ImposeGeometry(PlatformAngle);
+                    ImposeGeometry(PlatformAngle);
                 }
                 //Floor impenetrability condition
-                FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,PlatformSurfaceCentre.Z + (FVector::UpVector*AnterSize.Z/(VerticalImpenetrabilityFactor*PlatformCosine)).Z);
+                float ProjectedPlatformZ = PlatformCentre.Z + UKismetMathLibrary::DegTan(PlatformAngle/UKismetMathLibrary::GetPI()*180.)*(GetActorLocation().X - PlatformCentre.X);
+
+                FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,ProjectedPlatformZ + AnterSize.Z/VerticalImpenetrabilityFactor + PlatformHeight/PlatformCosine);
                 SetActorLocation(NewLocation);
-                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter new location: ") + NewLocation.ToString());
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform centre Z: ") + FString::SanitizeFloat(PlatformCentre.Z));
+                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform proj Z: ") + FString::SanitizeFloat(ProjectedPlatformZ));
             } 
             else
             {

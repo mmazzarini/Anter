@@ -129,6 +129,9 @@ protected:
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
+float ZMultiplier = 100.0f;
+
 UPROPERTY(EditAnywhere, Category = "Anter Jump")
 float JumpScale = 100.0f;
 
