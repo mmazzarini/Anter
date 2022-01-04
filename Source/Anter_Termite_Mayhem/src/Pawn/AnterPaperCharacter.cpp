@@ -136,8 +136,8 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
             if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked))
             {
                 AddMovementInput(MovementVectorX,MovementMultiplier);
-                AddMovementInput(MovementVectorZ,ZMultiplier);
-                AnterMovement->AddImpulse(MovementVectorZ*ZMultiplier);
+                //AddMovementInput(MovementVectorZ,ZMultiplier);
+                AnterMovement->AddImpulse(FVector(0.0f,0.0f,abs(MovementVectorZ.Z))*ZMultiplier);
             }
             else
             {
@@ -150,14 +150,15 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         }
         else
         {
+            
             if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
             {
-                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale,0.0f,0.0f));
+                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
                 if(AnterGeometron.Z != 0.0f)
                 {
-                    AddMovementInput(FVector(0.0f,0.0f,-1.0f*AnterMovement->Velocity.Z*FrictionScale));  
+                    AddMovementInput(FVector(0.0f,0.0f,-1.0f*AnterMovement->Velocity.Z*FrictionScale*AnterGeometron.Z));  
                 }
-            }
+            }           
             else
             {
                 AnterMovement->Velocity.X = 0.0f;
