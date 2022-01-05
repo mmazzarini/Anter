@@ -133,11 +133,19 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         FVector MovementVectorZ = FVector(0.0f,0.0f,InAxisValue*AnterGeometron.Z);
         if(InAxisValue != 0.0f)
         {
-            if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked))
+        //Input is given by the player
+            if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked) || (AnterMovement->Velocity.X >0.0f && bIsRightUnlocked) || (AnterMovement->Velocity.X <0.0f && bIsLeftUnlocked))
             {
                 AddMovementInput(MovementVectorX,MovementMultiplier);
                 //AddMovementInput(MovementVectorZ,ZMultiplier);
-                AnterMovement->AddImpulse(FVector(0.0f,0.0f,abs(MovementVectorZ.Z))*ZMultiplier);
+                if((FMath::Asin(AnterGeometron.Z) >= 0.0f && InAxisValue >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && InAxisValue <0.0f))
+                {
+                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,abs(MovementVectorZ.Z))*ZAscendingMultiplier);
+                }
+                else
+                {
+                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,-abs(MovementVectorZ.Z))*ZDiscendingMultiplier);
+                }
             }
             else
             {
@@ -150,13 +158,21 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         }
         else
         {
-            
+        //The player gives no input: handling braking and slowing down
+
             if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
             {
                 AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
                 if(AnterGeometron.Z != 0.0f)
                 {
-                    AddMovementInput(FVector(0.0f,0.0f,-1.0f*AnterMovement->Velocity.Z*FrictionScale*AnterGeometron.Z));  
+                    if((FMath::Asin(AnterGeometron.Z) >= 0.0f && AnterMovement->Velocity.X >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && AnterMovement->Velocity.X <0.0f))
+                    {
+                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.X*abs(AnterGeometron.Z)*ZBrake));  
+                    }
+                    else
+                    {
+                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.X*abs(AnterGeometron.Z)*ZBrake));  
+                    }
                 }
             }           
             else

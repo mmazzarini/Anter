@@ -130,7 +130,13 @@ UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float ZMultiplier = 100.0f;
+float ZAscendingMultiplier = 100.0f;
+
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
+float ZDiscendingMultiplier = 60.0f;
+
+UPROPERTY(EditAnywhere, Category = "Anter Movement")
+float ZBrake = 1000.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Jump")
 float JumpScale = 100.0f;
