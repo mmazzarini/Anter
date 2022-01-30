@@ -133,7 +133,8 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         FVector MovementVectorZ = FVector(0.0f,0.0f,InAxisValue*AnterGeometron.Z);
         if(InAxisValue != 0.0f)
         {
-        //Input is given by the player
+            //Input is given by the player
+
             if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked) || (AnterMovement->Velocity.X >0.0f && bIsRightUnlocked) || (AnterMovement->Velocity.X <0.0f && bIsLeftUnlocked))
             {
                 AddMovementInput(MovementVectorX,MovementMultiplier);
@@ -158,30 +159,38 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         }
         else
         {
-        //The player gives no input: handling braking and slowing down
+            //The player gives no input: handling braking and slowing down
 
+            AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
+
+            //X braking
             if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
             {
-                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
-                if(AnterGeometron.Z != 0.0f)
-                {
-                    if((FMath::Asin(AnterGeometron.Z) >= 0.0f && AnterMovement->Velocity.X >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && AnterMovement->Velocity.X <0.0f))
-                    {
-                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.X*abs(AnterGeometron.Z)*ZBrake));  
-                    }
-                    else
-                    {
-                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.X*abs(AnterGeometron.Z)*ZBrake));  
-                    }
-                }
-            }           
+                AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)*ZBrake));
+            }
             else
             {
-                AnterMovement->Velocity.X = 0.0f;
-                if(AnterGeometron.Z != 0.0f)
+                AnterMovement->Velocity.X = 0.0f; 
+            }
+
+            //Z braking
+            if(AnterGeometron.Z != 0.0f)
+            {
+                if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
+                {
+                    //if((FMath::Asin(AnterGeometron.Z) >= 0.0f && AnterMovement->Velocity.X >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && AnterMovement->Velocity.X <0.0f))
+                    //{
+                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,ZBrake)); //+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)* 
+                    //}
+                    //else
+                    //{
+                    //    AnterMovement->AddImpulse(FVector(0.0f,0.0f,ZBrake));  
+                    //}                    
+                }
+                else
                 {
                     AnterMovement->Velocity.Z = 0.0f;
-                }
+                }             
             }
         }
     }
@@ -362,8 +371,17 @@ void AAnterPaperCharacter::SetIsFalling(bool InIsFalling)
 PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, EPlatformCollisionType InPlatformCollisionType)
 {
-    TPair<AActor*,EPlatformCollisionType> PlatformToAdd = TPair<AActor*,EPlatformCollisionType>(InPlatformToAdd,InPlatformCollisionType);
-    RegisteredVerticalPlatformCollisions.Add(PlatformToAdd);
+    auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToAdd](TPair <AActor*,EPlatformCollisionType> PlatformPair)
+    {
+        return PlatformPair.Key == InPlatformToAdd;
+    }
+    );
+    //Add if the platform is not present already in the array
+    if(PlatformIndex == INDEX_NONE)
+    {
+        TPair<AActor*,EPlatformCollisionType> PlatformToAdd = TPair<AActor*,EPlatformCollisionType>(InPlatformToAdd,InPlatformCollisionType);
+        RegisteredVerticalPlatformCollisions.Add(PlatformToAdd);        
+    }
 }
 PRAGMA_ENABLE_OPTIMIZATION
 
