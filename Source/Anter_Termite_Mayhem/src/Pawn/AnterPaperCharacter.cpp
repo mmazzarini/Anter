@@ -137,15 +137,18 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 
             if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked) || (AnterMovement->Velocity.X >0.0f && bIsRightUnlocked) || (AnterMovement->Velocity.X <0.0f && bIsLeftUnlocked))
             {
-                AddMovementInput(MovementVectorX,MovementMultiplier);
-                //AddMovementInput(MovementVectorZ,ZMultiplier);
-                if((FMath::Asin(AnterGeometron.Z) >= 0.0f && InAxisValue >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && InAxisValue <0.0f))
+                if(AnterGeometron.Z == 0.0f)
                 {
-                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,abs(MovementVectorZ.Z))*ZAscendingMultiplier);
+                    LastVelocityX = AnterMovement->Velocity.X;
+                    AddMovementInput(MovementVectorX,MovementMultiplier);
                 }
                 else
                 {
-                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,-abs(MovementVectorZ.Z))*ZDiscendingMultiplier);
+                    AnterMovement->Velocity.X = 0.0f;
+                    AnterMovement->Velocity.Z = 0.0f;
+                    FVector NewLocation = GetActorLocation() + (MovementVectorX.X + MovementVectorZ.Z)*MovementMultiplier;
+                    SetActorLocation(NewLocation);
+                    LastVelocityX = MovementVectorX.X;
                 }
             }
             else
@@ -157,22 +160,39 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                 }
             }           
         }
+
+        //30 jan 2022 we need to go on from here
+
         else
         {
             //The player gives no input: handling braking and slowing down
-
-            AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
-
-            //X braking
-            if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
+            if(AnterGeometron.Z == 0.0f)
             {
-                AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)*ZBrake));
+                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
+
+                //X braking
+                if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
+                {
+                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)*ZBrake));
+                }
+                else
+                {
+                    AnterMovement->Velocity.X = 0.0f; 
+                }
             }
             else
             {
-                AnterMovement->Velocity.X = 0.0f; 
+                AnterMovement->Velocity.X = 0.0f;
+                AnterMovement->Velocity.Z = 0.0f;
+                if(LastVelocityX >= VelocityThreshold)
+                {
+                    FVector NewLocation = GetActorLocation() + (FVector::RightVector.X*AnterGeometron.X + FVector::UpVector.Z*AnterGeometron.Z)*LastVelocityX;
+                    SetActorLocation(NewLocation);
+                    LastVelocityX /= 2.0f;
+                }
             }
 
+            /*
             //Z braking
             if(AnterGeometron.Z != 0.0f)
             {
@@ -192,6 +212,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                     AnterMovement->Velocity.Z = 0.0f;
                 }             
             }
+            */
         }
     }
 }

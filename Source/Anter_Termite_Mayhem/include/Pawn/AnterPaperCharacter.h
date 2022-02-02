@@ -164,17 +164,24 @@ float HorizontalTolerance = 0.0f;
 
 private:
 
+UPROPERTY()
 bool bCanAnterJump = false;
 
+UPROPERTY()
 bool bIsFalling = true;
 
-
+UPROPERTY()
 bool bIsLeftUnlocked = true;
 
+UPROPERTY()
 bool bIsRightUnlocked = true;
+
+UPROPERTY()
+float LastVelocityX;
 
 //Array of information about vertical collisions with platforms
 TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
+
 
 FGeometron AnterGeometron;
 
