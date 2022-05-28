@@ -11,7 +11,7 @@
 
 
 UCLASS(BlueprintType,Blueprintable)
-class AAnterFire : public APaperCharacter
+class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
 {
     GENERATED_BODY()
 
