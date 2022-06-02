@@ -4,12 +4,11 @@
 
 #include "BaseEnemyController.generated.h"
 
-class ANTER_TERMITE_MAYHEM_API ABaseEnemyController : public AIController
+UCLASS()
+class ANTER_TERMITE_MAYHEM_API ABaseEnemyController : public AAIController
 {
     GENERATED_BODY()
 
 public:
-
-    
 
 };
