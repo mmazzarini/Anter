@@ -1,25 +1,25 @@
 #include "ActorComponents/BaseEnemyMovementComponent.h"
-#include ""
+#include "SceneActors/Enemies/BaseEnemy.h"
 
-UBaseEnemyMovementComponent::UBaseMovementComponent()
+UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 {
 
 }
 
-void UBaseEnemyMovement::Initialize()
+void UBaseEnemyMovementComponent::Initialize()
 {
-    SetMovement(InitialMovementGeometry, InitialMovementSpeedX, InitialMovementSpeedY);
+    SetMovement(InitialMovementGeometry, InitialMovementSpeed);
     OwnerEnemy = Cast<ABaseEnemy>(GetOwner());
 }
 
-void UBaseEnemyMovement::SetMovement(FVector2D InGeometryVector, float InSpeed)
+void UBaseEnemyMovementComponent::SetMovement(FVector2D InGeometryVector, float InSpeed)
 {
     InternalMovementGeometry.X = InGeometryVector.X;
     InternalMovementGeometry.Y = InGeometryVector.Y;
     InternalMovementSpeed = InSpeed;
 }
 
-void UBaseEnemyMovement::UpdateMovement()
+void UBaseEnemyMovementComponent::UpdateMovement()
 {
     OnMovementUpdated.Broadcast(InternalMovementGeometry,InternalMovementSpeed);
 }

@@ -27,5 +27,6 @@ void ABaseEnemy::SetBindings()
 
 void ABaseEnemy::HandleMovement(FVector2D InMovementDirection, float InMovementSpeed)
 {
-    AddMovementInput(InMovementDirection,InMovementSpeed);
+    FVector InputMovement3D = FVector(InMovementDirection.X,InMovementDirection.Y,0.0f);
+    AddMovementInput(InputMovement3D,InMovementSpeed);
 }

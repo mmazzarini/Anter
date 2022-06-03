@@ -4,11 +4,9 @@
 
 #include "BaseEnemyController.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API ABaseEnemyController : public AAIController
 {
     GENERATED_BODY()
-
-public:
 
 };

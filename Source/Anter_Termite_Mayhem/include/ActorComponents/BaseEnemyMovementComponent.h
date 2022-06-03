@@ -5,6 +5,8 @@
 
 #include "BaseEnemyMovementComponent.generated.h"
 
+class ABaseEnemy;
+
 /*
 *
 * Base Enemy Class that gives inputs to movements, based on movement set by interaction with the environment
@@ -19,6 +21,8 @@ class ANTER_TERMITE_MAYHEM_API UBaseEnemyMovementComponent : public USceneCompon
     GENERATED_BODY()
 
 public:
+
+    UBaseEnemyMovementComponent();
 
     void Initialize();
 
@@ -36,7 +40,7 @@ protected:
     UPROPERTY(EditDefaultsOnly)
     FVector2D InitialMovementGeometry;
 
-    float InternalMovementSpeedX;
+    float InternalMovementSpeed;
 
     FVector2D InternalMovementGeometry;
 
