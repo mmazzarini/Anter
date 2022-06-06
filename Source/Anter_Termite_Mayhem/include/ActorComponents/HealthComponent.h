@@ -20,30 +20,30 @@ class ANTER_TERMITE_MAYHEM_API UHealthComponent : public USceneComponent
 {
     GENERATED_BODY()
 
-    public:
+public:
 
-        UHealthComponent();
+    UHealthComponent();
 
-        //This function updates the core health of the health container
-        UFUNCTION()
-        virtual void UpdateHealth(float InNewHealth);
+    //This function updates the core health of the health container
+    UFUNCTION()
+    virtual void UpdateHealth(float InNewHealth);
 
-        //This function is used to calculate the new value of health and change it 
-        UFUNCTION()
-        virtual void IncreaseHealth(float InIncreaseHealth);
+    //This function is used to calculate the new value of health and change it 
+    UFUNCTION()
+    virtual void IncreaseHealth(float InIncreaseHealth);
     
-        //Base class reset
-        UFUNCTION()
-        virtual void ResetHealth();
+    //Base class reset
+    UFUNCTION()
+    virtual void ResetHealth();
         
-        UFUNCTION()
-        virtual void CheckDeath(); 
+    UFUNCTION()
+    virtual void CheckDeath(); 
 
-        float GetCoreHealth(){return CoreHealth;}
+    float GetCoreHealth(){return CoreHealth;}
 
-        FOnDeathReachedDelegate GetDeathReachedDelegate(){return OnDeathReached;}
+    FOnDeathReachedDelegate GetDeathReachedDelegate(){return OnDeathReached;}
 
-    protected:
+protected:
     
     UPROPERTY(EditDefaultsOnly)
     float MaxHealth = 10.0f;
@@ -51,7 +51,7 @@ class ANTER_TERMITE_MAYHEM_API UHealthComponent : public USceneComponent
     UPROPERTY(EditDefaultsOnly)
     float StartingHealth = 3.0f;
 
-    private:
+private:
 
     // The true core health of the Pawn. 
     float CoreHealth = 0.0f;

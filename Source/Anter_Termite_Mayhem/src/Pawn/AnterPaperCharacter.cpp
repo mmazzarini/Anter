@@ -37,7 +37,7 @@ AAnterPaperCharacter::AAnterPaperCharacter()
     AnterBox = CreateDefaultSubobject<UBoxComponent>(TEXT("AnterBox"));
     AnterBox->SetupAttachment(RootComponent);
 
-}
+} 
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
@@ -81,7 +81,7 @@ void AAnterPaperCharacter::BeginPlay()
     SetupGravity();
     RegisteredVerticalPlatformCollisions.Empty();
     ResetGeometron();
-};
+}
 
 void AAnterPaperCharacter::SetBindings()
 {

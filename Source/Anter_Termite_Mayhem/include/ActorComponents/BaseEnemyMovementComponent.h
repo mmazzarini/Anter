@@ -1,7 +1,6 @@
 #pragma once
 
-#include "GameFramework/MovementComponent.h"
-#include "Components/SceneComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 #include "BaseEnemyMovementComponent.generated.h"
 
@@ -26,18 +25,28 @@ public:
 
     void Initialize();
 
+    virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) override;
+
     virtual void SetMovement(FVector2D InGeometryVector, float InSpeed);
 
     virtual void UpdateMovement();
+
+    /*
+    Wrapper function to handle collisions notified by external components.
+    Can be bound to a Broadcaster to be executed.
+    */
+    UFUNCTION()
+    void OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
 
     FOnMovementUpdatedDelegate OnMovementUpdated;
 
 protected:
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
     float InitialMovementSpeed;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
     FVector2D InitialMovementGeometry;
 
     float InternalMovementSpeed;
@@ -47,5 +56,8 @@ protected:
     // Reference to owner enemy
     UPROPERTY()
     ABaseEnemy* OwnerEnemy;
+
+    /* This is used to invert speed */
+    void InvertSpeed();
 
 };

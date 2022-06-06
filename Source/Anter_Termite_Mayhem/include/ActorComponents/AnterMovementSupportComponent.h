@@ -16,8 +16,8 @@ public:
 
     void HandleRightMovement(float InMovementAmount);    
 
-private:
-
+protected:
+    UPROPERTY(EditDefaultsOnly)
     FVector PositionVector = FVector(0.0f,0.0f,0.0f);
 
 };
