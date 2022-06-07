@@ -69,9 +69,9 @@ void UBaseEnemyMovementComponent::OnCollided(UPrimitiveComponent* OverlappedComp
         float PlatformSine = 0.0f;
         FMath::SinCos(&PlatformSine,&PlatformCosine,PlatformAngle);
         //Pawn geometrical references
-        FVector AnterSize = FVector(0.0f,0.0f,0.0f);
-        FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
-        this->GetActorBounds(true,AnterCentre,AnterSize,false);
+        FVector EnemySize = FVector(0.0f,0.0f,0.0f);
+        FVector EnemyCentre = FVector(0.0f,0.0f,0.0f);
+        this->GetActorBounds(true,AnterCentre,Size,false);
         FVector TopDist = this->GetActorLocation()-PlatformSurfaceCentre;
         FVector BottomDist = this->GetActorLocation()-PlatformBottomCentre;
         //Check geometry of collision to decide which impact     

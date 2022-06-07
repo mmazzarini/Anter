@@ -38,7 +38,6 @@ public:
     UFUNCTION()
     void OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
-
     FOnMovementUpdatedDelegate OnMovementUpdated;
 
 protected:

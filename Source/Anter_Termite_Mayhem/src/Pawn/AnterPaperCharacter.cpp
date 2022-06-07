@@ -3,6 +3,7 @@
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ActorComponents/AnterMovementSupportComponent.h"
+#include "ActorComponents/CollisionSupportComponent.h"
 #include "ActorComponents/AnterInputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/AnterPlayerController.h"
@@ -37,6 +38,9 @@ AAnterPaperCharacter::AAnterPaperCharacter()
     AnterBox = CreateDefaultSubobject<UBoxComponent>(TEXT("AnterBox"));
     AnterBox->SetupAttachment(RootComponent);
 
+    AnterCollisionSupport = CreateDefaultSubobject<UCollisionSupportComponent>(TEXT("AnterCollisionSupport"));
+    AnterCollisionSupport->SetupAttachment(RootComponent);
+
 } 
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
@@ -53,15 +57,15 @@ void AAnterPaperCharacter::OnDeathEvent()
     {
         AnterHealth->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
-    if(AnterBox != nullptr)
+    if(AnterBox != nullptr && AnterCollisionSupport != nullptr)
     {
         if(AnterBox->OnComponentBeginOverlap.IsBound())
         {
-            AnterBox->OnComponentBeginOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderHit);
+            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderHit);
         }
         if(AnterBox->OnComponentEndOverlap.IsBound())
         {
-            AnterBox->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
+            AnterBox->OnComponentEndOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderUnhit);
         }
     }
     Destroy();
@@ -233,101 +237,62 @@ void AAnterPaperCharacter::HandleJump()
 
 void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-    if(OtherActor != nullptr)
+    FCollisionGeometry CollisionGeometry;
+    if(AnterCollisionSupport != nullptr)
     {
-        if(OtherActor->GetName().Contains("Floor"))
+       CollisionGeometry = AnterCollisionSupport->ProcessCollisionGeometry(OverlappedComponent,OtherActor,OtherComp,OtherBodyIndex,bFromSweep,SweepResult);
+    }
+
+    if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
+    {
+        /* Impact was from top: pawn is standing on platform. */ 
+
+        //Register impact with vertical colliding platform
+        RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsVeritcallyColliding);
+
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if(AnterMovement != nullptr)
         {
+            SetIsFalling(false);
+            SetCanJump(true);
+            AnterMovement->GravityScale = 0.0f;
+        }
+        //Floor impenetrability condition
 
-            FVector PlatformCentre = FVector(0.0f,0.0f,0.0f);
-            FVector PlatformSize = FVector(0.0f,0.0f,0.0f);
-            OtherActor->GetActorBounds(true,PlatformCentre,PlatformSize,false);
-            
-            UStaticMeshComponent* MeshComponent = Cast<UStaticMeshComponent>(OtherActor->FindComponentByClass<UStaticMeshComponent>());
-            float PlatformLength = 0.0f;
-            float PlatformHeight = 0.0f;
-
-            if(MeshComponent != nullptr)
+        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,ProjectedPlatformZ + CollisionGeometry.PlatformCentre + CollisionGeometry.PlatformHeight/2.0f/VerticalImpenetrabilityFactor);
+        SetActorLocation(NewLocation);
+    } 
+    else
+    {
+        if(FVector::DotProduct(CollisionGeometry.BottomDist,-CollisionGeometry.RotatedNormal) < VerticalTolerance)
+        {
+            /* Impact was from side or bottom */
+            FVector PlatformRightSideCentre = PlatformCentre + FVector::XAxisVector*PlatformLength;
+            FVector PlatformLeftSideCentre = PlatformCentre - FVector::XAxisVector*PlatformLength;
+            FVector SideDist = this->GetActorLocation()-PlatformCentre;
+            if(SideDist.X > 0.0f)
             {
-                UStaticMesh* StaticMesh = MeshComponent->GetStaticMesh();
-                if(StaticMesh != nullptr)
+                //Impact coming from right
+                if((FVector::DotProduct(SideDist,FVector::XAxisVector) > HorizontalTolerance))
                 {
-                    FVector IntrinsicSize = StaticMesh->GetBounds().GetBox().GetExtent();
-                    FVector PlatformScale = OtherActor->GetTransform().GetScale3D();
-                    PlatformLength = IntrinsicSize.X*PlatformScale.X;   
-                    PlatformHeight =  IntrinsicSize.Z*PlatformScale.Z;    
+                    //Impenetrability
+                    SetLeftMovementFree(false);
+                    RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromRight);
                 }
             }
-
-            FVector PlatformSurfaceCentre = PlatformCentre + OtherActor->GetActorRotation().RotateVector(FVector::UpVector*PlatformHeight); 
-            FVector PlatformBottomCentre =  PlatformCentre - OtherActor->GetActorRotation().RotateVector(FVector::UpVector*PlatformHeight);
-            float PlatformAngle = OtherActor->GetTransform().GetRotation().GetAngle();
-            float PlatformCosine = 1.0f;
-            float PlatformSine = 0.0f;
-            FMath::SinCos(&PlatformSine,&PlatformCosine,PlatformAngle);
-            //Pawn geometrical references
-            FVector AnterSize = FVector(0.0f,0.0f,0.0f);
-            FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
-            this->GetActorBounds(true,AnterCentre,AnterSize,false);
-            FVector TopDist = this->GetActorLocation()-PlatformSurfaceCentre;
-            FVector BottomDist = this->GetActorLocation()-PlatformBottomCentre;
-            //Check geometry of collision to decide which impact     
-            FVector RotatedNormal = OtherActor->GetTransform().GetRotation().RotateVector(FVector::UpVector);
-            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform angle: ") +  FString::SanitizeFloat(PlatformAngle));
-            if(FVector::DotProduct(TopDist,RotatedNormal) >= VerticalTolerance)
+            else if(SideDist.X < 0.0f)
             {
-                /* Impact was from top: pawn is standing on platform. */ 
-
-                //Register impact with vertical colliding platform
-                RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsVeritcallyColliding);
-
-                UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-                if(AnterMovement != nullptr)
+                //Impact coming from left
+                if((FVector::DotProduct(SideDist,-FVector::XAxisVector) > HorizontalTolerance))
                 {
-                    SetIsFalling(false);
-                    SetCanJump(true);
-                    AnterMovement->GravityScale = 0.0f;
-                    ImposeGeometry(PlatformAngle);
-                }
-                //Floor impenetrability condition
-                float ProjectedPlatformZ = PlatformCentre.Z + UKismetMathLibrary::DegTan(PlatformAngle/UKismetMathLibrary::GetPI()*180.)*(GetActorLocation().X - PlatformCentre.X);
-
-                FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,ProjectedPlatformZ + AnterSize.Z/VerticalImpenetrabilityFactor + PlatformHeight/PlatformCosine);
-                SetActorLocation(NewLocation);
-                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform centre Z: ") + FString::SanitizeFloat(PlatformCentre.Z));
-                GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Platform proj Z: ") + FString::SanitizeFloat(ProjectedPlatformZ));
-            } 
-            else
-            {
-                if(FVector::DotProduct(BottomDist,-RotatedNormal) < VerticalTolerance)
-                {
-
-                    /* Impact was from side or bottom */
-                    FVector PlatformRightSideCentre = PlatformCentre + FVector::XAxisVector*PlatformLength;
-                    FVector PlatformLeftSideCentre = PlatformCentre - FVector::XAxisVector*PlatformLength;
-                    FVector SideDist = this->GetActorLocation()-PlatformCentre;
-                    if(SideDist.X > 0.0f)
-                    {
-                        //Impact coming from right
-                        if((FVector::DotProduct(SideDist,FVector::XAxisVector) > HorizontalTolerance))
-                        {
-                            //Impenetrability
-                            SetLeftMovementFree(false);
-                            RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromRight);
-                        }
-                    }
-                    else if(SideDist.X < 0.0f)
-                    {
-                        //Impact coming from left
-                        if((FVector::DotProduct(SideDist,-FVector::XAxisVector) > HorizontalTolerance))
-                        {
-                            //Impenetrability
-                            SetRightMovementFree(false);
-                            RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromLeft);
-                        }
-                    }
+                    //Impenetrability
+                    SetRightMovementFree(false);
+                    RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromLeft);
                 }
             }
         }
+    }
+
     }
 }   
 

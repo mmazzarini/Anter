@@ -8,6 +8,7 @@
 #include "ActorComponents/AnterCameraComponent.h"
 #include "ActorComponents/AnterMovementSupportComponent.h"
 #include "ActorComponents/AnterWeaponComponent.h"
+#include "ActorComponents/CollisionSupportComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -123,6 +124,9 @@ UAnterWeaponComponent* AnterWeapon;
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UBoxComponent* AnterBox;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UCollisionSupportComponent* AnterCollisionSupport;
 
 protected:
 
