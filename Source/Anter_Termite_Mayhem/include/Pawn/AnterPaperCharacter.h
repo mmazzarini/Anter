@@ -12,6 +12,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "SceneActors/SceneActorInterface.h"
 
 #include "AnterPaperCharacter.generated.h"
 
@@ -41,7 +42,7 @@ struct FGeometron
 */
 
 UCLASS(BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter
+class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter, public ISceneActorInterface
 {
     GENERATED_BODY()
 
@@ -101,6 +102,8 @@ public:
     void ImposeGeometry(float InAngle);
 
     void ResetGeometron();
+
+    void HandleCollision(const FCollisionGeometry& InCollisionGeometry) override;
 
 /* Anter Components */
 

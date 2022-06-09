@@ -61,7 +61,7 @@ void AAnterPaperCharacter::OnDeathEvent()
     {
         if(AnterBox->OnComponentBeginOverlap.IsBound())
         {
-            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderHit);
+            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::AAnterPaperCharacter);
         }
         if(AnterBox->OnComponentEndOverlap.IsBound())
         {
@@ -85,6 +85,11 @@ void AAnterPaperCharacter::BeginPlay()
     SetupGravity();
     RegisteredVerticalPlatformCollisions.Empty();
     ResetGeometron();
+
+    if(AnterCollisionSupport != nullptr)
+    {
+        AnterCollisionSupport->RegisterInterfaceOwnerCharacter(this);
+    }
 }
 
 void AAnterPaperCharacter::SetBindings()
@@ -96,8 +101,8 @@ void AAnterPaperCharacter::SetBindings()
 
     if(AnterBox != nullptr)
     {
-        AnterBox->OnComponentBeginOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderHit);
-        AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
+        AnterBox->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
+        AnterBox->OnComponentEndOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderUnhit);
     }
 }
 
@@ -237,12 +242,15 @@ void AAnterPaperCharacter::HandleJump()
 
 void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
+    /*
     FCollisionGeometry CollisionGeometry;
     if(AnterCollisionSupport != nullptr)
     {
        CollisionGeometry = AnterCollisionSupport->ProcessCollisionGeometry(OverlappedComponent,OtherActor,OtherComp,OtherBodyIndex,bFromSweep,SweepResult);
     }
+    */
 
+    
     if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
     {
         /* Impact was from top: pawn is standing on platform. */ 
@@ -419,4 +427,9 @@ void AAnterPaperCharacter::ImposeGeometry(float InAngle)
 void AAnterPaperCharacter::ResetGeometron()
 {
     ImposeGeometry(0.0f);
+}
+
+void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& InCollisionGeometry) 
+{
+    
 }

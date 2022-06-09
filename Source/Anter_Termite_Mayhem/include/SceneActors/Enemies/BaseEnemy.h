@@ -7,6 +7,7 @@
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "SceneActors/SceneActorInterface.h"
 
 #include "BaseEnemy.generated.h"
 /*
@@ -17,7 +18,7 @@ Can be derived to obtain all the specified enemies.
 */
 
 UCLASS(BlueprintType)
-class ANTER_TERMITE_MAYHEM_API ABaseEnemy : public APaperCharacter
+class ANTER_TERMITE_MAYHEM_API ABaseEnemy : public APaperCharacter, public ISceneActorInterface
 {
 
     GENERATED_BODY()
@@ -27,6 +28,8 @@ public:
     ABaseEnemy();
 
     void BeginPlay() override;
+
+    void HandleCollision(const FCollisionGeometry& InCollisionGeometry) override;
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBaseEnemyMovementComponent* BaseEnemyMovement;
@@ -39,6 +42,9 @@ public:
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBoxComponent* BaseEnemyBox;
+
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UCollisionSupportComponent* BaseEnemyCollisionSupport;
 
 protected:
 
