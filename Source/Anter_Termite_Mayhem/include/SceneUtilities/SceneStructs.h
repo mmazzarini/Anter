@@ -2,6 +2,10 @@
 
 #include "SceneStructs.generated.h"
 
+/*
+Class that describes the geometrical properties of the colliding platform and of the
+*/
+
 USTRUCT()
 struct FCollisionGeometry
 {
@@ -24,3 +28,4 @@ struct FCollisionGeometry
     float PlatformLength = 0.0f;
     float PlatformHeight = 0.0f;
 };
+

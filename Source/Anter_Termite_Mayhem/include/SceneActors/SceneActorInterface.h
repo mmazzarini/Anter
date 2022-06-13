@@ -24,6 +24,7 @@ class ISceneActorInterface
 public:
 
     /* Pure virtual functions */
-    virtual void HandleCollision(const FCollisionGeometry& InCollisionGeometry) = 0;
+    UFUNCTION()
+    virtual void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) = 0;
 
 };

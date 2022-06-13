@@ -61,11 +61,11 @@ void AAnterPaperCharacter::OnDeathEvent()
     {
         if(AnterBox->OnComponentBeginOverlap.IsBound())
         {
-            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::AAnterPaperCharacter);
+            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
         }
         if(AnterBox->OnComponentEndOverlap.IsBound())
         {
-            AnterBox->OnComponentEndOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderUnhit);
+            AnterBox->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
         }
     }
     Destroy();
@@ -102,7 +102,7 @@ void AAnterPaperCharacter::SetBindings()
     if(AnterBox != nullptr)
     {
         AnterBox->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
-        AnterBox->OnComponentEndOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::OnColliderUnhit);
+        AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
     }
 }
 
@@ -240,16 +240,8 @@ void AAnterPaperCharacter::HandleJump()
 }
 
 
-void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
-    /*
-    FCollisionGeometry CollisionGeometry;
-    if(AnterCollisionSupport != nullptr)
-    {
-       CollisionGeometry = AnterCollisionSupport->ProcessCollisionGeometry(OverlappedComponent,OtherActor,OtherComp,OtherBodyIndex,bFromSweep,SweepResult);
-    }
-    */
-
     
     if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
     {
@@ -267,7 +259,7 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
         }
         //Floor impenetrability condition
 
-        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,ProjectedPlatformZ + CollisionGeometry.PlatformCentre + CollisionGeometry.PlatformHeight/2.0f/VerticalImpenetrabilityFactor);
+        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + (CollisionGeometry.TopDist.Z)/VerticalImpenetrabilityFactor);
         SetActorLocation(NewLocation);
     } 
     else
@@ -275,9 +267,9 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
         if(FVector::DotProduct(CollisionGeometry.BottomDist,-CollisionGeometry.RotatedNormal) < VerticalTolerance)
         {
             /* Impact was from side or bottom */
-            FVector PlatformRightSideCentre = PlatformCentre + FVector::XAxisVector*PlatformLength;
-            FVector PlatformLeftSideCentre = PlatformCentre - FVector::XAxisVector*PlatformLength;
-            FVector SideDist = this->GetActorLocation()-PlatformCentre;
+            FVector PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformLength;
+            FVector PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformLength;
+            FVector SideDist = this->GetActorLocation()-CollisionGeometry.PlatformCentre;
             if(SideDist.X > 0.0f)
             {
                 //Impact coming from right
@@ -299,8 +291,6 @@ void AAnterPaperCharacter::OnColliderHit(UPrimitiveComponent* OverlappedComponen
                 }
             }
         }
-    }
-
     }
 }   
 
@@ -427,9 +417,4 @@ void AAnterPaperCharacter::ImposeGeometry(float InAngle)
 void AAnterPaperCharacter::ResetGeometron()
 {
     ImposeGeometry(0.0f);
-}
-
-void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& InCollisionGeometry) 
-{
-    
 }

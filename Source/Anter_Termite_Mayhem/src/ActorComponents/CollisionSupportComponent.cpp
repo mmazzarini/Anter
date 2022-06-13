@@ -53,7 +53,7 @@ void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* O
     //We need to use interface ptr to call the interface method on the scene actor owning this component
     if(OwnerActorInterfacePtr != nullptr)
     {
-       OwnerActorInterfacePtr->HandleCollision(CollisionGeometry);  
+       OwnerActorInterfacePtr->HandleCollision(CollisionGeometry,OtherActor);  
     }
 }
 

@@ -7,6 +7,7 @@
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "ActorComponents/CollisionSupportComponent.h"
 #include "SceneActors/SceneActorInterface.h"
 
 #include "BaseEnemy.generated.h"
@@ -29,7 +30,7 @@ public:
 
     void BeginPlay() override;
 
-    void HandleCollision(const FCollisionGeometry& InCollisionGeometry) override;
+    virtual void HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor) override; //float InMovementSpeed){} 
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBaseEnemyMovementComponent* BaseEnemyMovement;
@@ -51,8 +52,5 @@ protected:
     /* Enemy components */
 
     void SetBindings();
-
-    //UFUNCTION()
-    //virtual void HandleMovement(FVector2D InMovementDirection, float InMovementSpeed);
 
 };

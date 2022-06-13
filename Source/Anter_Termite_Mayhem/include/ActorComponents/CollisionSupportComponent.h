@@ -15,7 +15,6 @@ public:
 
     UCollisionSupportComponent();
 
-    UFUNCTION()
     void RegisterInterfaceOwnerCharacter(ISceneActorInterface* ActorOwnerInterface);
 
     UFUNCTION()

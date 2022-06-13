@@ -15,7 +15,7 @@ ABaseEnemy::ABaseEnemy()
     BaseEnemyBox = CreateDefaultSubobject<UBoxComponent>(TEXT("BaseEnemyBox"));
     BaseEnemyBox->SetupAttachment(RootComponent);
 
-    BaseEnemyCollisionSupport = CreateDefaultSuboject<UCollisionSupportComponent>(TEXT("BaseEnemyCollisionSupport"));
+    BaseEnemyCollisionSupport = CreateDefaultSubobject<UCollisionSupportComponent>(TEXT("BaseEnemyCollisionSupport"));
     BaseEnemyCollisionSupport->SetupAttachment(RootComponent);
 }
 
@@ -36,7 +36,7 @@ void ABaseEnemy::BeginPlay()
 
 }
 
-void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry) 
+void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
 
 }
