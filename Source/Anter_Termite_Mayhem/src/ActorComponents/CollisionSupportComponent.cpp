@@ -49,11 +49,11 @@ void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* O
         CollisionGeometry.PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformLength;
         CollisionGeometry.PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformHeight;
         CollisionGeometry.SideDist = OwningActor->GetActorLocation()-CollisionGeometry.PlatformCentre;
-    }
-    //We need to use interface ptr to call the interface method on the scene actor owning this component
-    if(OwnerActorInterfacePtr != nullptr)
-    {
-       OwnerActorInterfacePtr->HandleCollision(CollisionGeometry,OtherActor);  
+        //We need to use interface ptr to call the interface method on the scene actor owning this component
+        if(wOwnerActorInterfacePtr != nullptr)
+        {
+            OwnerActorInterfacePtr->HandleCollision(CollisionGeometry,OtherActor);  
+        }
     }
 }
 

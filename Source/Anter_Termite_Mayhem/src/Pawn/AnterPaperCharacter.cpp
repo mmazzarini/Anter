@@ -72,7 +72,7 @@ void AAnterPaperCharacter::OnDeathEvent()
     RegisteredVerticalPlatformCollisions.Empty();
 }
 
-
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -91,6 +91,7 @@ void AAnterPaperCharacter::BeginPlay()
         AnterCollisionSupport->RegisterInterfaceOwnerCharacter(this);
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::SetBindings()
 {
@@ -239,7 +240,7 @@ void AAnterPaperCharacter::HandleJump()
     }
 }
 
-
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
     
@@ -293,6 +294,7 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
         }
     }
 }   
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
