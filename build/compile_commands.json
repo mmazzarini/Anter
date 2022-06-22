@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/Users/matteomazzarini/Documents/Unreal Projects/Anter_Termite_Mayhem/build",
-  "command": "/usr/bin/clang++    -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.3.sdk -mmacosx-version-min=11.2   -o CMakeFiles/Anter_Termite_Mayhem.dir/Anter_Termite_Mayhem.cpp.o -c \"/Users/matteomazzarini/Documents/Unreal Projects/Anter_Termite_Mayhem/Anter_Termite_Mayhem.cpp\"",
-  "file": "/Users/matteomazzarini/Documents/Unreal Projects/Anter_Termite_Mayhem/Anter_Termite_Mayhem.cpp"
-}
-]

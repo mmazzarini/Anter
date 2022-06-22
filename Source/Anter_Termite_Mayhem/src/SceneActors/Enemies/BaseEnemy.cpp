@@ -42,7 +42,7 @@ void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, 
 }
 
 void ABaseEnemy::SetBindings()
-{
+{ 
     if(BaseEnemyBox != nullptr && BaseEnemyMovement != nullptr)
     {
         BaseEnemyBox->OnComponentBeginOverlap.AddDynamic(BaseEnemyMovement,&UBaseEnemyMovementComponent::OnCollided);
