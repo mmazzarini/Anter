@@ -13,6 +13,7 @@
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/PrimitiveComponent.h"
+#include "SceneActors/Platforms/BasePlatform.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -201,28 +202,6 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                     LastVelocityX /= 2.0f;
                 }
             }
-
-            /*
-            //Z braking
-            if(AnterGeometron.Z != 0.0f)
-            {
-                if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
-                {
-                    //if((FMath::Asin(AnterGeometron.Z) >= 0.0f && AnterMovement->Velocity.X >0.0f) || (FMath::Asin(AnterGeometron.Z) < 0.0f && AnterMovement->Velocity.X <0.0f))
-                    //{
-                        AnterMovement->AddImpulse(FVector(0.0f,0.0f,ZBrake)); //+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)* 
-                    //}
-                    //else
-                    //{
-                    //    AnterMovement->AddImpulse(FVector(0.0f,0.0f,ZBrake));  
-                    //}                    
-                }
-                else
-                {
-                    AnterMovement->Velocity.Z = 0.0f;
-                }             
-            }
-            */
         }
     }
 }
@@ -243,55 +222,12 @@ void AAnterPaperCharacter::HandleJump()
 PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
-    
-    if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
-    {
-        /* Impact was from top: pawn is standing on platform. */ 
-
-        //Register impact with vertical colliding platform
-        RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsVeritcallyColliding);
-
-        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-        if(AnterMovement != nullptr)
-        {
-            SetIsFalling(false);
-            SetCanJump(true);
-            AnterMovement->GravityScale = 0.0f;
-        }
-        //Floor impenetrability condition
-
-        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + (CollisionGeometry.TopDist.Z)/VerticalImpenetrabilityFactor);
-        SetActorLocation(NewLocation);
-    } 
-    else
-    {
-        if(FVector::DotProduct(CollisionGeometry.BottomDist,-CollisionGeometry.RotatedNormal) < VerticalTolerance)
-        {
-            /* Impact was from side or bottom */
-            FVector PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformLength;
-            FVector PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformLength;
-            FVector SideDist = this->GetActorLocation()-CollisionGeometry.PlatformCentre;
-            if(SideDist.X > 0.0f)
-            {
-                //Impact coming from right
-                if((FVector::DotProduct(SideDist,FVector::XAxisVector) > HorizontalTolerance))
-                {
-                    //Impenetrability
-                    SetLeftMovementFree(false);
-                    RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromRight);
-                }
-            }
-            else if(SideDist.X < 0.0f)
-            {
-                //Impact coming from left
-                if((FVector::DotProduct(SideDist,-FVector::XAxisVector) > HorizontalTolerance))
-                {
-                    //Impenetrability
-                    SetRightMovementFree(false);
-                    RegisterPlatformCollision(OtherActor,EPlatformCollisionType::IsCollidingFromLeft);
-                }
-            }
-        }
+    ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
+    if(Platform != nullptr)
+    {   
+        //Colliding object was a platform
+        HandlePlatform(CollisionGeometry,Platform);
+        return;
     }
 }   
 PRAGMA_ENABLE_OPTIMIZATION
@@ -419,4 +355,57 @@ void AAnterPaperCharacter::ImposeGeometry(float InAngle)
 void AAnterPaperCharacter::ResetGeometron()
 {
     ImposeGeometry(0.0f);
+}
+
+void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
+{
+        if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
+    {
+        /* Impact was from top: pawn is standing on platform. */ 
+
+        //Register impact with vertical colliding platform
+        RegisterPlatformCollision(Platform,EPlatformCollisionType::IsVeritcallyColliding);
+
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if(AnterMovement != nullptr)
+        {
+            SetIsFalling(false);
+            SetCanJump(true);
+            AnterMovement->GravityScale = 0.0f;
+        }
+        //Floor impenetrability condition
+
+        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + (CollisionGeometry.TopDist.Z)/VerticalImpenetrabilityFactor);
+        SetActorLocation(NewLocation);
+    } 
+    else
+    {
+        if(FVector::DotProduct(CollisionGeometry.BottomDist,-CollisionGeometry.RotatedNormal) < VerticalTolerance)
+        {
+            /* Impact was from side or bottom */
+            FVector PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformLength;
+            FVector PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformLength;
+            FVector SideDist = this->GetActorLocation()-CollisionGeometry.PlatformCentre;
+            if(SideDist.X > 0.0f)
+            {
+                //Impact coming from right
+                if((FVector::DotProduct(SideDist,FVector::XAxisVector) > HorizontalTolerance))
+                {
+                    //Impenetrability
+                    SetLeftMovementFree(false);
+                    RegisterPlatformCollision(Platform,EPlatformCollisionType::IsCollidingFromRight);
+                }
+            }
+            else if(SideDist.X < 0.0f)
+            {
+                //Impact coming from left
+                if((FVector::DotProduct(SideDist,-FVector::XAxisVector) > HorizontalTolerance))
+                {
+                    //Impenetrability
+                    SetRightMovementFree(false);
+                    RegisterPlatformCollision(Platform,EPlatformCollisionType::IsCollidingFromLeft);
+                }
+            }
+        }
+    }
 }

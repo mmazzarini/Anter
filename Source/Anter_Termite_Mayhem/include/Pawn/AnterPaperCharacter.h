@@ -26,6 +26,7 @@ enum class EPlatformCollisionType : uint8
     IsCollidingFromLeft
 };
 
+
 //Little structure to be referenced by Pawn in order to impose its local geometry while moving
 
 struct FGeometron
@@ -104,6 +105,8 @@ public:
     void ResetGeometron();
 
     void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) override;
+
+    void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
 /* Anter Components */
 
