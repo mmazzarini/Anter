@@ -10,11 +10,12 @@ void UCollisionSupportComponent::RegisterInterfaceOwnerCharacter(ISceneActorInte
     OwnerActorInterfacePtr = ActorOwnerInterface;
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
     FCollisionGeometry CollisionGeometry;
     AActor* OwningActor = GetOwner();
-    if(OtherActor != nullptr && OtherActor->GetName().Contains("Floor"))
+    if(OtherActor != nullptr)
     {
         OtherActor->GetActorBounds(true,CollisionGeometry.PlatformCentre,CollisionGeometry.PlatformSize,false);
         
@@ -56,6 +57,7 @@ void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* O
         }
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION 
 
 /*
             if(FVector::DotProduct(TopDist,RotatedNormal) >= VerticalTolerance)
