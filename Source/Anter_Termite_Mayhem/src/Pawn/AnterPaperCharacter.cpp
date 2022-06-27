@@ -101,7 +101,7 @@ void AAnterPaperCharacter::SetBindings()
         AnterHealth->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
 
-    if(AnterBox != nullptr)
+    if(AnterBox != nullptr && AnterCollisionSupport != nullptr)
     {
         AnterBox->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
         AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
@@ -117,18 +117,18 @@ void AAnterPaperCharacter::SetupGravity()
     }
 }
 
-void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InputComponent)
+void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputComponent)
 {   
-    Super::SetupPlayerInputComponent(InputComponent);
+    Super::SetupPlayerInputComponent(InInputComponent);
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if((InputComponent != nullptr))
+    if((InInputComponent != nullptr))
     {
-        InputComponent->BindAxis("RightMovement",this,&AAnterPaperCharacter::HandleRightMovement);
-        InputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
+        InInputComponent->BindAxis("RightMovement",this,&AAnterPaperCharacter::HandleRightMovement);
+        InInputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
         if(AnterWeapon != nullptr)
         {
-            InputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
-            InputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
+            InInputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
+            InInputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
         }
     }
 

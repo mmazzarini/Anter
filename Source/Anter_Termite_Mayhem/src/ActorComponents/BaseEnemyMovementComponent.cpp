@@ -5,7 +5,7 @@ UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
     PrimaryComponentTick.bStartWithTickEnabled = true;  
-    RegisterComponent();
+    //RegisterComponent();
 }
 
 void UBaseEnemyMovementComponent::Initialize()
