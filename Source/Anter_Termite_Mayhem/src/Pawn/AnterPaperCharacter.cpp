@@ -44,13 +44,16 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
 } 
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
     AdjustVelocity();
     //Ensure no displacement from Y = 0 plane
+    FVector LocationTemp = GetActorLocation();
     SetActorLocation(FVector(GetActorLocation().X,0.0f,GetActorLocation().Z));
     ConstrainJump();
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::OnDeathEvent()
 {
@@ -234,34 +237,31 @@ PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    if(OtherActor != nullptr)
+    ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
+    if(Platform != nullptr)
     {
-        if(OtherActor->GetName().Contains("Floor"))
+        //First, Deregister platform from colliding platforms
+        DeregisterPlatformCollision(Platform);
+
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if(AnterMovement != nullptr)
         {
-
-            //First, Deregister platform from colliding platforms
-            DeregisterPlatformCollision(OtherActor);
-
-            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-            if(AnterMovement != nullptr)
+            //If there is no vertically colliding platform in the registered platforms array, then free fall
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsVeritcallyColliding) == false)
             {
-                //If there is no vertically colliding platform in the registered platforms array, then free fall
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVeritcallyColliding) == false)
-                {
-                    SetIsFalling(true);
-                    AnterMovement->GravityScale = InputGravityScale;
-                    ResetGeometron();
-                }
-                
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
-                {
-                    SetRightMovementFree(true);                    
-                }
+                SetIsFalling(true);
+                AnterMovement->GravityScale = InputGravityScale;
+                ResetGeometron();
+            }
+            
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
+            {
+                SetRightMovementFree(true);                    
+            }
 
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
-                {
-                    SetLeftMovementFree(true);
-                }
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
+            {
+                SetLeftMovementFree(true);
             }
         }
     }
@@ -357,6 +357,7 @@ void AAnterPaperCharacter::ResetGeometron()
     ImposeGeometry(0.0f);
 }
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
 {
         if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
@@ -374,8 +375,13 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
             AnterMovement->GravityScale = 0.0f;
         }
         //Floor impenetrability condition
-
-        FVector NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + (CollisionGeometry.TopDist.Z)/VerticalImpenetrabilityFactor);
+        FVector NewLocation = GetActorLocation();
+        if(AnterBox != nullptr)
+        {
+            FVector AnterBoxExtent = AnterBox->GetScaledBoxExtent();
+            FVector PlatformBoxExtent = Platform->FindComponentByClass<UBoxComponent>()->GetScaledBoxExtent();
+            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformCentre.Z + PlatformBoxExtent.Z + AnterBoxExtent.Z*VerticalImpenetrabilityFactor);
+        }
         SetActorLocation(NewLocation);
     } 
     else
@@ -409,3 +415,4 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         }
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION
