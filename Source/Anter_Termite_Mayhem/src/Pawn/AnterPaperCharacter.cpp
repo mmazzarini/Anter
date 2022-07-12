@@ -18,6 +18,9 @@
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
 
+    AnterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AnterMesh"));
+    AnterMesh->SetupAttachment(RootComponent);
+
     AnterMovementSupport = CreateDefaultSubobject<UAnterMovementSupportComponent>(TEXT("AnterMovementSupport"));
     AnterMovementSupport->SetupAttachment(RootComponent);
 
@@ -26,9 +29,6 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(Spring);
-
-    AnterMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AnterMesh"));
-    AnterMesh->SetupAttachment(RootComponent);
 
     AnterHealth = CreateDefaultSubobject<UHealthComponent>(TEXT("AnterHealth"));
     AnterHealth->SetupAttachment(RootComponent);
@@ -61,15 +61,15 @@ void AAnterPaperCharacter::OnDeathEvent()
     {
         AnterHealth->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
-    if(AnterBox != nullptr && AnterCollisionSupport != nullptr)
+    if(AnterMesh != nullptr && AnterCollisionSupport != nullptr)
     {
-        if(AnterBox->OnComponentBeginOverlap.IsBound())
+        if(AnterMesh->OnComponentBeginOverlap.IsBound())
         {
-            AnterBox->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
+            AnterMesh->OnComponentBeginOverlap.RemoveDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
         }
-        if(AnterBox->OnComponentEndOverlap.IsBound())
+        if(AnterMesh->OnComponentEndOverlap.IsBound())
         {
-            AnterBox->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
+            AnterMesh->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
         }
     }
     Destroy();
@@ -94,6 +94,9 @@ void AAnterPaperCharacter::BeginPlay()
     {
         AnterCollisionSupport->RegisterInterfaceOwnerCharacter(this);
     }
+
+    //Anter centre is not really revelevant at BeginPlay, but AnterSize is. 
+    GetActorBounds(true,AnterCentre,AnterSize,false);
 }
 PRAGMA_ENABLE_OPTIMIZATION
 
@@ -104,10 +107,10 @@ void AAnterPaperCharacter::SetBindings()
         AnterHealth->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
     }
 
-    if(AnterBox != nullptr && AnterCollisionSupport != nullptr)
+    if(AnterMesh != nullptr && AnterCollisionSupport != nullptr)
     {
-        AnterBox->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
-        AnterBox->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
+        AnterMesh->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
+        AnterMesh->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
     }
 }
 
@@ -235,37 +238,42 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
 }   
 PRAGMA_ENABLE_OPTIMIZATION
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
     if(Platform != nullptr)
     {
-        //First, Deregister platform from colliding platforms
-        DeregisterPlatformCollision(Platform);
-
-        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-        if(AnterMovement != nullptr)
+        UStaticMeshComponent* OtherMesh = Cast<UStaticMeshComponent>(OtherComp);
+        if(OtherMesh != nullptr)
         {
-            //If there is no vertically colliding platform in the registered platforms array, then free fall
-            if(FindAnyCollisionOfType(EPlatformCollisionType::IsVeritcallyColliding) == false)
+            //First, Deregister platform from colliding platforms
+            DeregisterPlatformCollision(Platform);
+            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+            if(AnterMovement != nullptr)
             {
-                SetIsFalling(true);
-                AnterMovement->GravityScale = InputGravityScale;
-                ResetGeometron();
-            }
-            
-            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
-            {
-                SetRightMovementFree(true);                    
-            }
+                //If there is no vertically colliding platform in the registered platforms array, then free fall
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVerticallyColliding) == false)
+                {
+                    SetIsFalling(true);
+                    AnterMovement->GravityScale = InputGravityScale;
+                    ResetGeometron();
+                }
+                
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
+                {
+                    SetRightMovementFree(true);                    
+                }
 
-            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
-            {
-                SetLeftMovementFree(true);
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
+                {
+                    SetLeftMovementFree(true);
+                }
             }
         }
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::SetCanJump(bool InCanJump)
 {
@@ -323,7 +331,7 @@ void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemov
 }
 PRAGMA_ENABLE_OPTIMIZATION
 
-PRAGMA_DISABLE_OPTIMIZATION
+
 bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind)
 {
     TPair <AActor*,EPlatformCollisionType>* PlatformToFind = RegisteredVerticalPlatformCollisions.FindByPredicate([=](TPair <AActor*,EPlatformCollisionType> PlatformPair)
@@ -333,8 +341,8 @@ bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatf
     );
     return (PlatformToFind != nullptr);
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
+PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::AdjustVelocity()
 {
     if(bIsFalling == false)
@@ -346,6 +354,7 @@ void AAnterPaperCharacter::AdjustVelocity()
         }
     }
 }
+PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::ImposeGeometry(float InAngle)
 {
@@ -360,12 +369,13 @@ void AAnterPaperCharacter::ResetGeometron()
 PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
 {
-        if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal) >= VerticalTolerance)
+    //if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)/FMath::Abs(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)) >= VerticalTolerance)
+    if(CollisionGeometry.TopDist.Z >= -(AnterSize.Z))
     {
         /* Impact was from top: pawn is standing on platform. */ 
 
         //Register impact with vertical colliding platform
-        RegisterPlatformCollision(Platform,EPlatformCollisionType::IsVeritcallyColliding);
+        RegisterPlatformCollision(Platform,EPlatformCollisionType::IsVerticallyColliding);
 
         UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
         if(AnterMovement != nullptr)
@@ -376,12 +386,11 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         }
         //Floor impenetrability condition
         FVector NewLocation = GetActorLocation();
-        if(AnterBox != nullptr)
-        {
-            FVector AnterBoxExtent = AnterBox->GetScaledBoxExtent();
-            FVector PlatformBoxExtent = Platform->FindComponentByClass<UBoxComponent>()->GetScaledBoxExtent();
-            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformCentre.Z + PlatformBoxExtent.Z + AnterBoxExtent.Z*VerticalImpenetrabilityFactor);
-        }
+        //if(AnterBox != nullptr)
+        //{
+            //FVector AnterBoxExtent = AnterBox->GetScaledBoxExtent();
+            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformCentre.Z + CollisionGeometry.PlatformSize.Z/2.0f); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
+        //}
         SetActorLocation(NewLocation);
     } 
     else

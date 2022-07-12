@@ -21,7 +21,7 @@ class UInputComponent;
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
 {
-    IsVeritcallyColliding,
+    IsVerticallyColliding,
     IsCollidingFromRight,
     IsCollidingFromLeft
 };
@@ -194,6 +194,14 @@ TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisio
 
 
 FGeometron AnterGeometron;
+
+UPROPERTY()
+FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
+UPROPERTY()
+FVector AnterSize = FVector(0.0f,0.0f,0.0f);
+
+UPROPERTY()
+bool bIsAnterColliding = false;
 
 };
 

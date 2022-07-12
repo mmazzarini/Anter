@@ -18,27 +18,10 @@ void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* O
     if(OtherActor != nullptr && OtherActor != OwningActor)
     {
         OtherActor->GetActorBounds(true,CollisionGeometry.PlatformCentre,CollisionGeometry.PlatformSize,false);
-        
-        UStaticMeshComponent* PlatformMeshComponent = Cast<UStaticMeshComponent>(OtherActor->FindComponentByClass<UStaticMeshComponent>());
-
-        if(PlatformMeshComponent != nullptr)
-        {
-            UStaticMesh* PlatformStaticMesh = PlatformMeshComponent->GetStaticMesh();
-            if(PlatformStaticMesh != nullptr)
-            {
-                FVector IntrinsicSize = PlatformStaticMesh->GetBounds().GetBox().GetExtent();
-                FVector PlatformScale = OtherActor->GetTransform().GetScale3D();
-                CollisionGeometry.PlatformLength = IntrinsicSize.X*PlatformScale.X/2.0f;   
-                CollisionGeometry.PlatformHeight =  IntrinsicSize.Z*PlatformScale.Z/2.0f;    
-            }
-        }
-
-        CollisionGeometry.PlatformSurfaceCentre = CollisionGeometry.PlatformCentre + FVector::UpVector*CollisionGeometry.PlatformHeight; 
-        CollisionGeometry.PlatformBottomCentre =  CollisionGeometry.PlatformCentre - FVector::UpVector*CollisionGeometry.PlatformHeight;
-        float PlatformAngle = OtherActor->GetTransform().GetRotation().GetAngle();
-        float PlatformCosine = 1.0f;
-        float PlatformSine = 0.0f;
-        FMath::SinCos(&PlatformSine,&PlatformCosine,PlatformAngle);
+        CollisionGeometry.PlatformSurfaceCentre = CollisionGeometry.PlatformCentre + FVector::UpVector*CollisionGeometry.PlatformSize.Z; 
+        CollisionGeometry.PlatformBottomCentre =  CollisionGeometry.PlatformCentre - FVector::UpVector*CollisionGeometry.PlatformSize.Z;
+        CollisionGeometry.PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformSize.X;
+        CollisionGeometry.PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformSize.X;
         //Pawn geometrical references
         FVector OwnerSize = FVector(0.0f,0.0f,0.0f);
         FVector OwnerCentre = FVector(0.0f,0.0f,0.0f);
@@ -48,8 +31,6 @@ void UCollisionSupportComponent::ProcessCollisionGeometry(UPrimitiveComponent* O
         CollisionGeometry.BottomDist = OwningActorLocation-CollisionGeometry.PlatformBottomCentre;
         //Check geometry of collision to decide which impact     
         CollisionGeometry.RotatedNormal = OtherActor->GetTransform().GetRotation().RotateVector(FVector::UpVector);
-        CollisionGeometry.PlatformRightSideCentre = CollisionGeometry.PlatformCentre + FVector::XAxisVector*CollisionGeometry.PlatformLength;
-        CollisionGeometry.PlatformLeftSideCentre = CollisionGeometry.PlatformCentre - FVector::XAxisVector*CollisionGeometry.PlatformLength;
         CollisionGeometry.SideDist = OwningActor->GetActorLocation()-CollisionGeometry.PlatformCentre;
         //We need to use interface ptr to call the interface method on the scene actor owning this component
         if(OwnerActorInterfacePtr != nullptr)
