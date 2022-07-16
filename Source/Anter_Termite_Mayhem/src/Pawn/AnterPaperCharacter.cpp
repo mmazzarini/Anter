@@ -389,7 +389,7 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         //if(AnterBox != nullptr)
         //{
             //FVector AnterBoxExtent = AnterBox->GetScaledBoxExtent();
-            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformCentre.Z + CollisionGeometry.PlatformSize.Z/2.0f); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
+            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);// AnterSize.Z*VerticalImpenetrabilityFactor); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
         //}
         SetActorLocation(NewLocation);
     } 
