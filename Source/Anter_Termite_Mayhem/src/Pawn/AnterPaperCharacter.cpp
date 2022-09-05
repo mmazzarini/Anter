@@ -366,7 +366,6 @@ void AAnterPaperCharacter::ResetGeometron()
     ImposeGeometry(0.0f);
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
 {
     //if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)/FMath::Abs(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)) >= VerticalTolerance)
@@ -424,4 +423,3 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         }
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION

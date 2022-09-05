@@ -10,7 +10,8 @@ UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 
 void UBaseEnemyMovementComponent::Initialize()
 {
-    SetMovement(InitialMovementGeometry, InitialMovementSpeed);
+    SetMovement(InitialMovementGeometry);
+    SetSpeed(InitialMovementSpeed);
     OwnerEnemy = Cast<ABaseEnemy>(GetOwner());
 }
 
@@ -19,10 +20,14 @@ void UBaseEnemyMovementComponent::TickComponent(float DeltaTime, enum ELevelTick
     UpdateMovement();
 }
 
-void UBaseEnemyMovementComponent::SetMovement(FVector2D InGeometryVector, float InSpeed)
+void UBaseEnemyMovementComponent::SetMovement(FVector2D InGeometryVector)
 {
     InternalMovementGeometry.X = InGeometryVector.X;
     InternalMovementGeometry.Y = InGeometryVector.Y;
+}
+
+void UBaseEnemyMovementComponent::SetSpeed(float InSpeed)
+{
     InternalMovementSpeed = InSpeed;
 }
 

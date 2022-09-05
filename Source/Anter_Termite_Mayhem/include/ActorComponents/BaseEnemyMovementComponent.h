@@ -27,7 +27,9 @@ public:
 
     virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) override;
 
-    virtual void SetMovement(FVector2D InGeometryVector, float InSpeed);
+    virtual void SetMovement(FVector2D InGeometryVector);
+
+    virtual void SetSpeed(float InSpeed);
 
     virtual void UpdateMovement();
 
@@ -39,6 +41,8 @@ public:
     void OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
     FOnMovementUpdatedDelegate OnMovementUpdated;
+
+    const float GetInnerSpeed() const {return InternalMovementSpeed;}
 
 protected:
 

@@ -108,6 +108,8 @@ public:
 
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
+    void HandleEnemy(const FCollisionGeometry& CollisionGeometry, AActor* Enemy);
+
 /* Anter Components */
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
