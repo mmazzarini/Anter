@@ -45,7 +45,7 @@ void ABaseEnemy::Tick(float DeltaSeconds)
         StartToMove();
     }
     */
-   UpdateMovement();
+   //UpdateMovement();
 }
 
 void ABaseEnemy::StartToMove()
@@ -56,7 +56,7 @@ void ABaseEnemy::StartToMove()
 void ABaseEnemy::MoveToNextPivot()
 {
     //We first switch orientation if necessary, then we move to next pivot by updating the velocity.
-    if(PivotIndex == GetCurrentPivotPositionsArray().Num()-1)
+    if(PivotArrayIndex == GetCurrentPivotPositionsArray().Num()-1)
     {
         SwitchOrientation();
     }
@@ -110,9 +110,9 @@ void ABaseEnemy::AdjustVelocity()
     FVector LocationDistance = NewLocation - CurrentLocation;
     
     // Normalize distance vector
-    if(LocationDistance.GetAbs() != 0 && BaseEnemyMovement != nullptr)
+    if(LocationDistance.Size() != 0 && BaseEnemyMovement != nullptr)
     {
-        FVector3D NewGeometry = LocationDistance/LocationDistance.GetAbs();
+        FVector NewGeometry = LocationDistance/LocationDistance.Size();
         FVector2D New2DGeometry(NewGeometry.X,NewGeometry.Y);
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }

@@ -4,21 +4,18 @@
 
 void ABaseEnemyController::BeginPlay()
 {
-    for(TActorIterator<ABaseEnemy> EnemyItr(GetWorld()); EnemyItr; ++EnemyItr)
+    APawn* ControlledPawn = GetPawn();
+    if(ControlledPawn != nullptr)
     {
-        EnemyPawn = EnemyItr;
+        EnemyPawn = Cast<ABaseEnemy>(ControlledPawn);
     }
-    SetPawn(EnemyPawn);
-    if(EnemyPawn != nullptr)
+    if(EnemyPawn != nullptr && EnemyPawn->GetPivotState() == EEnemyPivotState::HasBeenFilled)       
     {
-        if(EnemyPawn->GetPivotState() == EEnemyPivotState::HasBeenFilled)       
-        {
-            EnemyPawn->MoveToNextPivot();
-        } 
+        EnemyPawn->MoveToNextPivot();
     }
 }
 
-void Tick(float DeltaSeconds)
+void ABaseEnemyController::Tick(float DeltaSeconds)
 {
 
 }

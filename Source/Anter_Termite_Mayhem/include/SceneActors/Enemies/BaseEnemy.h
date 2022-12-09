@@ -5,7 +5,7 @@
 #include "ActorComponents/AnterFSMComponent.h"
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/BaseEnemyMovementComponent.h"
-#include "Components/StaticMeshComponent.h
+#include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
 #include "SceneActors/SceneActorInterface.h"

@@ -10,4 +10,3 @@ class ANTER_TERMITE_MAYHEM_API AAnterPlayerController : public APlayerController
     GENERATED_BODY()
 
 };
-

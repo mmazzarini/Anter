@@ -6,9 +6,9 @@ void AEnemyManager::BeginPlay()
 {
     Super::BeginPlay();
     RegisterEnemy();
-    if(Enemy != nullptr && EnemyPositions.Num() > 0)
+    if(EnemyPositions.Num() > 0)
     {
-        FillEnemyPositions(Enemy);
+        FillEnemyPositions();
     }
 }
 
@@ -16,7 +16,7 @@ void AEnemyManager::RegisterEnemy()
 {
     for(TActorIterator<ABaseEnemy> EnemyItr(GetWorld()); EnemyItr; ++EnemyItr)
     {
-        Enemy = EnemyItr;
+        Enemy = *EnemyItr;
     }
 }
 
