@@ -23,16 +23,16 @@ public:
     UFUNCTION()
     void FillEnemyPositions();
 
-    //This function will be changed. Is it to test communications with enemy
-    UFUNCTION()
-    void RegisterEnemy();
 
 protected:
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditAnywhere)
     TArray<FVector> EnemyPositions;
 
     UPROPERTY()
     ABaseEnemy* Enemy;
+
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<ABaseEnemy> EnemyClass;
 
 };

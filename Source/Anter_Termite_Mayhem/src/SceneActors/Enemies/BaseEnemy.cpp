@@ -17,6 +17,8 @@ ABaseEnemy::ABaseEnemy()
 
     BaseEnemyCollisionSupport = CreateDefaultSubobject<UCollisionSupportComponent>(TEXT("BaseEnemyCollisionSupport"));
     BaseEnemyCollisionSupport->SetupAttachment(RootComponent);
+    
+    PivotState = EEnemyPivotState::IsWaitingToBeFilled;
 }
 
 void ABaseEnemy::BeginPlay()
@@ -39,18 +41,23 @@ void ABaseEnemy::BeginPlay()
 
 void ABaseEnemy::Tick(float DeltaSeconds)
 {
-    /*
+    
     if(PivotState == EEnemyPivotState::HasBeenFilled)
     {
         StartToMove();
     }
-    */
+    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPivotPositions[PivotArrayIndex]);
+    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < 10.0f)
+    {
+        MoveToNextPivot();
+    }
    //UpdateMovement();
 }
 
 void ABaseEnemy::StartToMove()
 {
     PivotState = EEnemyPivotState::HasStartedMoving; 
+    MoveToNextPivot();
 }
 
 void ABaseEnemy::MoveToNextPivot()
@@ -61,6 +68,7 @@ void ABaseEnemy::MoveToNextPivot()
         SwitchOrientation();
     }
 
+    PivotArrayIndex++;
     AdjustVelocity();
 }
 
@@ -94,13 +102,15 @@ void ABaseEnemy::FillPositionArrays(TArray<FVector> InPositions)
         for(FVector InPosition : InPositions)
         {
             PivotPositions.Add(InPosition);
+            CurrentPivotPositions.Add(InPosition);
         }
         //reverse loop
-        for(uint8 PositionIndex = InPositions.Num()-1; PositionIndex >= 0; PositionIndex--)
+        for(int32 PositionIndex = InPositions.Num()-1; PositionIndex >= 0; PositionIndex--)
         {
             ReversePivotPositions.Add(InPositions[PositionIndex]);
         }
     }
+    PivotState = EEnemyPivotState::HasBeenFilled;
 }
 
 void ABaseEnemy::AdjustVelocity()
@@ -112,7 +122,9 @@ void ABaseEnemy::AdjustVelocity()
     // Normalize distance vector
     if(LocationDistance.Size() != 0 && BaseEnemyMovement != nullptr)
     {
-        FVector NewGeometry = LocationDistance/LocationDistance.Size();
+        FVector NewGeometry;
+        NewGeometry.X = LocationDistance.X/LocationDistance.Size();
+        NewGeometry.Y = LocationDistance.Z/LocationDistance.Size();
         FVector2D New2DGeometry(NewGeometry.X,NewGeometry.Y);
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }

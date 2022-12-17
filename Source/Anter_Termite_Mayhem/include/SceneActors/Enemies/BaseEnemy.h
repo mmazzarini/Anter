@@ -60,7 +60,7 @@ public:
     EEnemyPivotState GetPivotState(){return PivotState;}
 
     void SetPivotState(EEnemyPivotState InPivotState){PivotState = InPivotState;}
-
+    
     void MoveToNextPivot();
 
     void SwitchOrientation();

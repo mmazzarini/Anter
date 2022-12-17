@@ -5,18 +5,11 @@
 void AEnemyManager::BeginPlay()
 {
     Super::BeginPlay();
-    RegisterEnemy();
+    Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
+    
     if(EnemyPositions.Num() > 0)
     {
         FillEnemyPositions();
-    }
-}
-
-void AEnemyManager::RegisterEnemy()
-{
-    for(TActorIterator<ABaseEnemy> EnemyItr(GetWorld()); EnemyItr; ++EnemyItr)
-    {
-        Enemy = *EnemyItr;
     }
 }
 
