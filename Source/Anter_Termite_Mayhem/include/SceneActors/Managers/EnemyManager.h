@@ -8,6 +8,7 @@ along an array of positions
 */
 
 class ABaseEnemy;
+class ABaseEnemyBoundary;
 
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AEnemyManager : public AActor
@@ -34,5 +35,8 @@ protected:
 
     UPROPERTY(EditAnywhere)
     TSubclassOf<ABaseEnemy> EnemyClass;
+
+    UPROPERTY(EditAnywhere)
+    TSubclassOf<ABaseEnemyBoundary> EnemyBoundaryClass;
 
 };

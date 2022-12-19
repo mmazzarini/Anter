@@ -1,4 +1,8 @@
 #include "SceneActors/Enemies/BaseEnemy.h"
+#include "AIController.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "SceneActors/Enemies/BaseEnemyBoundary.h"
+
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 
 ABaseEnemy::ABaseEnemy()
@@ -46,12 +50,24 @@ void ABaseEnemy::Tick(float DeltaSeconds)
     {
         StartToMove();
     }
-    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPivotPositions[PivotArrayIndex]);
-    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < 10.0f)
+    /*
+    AAIController* EnemyController = Cast<AAIController>(GetController());
+    if(EnemyController != nullptr)
+    {
+        EPathFollowingRequestResult::Type EnemyMovingStatus = EnemyController->MoveToLocation(CurrentPivotPositions[PivotArrayIndex],100.0f);
+        if(EnemyMovingStatus == EPathFollowingRequestResult::Type::AlreadyAtGoal)    
+        {
+                MoveToNextPivot();
+        }
+    }
+    */
+    FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
+    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
+    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < 50.0f)
     {
         MoveToNextPivot();
     }
-   //UpdateMovement();
+    //UpdateMovement();
 }
 
 void ABaseEnemy::StartToMove()
@@ -80,7 +96,15 @@ void ABaseEnemy::SwitchOrientation()
 
 void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
-
+    ABaseEnemyBoundary* EnemyBoundary = Cast<ABaseEnemyBoundary>(OtherActor);
+    if(EnemyBoundary != nullptr)
+    {
+        if(RootComponent != nullptr)
+        {
+            RootComponent->ComponentVelocity.Set(0.0f,0.0f,0.0f);
+        }
+        MoveToNextPivot();
+    }
 }
 
 void ABaseEnemy::SetBindings()
@@ -88,6 +112,10 @@ void ABaseEnemy::SetBindings()
     if(BaseEnemyBox != nullptr && BaseEnemyMovement != nullptr)
     {
         BaseEnemyBox->OnComponentBeginOverlap.AddDynamic(BaseEnemyMovement,&UBaseEnemyMovementComponent::OnCollided);
+    }
+    if(BaseEnemyMesh !=nullptr && BaseEnemyCollisionSupport != nullptr)
+    {
+        BaseEnemyMesh->OnComponentBeginOverlap.AddDynamic(BaseEnemyCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
     }
 }
 
@@ -126,6 +154,12 @@ void ABaseEnemy::AdjustVelocity()
         NewGeometry.X = LocationDistance.X/LocationDistance.Size();
         NewGeometry.Y = LocationDistance.Z/LocationDistance.Size();
         FVector2D New2DGeometry(NewGeometry.X,NewGeometry.Y);
+        /*
+        //Fix movement reset
+        BaseEnemyMovement->Velocity.X = 0.0f;
+        BaseEnemyMovement->Velocity.Y = 0.0f;
+        BaseEnemyMovement->Velocity.Z = 0.0f;
+        */
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }
 }
