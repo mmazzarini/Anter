@@ -67,6 +67,9 @@ public:
 
     virtual void HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor) override; //float InMovementSpeed){} 
 
+    //Setter method for PivotDistanceThreshold
+    void SetPivotDistanceThreshold(float InPivotDistanceThreshold){PivotDistanceThreshold = InPivotDistanceThreshold;}
+
     UFUNCTION(BlueprintCallable)
     void FillPositionArrays(TArray<FVector> InPositions);
 
@@ -110,4 +113,8 @@ protected:
 
     UPROPERTY(EditDefaultsOnly)
     FVector EnemySpeed;
+
+    //Distance from pivot to trigger movement to next pivot
+    UPROPERTY(EditAnywhere)
+    float PivotDistanceThreshold = 0.0f;
 };

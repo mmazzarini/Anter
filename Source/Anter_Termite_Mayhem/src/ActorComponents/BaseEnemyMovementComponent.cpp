@@ -37,7 +37,8 @@ void UBaseEnemyMovementComponent::UpdateMovement()
     if(OwnerEnemy != nullptr)
     {
         FVector InputMovement3D = FVector(InternalMovementGeometry.X,0.0f,InternalMovementGeometry.Y);
-        OwnerEnemy->AddMovementInput(InputMovement3D,InternalMovementSpeed);
+        FVector NewPosition = OwnerEnemy->GetActorLocation() + InputMovement3D*InternalMovementSpeed;
+        OwnerEnemy->SetActorLocation(NewPosition);
     }
     //    OnMovementUpdated.Broadcast(InternalMovementGeometry,InternalMovementSpeed);
 }

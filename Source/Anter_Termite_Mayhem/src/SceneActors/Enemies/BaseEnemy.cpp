@@ -50,20 +50,10 @@ void ABaseEnemy::Tick(float DeltaSeconds)
     {
         StartToMove();
     }
-    /*
-    AAIController* EnemyController = Cast<AAIController>(GetController());
-    if(EnemyController != nullptr)
-    {
-        EPathFollowingRequestResult::Type EnemyMovingStatus = EnemyController->MoveToLocation(CurrentPivotPositions[PivotArrayIndex],100.0f);
-        if(EnemyMovingStatus == EPathFollowingRequestResult::Type::AlreadyAtGoal)    
-        {
-                MoveToNextPivot();
-        }
-    }
-    */
+
     FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
     float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
-    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < 50.0f)
+    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < PivotDistanceThreshold)
     {
         MoveToNextPivot();
     }
@@ -96,6 +86,7 @@ void ABaseEnemy::SwitchOrientation()
 
 void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
+    /*
     ABaseEnemyBoundary* EnemyBoundary = Cast<ABaseEnemyBoundary>(OtherActor);
     if(EnemyBoundary != nullptr)
     {
@@ -105,10 +96,12 @@ void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, 
         }
         MoveToNextPivot();
     }
+    */
 }
-
+   
 void ABaseEnemy::SetBindings()
 { 
+    /*
     if(BaseEnemyBox != nullptr && BaseEnemyMovement != nullptr)
     {
         BaseEnemyBox->OnComponentBeginOverlap.AddDynamic(BaseEnemyMovement,&UBaseEnemyMovementComponent::OnCollided);
@@ -117,6 +110,7 @@ void ABaseEnemy::SetBindings()
     {
         BaseEnemyMesh->OnComponentBeginOverlap.AddDynamic(BaseEnemyCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
     }
+    */
 }
 
 
@@ -163,11 +157,3 @@ void ABaseEnemy::AdjustVelocity()
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }
 }
-
-/*
-void ABaseEnemy::HandleMovement(FVector2D InMovementDirection, float InMovementSpeed)
-{
-    FVector InputMovement3D = FVector(InMovementDirection.X,InMovementDirection.Y,0.0f);
-    AddMovementInput(InputMovement3D,InMovementSpeed);
-}
-*/

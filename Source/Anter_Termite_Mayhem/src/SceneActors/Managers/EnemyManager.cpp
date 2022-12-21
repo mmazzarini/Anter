@@ -8,17 +8,24 @@ void AEnemyManager::BeginPlay()
     Super::BeginPlay();
     if(EnemyPositions.Num() > 0)
     {   
+        /*
         for(int32 PositionIndex = 0;PositionIndex <EnemyPositions.Num();PositionIndex++)
         {
             GetWorld()->SpawnActor<ABaseEnemyBoundary>(EnemyBoundaryClass,EnemyPositions[PositionIndex],GetActorRotation());
         }
-        Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,EnemyPositions[0],GetActorRotation());
+        */
+        Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,EnemyPositions[0]+GetActorLocation(),GetActorRotation());
     }
     else
     {
         Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
     }
     
+    if(Enemy != nullptr)
+    {
+        Enemy->SetPivotDistanceThreshold(EnemyPivotDistanceThreshold);
+    }
+
     if(EnemyPositions.Num() > 0)
     {
         FillEnemyPositions();
@@ -27,8 +34,14 @@ void AEnemyManager::BeginPlay()
 
 void AEnemyManager::FillEnemyPositions()
 {
+    TArray<FVector> CorrectedPositions;
+    for(FVector EnemyPosition : EnemyPositions)
+    {
+        CorrectedPositions.Add(EnemyPosition + this->GetActorLocation());
+    } 
+
     if(Enemy != nullptr)
     {
-        Enemy->FillPositionArrays(EnemyPositions);
+        Enemy->FillPositionArrays(CorrectedPositions);
     }
 }

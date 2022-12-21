@@ -27,6 +27,7 @@ public:
 
 protected:
 
+    //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 
     UPROPERTY(EditAnywhere)
     TArray<FVector> EnemyPositions;
 
@@ -38,5 +39,8 @@ protected:
 
     UPROPERTY(EditAnywhere)
     TSubclassOf<ABaseEnemyBoundary> EnemyBoundaryClass;
+
+    UPROPERTY(EditInstanceOnly)
+    float EnemyPivotDistanceThreshold;
 
 };
