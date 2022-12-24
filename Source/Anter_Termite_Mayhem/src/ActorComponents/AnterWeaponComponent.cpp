@@ -27,7 +27,7 @@ void UAnterWeaponComponent::ShootLaser()
                 Fire->SetMovementToRight((MovementDirectionScaleFactor > 0.0f));
             }
             SetCanShoot(false);
-            GetOwner()->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
+            Anter->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
         }
     }
 }

@@ -25,6 +25,26 @@ ABaseEnemy::ABaseEnemy()
     PivotState = EEnemyPivotState::IsWaitingToBeFilled;
 }
 
+void ABaseEnemy::UpdateAttack()
+{
+    
+}
+
+void ABaseEnemy::UpdateMovement()
+{
+    if(PivotState == EEnemyPivotState::HasBeenFilled)
+    {
+        StartToMove();
+    }
+
+    FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
+    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
+    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < PivotDistanceThreshold)
+    {
+        MoveToNextPivot();
+    }
+}
+
 void ABaseEnemy::BeginPlay()
 {
     Super::BeginPlay();
@@ -45,19 +65,7 @@ void ABaseEnemy::BeginPlay()
 
 void ABaseEnemy::Tick(float DeltaSeconds)
 {
-    
-    if(PivotState == EEnemyPivotState::HasBeenFilled)
-    {
-        StartToMove();
-    }
-
-    FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
-    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
-    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < PivotDistanceThreshold)
-    {
-        MoveToNextPivot();
-    }
-    //UpdateMovement();
+    UpdateMovement();
 }
 
 void ABaseEnemy::StartToMove()

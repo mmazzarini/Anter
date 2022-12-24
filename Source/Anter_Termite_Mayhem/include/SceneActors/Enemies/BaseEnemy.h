@@ -9,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
 #include "SceneActors/SceneActorInterface.h"
+#include "SceneActors/Enemies/EnemyInterface.h"
 
 #include "BaseEnemy.generated.h"
 
@@ -41,7 +42,7 @@ Can be derived to obtain all the specified enemies.
 */
 
 UCLASS(BlueprintType)
-class ANTER_TERMITE_MAYHEM_API ABaseEnemy : public APaperCharacter, public ISceneActorInterface
+class ANTER_TERMITE_MAYHEM_API ABaseEnemy : public APaperCharacter, public ISceneActorInterface, public IEnemyInterface
 {
 
     GENERATED_BODY()
@@ -87,6 +88,11 @@ public:
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UCollisionSupportComponent* BaseEnemyCollisionSupport;
+
+    //Interface overridden functions
+    void UpdateAttack();
+    
+    void UpdateMovement();
 
 protected:
 
