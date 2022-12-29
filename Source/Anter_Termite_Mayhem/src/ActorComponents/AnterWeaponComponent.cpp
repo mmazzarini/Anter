@@ -12,13 +12,13 @@ PRAGMA_DISABLE_OPTIMIZATION
 void UAnterWeaponComponent::ShootLaser()
 {
     //AAnterFire* FireShot = NewObject<AAnterFire>(dGetTransientPackage(),LaserSubClass);
-    AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(GetOwner());
-    if(Anter != nullptr)
+    AActor* OwnerActor = GetOwner(); //AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(GetOwner());
+    if(OwnerActor != nullptr)
     {
         if(bCanShoot == true)
         {
-            FVector AnterPosition = Anter->GetTransform().GetTranslation();
-            FRotator AnterRotation = Anter->GetTransform().Rotator();
+            FVector AnterPosition = OwnerActor->GetTransform().GetTranslation();
+            FRotator AnterRotation = OwnerActor->GetTransform().Rotator();
             FVector FirePosition = AnterPosition;
             FirePosition.X = AnterPosition.X + WeaponSpawnRange*MovementDirectionScaleFactor;
             AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
@@ -27,7 +27,7 @@ void UAnterWeaponComponent::ShootLaser()
                 Fire->SetMovementToRight((MovementDirectionScaleFactor > 0.0f));
             }
             SetCanShoot(false);
-            Anter->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
+            OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
         }
     }
 }

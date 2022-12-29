@@ -1,6 +1,8 @@
 #include "SceneActors/Managers/EnemyManager.h"
 #include "SceneActors/Enemies/BaseEnemy.h"
 #include "SceneActors/Enemies/BaseEnemyBoundary.h"
+#include "SceneUtilities/SceneStructs.h"
+
 #include "EngineUtils.h"
 
 void AEnemyManager::BeginPlay()
@@ -30,6 +32,8 @@ void AEnemyManager::BeginPlay()
     {
         FillEnemyPositions();
     }
+    
+    InjectEnemyLoopBehavior();
 }
 
 void AEnemyManager::FillEnemyPositions()
@@ -43,5 +47,13 @@ void AEnemyManager::FillEnemyPositions()
     if(Enemy != nullptr)
     {
         Enemy->FillPositionArrays(CorrectedPositions);
+    }
+}
+
+void AEnemyManager::InjectEnemyLoopBehavior()
+{
+    if(Enemy != nullptr)
+    {
+        Enemy->SetLoopBehavior(EnemyLoopBehavior);
     }
 }

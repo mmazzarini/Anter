@@ -1,5 +1,6 @@
 #include "GameFramework/Actor.h"
-
+#include "SceneUtilities/SceneStructs.h"
+#include "SceneActors/Managers/EnemyManagerInterface.h"
 #include "EnemyManager.generated.h"
 
 /*
@@ -11,7 +12,7 @@ class ABaseEnemy;
 class ABaseEnemyBoundary;
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AEnemyManager : public AActor
+class ANTER_TERMITE_MAYHEM_API AEnemyManager : public AActor, public IEnemyManagerInterface
 {
     GENERATED_BODY()
 
@@ -21,10 +22,9 @@ public:
 
     void BeginPlay() override;
 
-    UFUNCTION()
-    void FillEnemyPositions();
+    void FillEnemyPositions() override;
 
-
+    void InjectEnemyLoopBehavior() override;
 protected:
 
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 
@@ -42,5 +42,8 @@ protected:
 
     UPROPERTY(EditInstanceOnly)
     float EnemyPivotDistanceThreshold;
+
+    UPROPERTY(EditInstanceOnly)
+    EEnemyLoopBehavior EnemyLoopBehavior;
 
 };

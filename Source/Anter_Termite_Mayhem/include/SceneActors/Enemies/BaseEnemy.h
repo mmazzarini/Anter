@@ -10,7 +10,7 @@
 #include "ActorComponents/CollisionSupportComponent.h"
 #include "SceneActors/SceneActorInterface.h"
 #include "SceneActors/Enemies/EnemyInterface.h"
-
+#include "SceneUtilities/SceneStructs.h"
 #include "BaseEnemy.generated.h"
 
 /*
@@ -94,6 +94,8 @@ public:
     
     void UpdateMovement();
 
+    void SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior);
+
 protected:
 
     void SetBindings();
@@ -123,4 +125,6 @@ protected:
     //Distance from pivot to trigger movement to next pivot
     UPROPERTY(EditAnywhere)
     float PivotDistanceThreshold = 0.0f;
+
+    EEnemyLoopBehavior LoopBehavior;
 };

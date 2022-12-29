@@ -22,4 +22,9 @@ public:
     //Generic Enemy attack-update pure virtual function
     UFUNCTION()
     virtual void UpdateAttack() = 0;
+
+private:
+
+    //Stores Enemy previous location 
+    FVector PrevousLocation;
 };

@@ -88,7 +88,10 @@ void ABaseEnemy::MoveToNextPivot()
 
 void ABaseEnemy::SwitchOrientation()
 {
-    CurrentPivotPositions = (( CurrentPivotPositions == PivotPositions ) ? ReversePivotPositions : PivotPositions);
+    if(LoopBehavior == EEnemyLoopBehavior::GoesBackward)
+    {
+        CurrentPivotPositions = (( CurrentPivotPositions == PivotPositions ) ? ReversePivotPositions : PivotPositions);
+    }
     PivotArrayIndex = 0;
 }
 
@@ -164,4 +167,9 @@ void ABaseEnemy::AdjustVelocity()
         */
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }
+}
+
+void ABaseEnemy::SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior)
+{
+    LoopBehavior = InLoopBehavior;
 }

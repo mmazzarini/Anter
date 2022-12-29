@@ -29,3 +29,9 @@ struct FCollisionGeometry
     float PlatformHeight = 0.0f;
 };
 
+UENUM(BlueprintType)
+enum class EEnemyLoopBehavior : uint8
+{
+    LoopsAtArrive,
+    GoesBackward
+};
