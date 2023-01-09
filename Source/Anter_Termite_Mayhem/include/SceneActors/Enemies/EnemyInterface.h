@@ -26,5 +26,5 @@ public:
 private:
 
     //Stores Enemy previous location 
-    FVector PrevousLocation;
+    FVector PreviousLocation;
 };

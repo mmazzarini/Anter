@@ -20,11 +20,11 @@ void UAnterWeaponComponent::ShootLaser()
             FVector AnterPosition = OwnerActor->GetTransform().GetTranslation();
             FRotator AnterRotation = OwnerActor->GetTransform().Rotator();
             FVector FirePosition = AnterPosition;
-            FirePosition.X = AnterPosition.X + WeaponSpawnRange*MovementDirectionScaleFactor;
+            FirePosition.X = AnterPosition.X + WeaponSpawnRange*LaserDirection.X;
             AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
             if(Fire != nullptr)
             {
-                Fire->SetMovementToRight((MovementDirectionScaleFactor > 0.0f));
+                Fire->SetMovementToRight(LaserDirection); 
             }
             SetCanShoot(false);
             OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
@@ -44,6 +44,7 @@ void UAnterWeaponComponent::OnTimerEnded()
     SetCanShoot(true);
 }
 
+/*
 void UAnterWeaponComponent::OnOwnerMoving(float InAxisValue)
 {
     if(InAxisValue > 0.0f)
@@ -55,3 +56,4 @@ void UAnterWeaponComponent::OnOwnerMoving(float InAxisValue)
         MovementDirectionScaleFactor = -1.0f;
     }
 }
+*/

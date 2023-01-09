@@ -106,6 +106,8 @@ public:
 
     void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) override;
 
+    virtual void UpdateWeaponDirection() override;
+
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
     void HandleEnemy(const FCollisionGeometry& CollisionGeometry, AActor* Enemy);

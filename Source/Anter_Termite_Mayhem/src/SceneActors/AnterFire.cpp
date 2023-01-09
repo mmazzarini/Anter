@@ -64,9 +64,9 @@ void AAnterFire::CheckScreenLocation()
 }
 
 PRAGMA_DISABLE_OPTIMIZATION
-void AAnterFire::SetMovementToRight(bool InIsMovingRight)
+void AAnterFire::SetMovementToRight(FVector InMovementDirection)
 {
-    RightMovementCorrectionFactor = InIsMovingRight? 1.0f : -1.0f;
-    ProjectileMovement->Velocity.X = EditableVelocityX*RightMovementCorrectionFactor;
+    ProjectileMovement->Velocity.X = EditableVelocity*InMovementDirection.X;
+    ProjectileMovement->Velocity.Z = EditableVelocity*InMovementDirection.Z;
 }
 PRAGMA_ENABLE_OPTIMIZATION

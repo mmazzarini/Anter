@@ -21,7 +21,13 @@ ABaseEnemy::ABaseEnemy()
 
     BaseEnemyCollisionSupport = CreateDefaultSubobject<UCollisionSupportComponent>(TEXT("BaseEnemyCollisionSupport"));
     BaseEnemyCollisionSupport->SetupAttachment(RootComponent);
-    
+
+    if(bCanShoot)
+    {
+        BaseEnemyWeaponComponent = CreateDefaultSubobject<UAnterWeaponComponent>(TEXT("BaseEnemyCollisionSupport"));
+    }
+
+
     PivotState = EEnemyPivotState::IsWaitingToBeFilled;
 }
 

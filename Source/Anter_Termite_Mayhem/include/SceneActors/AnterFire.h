@@ -27,7 +27,7 @@ class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
 
     void CheckScreenLocation();
 
-    void SetMovementToRight(bool InIsMovingRight);
+    void SetMovementToRight(FVector InMovementDirection);
 
     protected:
 
@@ -46,7 +46,7 @@ class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
     float EditableMass = 0.0f;
 
     UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Projectile Kinematics")
-    float EditableVelocityX = 1000.0f;
+    float EditableVelocity = 1000.0f;
  
     UPROPERTY(EditAnywhere,BlueprintReadWrite, Category="Laser Visibility")
     float ScreenAppearanceMultiplier = 1.2f;
@@ -61,8 +61,5 @@ class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
 
     UPROPERTY(EditAnywhere, Category = "Fire Movement")
     float MovementMultiplier = 100.0f;
-
-    //Right movement correction
-    float RightMovementCorrectionFactor = 1.0f;
 
 };

@@ -30,7 +30,9 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
         UFUNCTION()
         void OnTimerEnded();
 
-        void OnOwnerMoving(float InAxisValue);
+        //void OnOwnerMoving(float InAxisValue);
+
+        void SetLaserDirection(FVector InLaserDirection){LaserDirection = InLaserDirection;}
 
     protected:
     UPROPERTY(EditDefaultsOnly)
@@ -49,7 +51,10 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
     FTimerHandle FireTimerHandle;
 
     //Can assume only 1 or -1, to flag character direction
-    float MovementDirectionScaleFactor;
+    //float MovementDirectionScaleFactor;
+
+    //Vector representing the module-1-scaled geoemtry of the laser movement
+    FVector LaserDirection;
 
 };
 

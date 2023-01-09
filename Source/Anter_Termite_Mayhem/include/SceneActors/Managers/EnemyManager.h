@@ -24,7 +24,7 @@ public:
 
     void FillEnemyPositions() override;
 
-    void InjectEnemyLoopBehavior() override;
+    void InjectEnemyBehavior() override;
 protected:
 
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 

@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
+#include "ActorComponents/AnterWeaponComponent.h"
 #include "SceneActors/SceneActorInterface.h"
 #include "SceneActors/Enemies/EnemyInterface.h"
 #include "SceneUtilities/SceneStructs.h"
@@ -68,6 +69,8 @@ public:
 
     virtual void HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor) override; //float InMovementSpeed){} 
 
+    virtual void UpdateWeaponDirection() override{}
+
     //Setter method for PivotDistanceThreshold
     void SetPivotDistanceThreshold(float InPivotDistanceThreshold){PivotDistanceThreshold = InPivotDistanceThreshold;}
 
@@ -89,12 +92,17 @@ public:
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UCollisionSupportComponent* BaseEnemyCollisionSupport;
 
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UAnterWeaponComponent* BaseEnemyWeaponComponent;
+
     //Interface overridden functions
     void UpdateAttack();
     
     void UpdateMovement();
 
     void SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior);
+
+    void SetCanShoot(bool InCanShoot){bCanShoot = InCanShoot;}
 
 protected:
 
@@ -127,4 +135,8 @@ protected:
     float PivotDistanceThreshold = 0.0f;
 
     EEnemyLoopBehavior LoopBehavior;
+
+    //Set externally by manager to configure if enemy shoots
+    UPROPERTY(EditDefaultsOnly)
+    bool bCanShoot;
 };

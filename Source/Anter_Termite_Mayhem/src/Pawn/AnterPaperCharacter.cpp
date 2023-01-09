@@ -76,7 +76,6 @@ void AAnterPaperCharacter::OnDeathEvent()
     RegisteredVerticalPlatformCollisions.Empty();
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -97,8 +96,12 @@ void AAnterPaperCharacter::BeginPlay()
 
     //Anter centre is not really revelevant at BeginPlay, but AnterSize is. 
     GetActorBounds(true,AnterCentre,AnterSize,false);
+
+    if(AnterWeapon != nullptr)
+    {
+        AnterWeapon->SetLaserDirection(FVector(1.0f,0.0f,0.0f));
+    }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::SetBindings()
 {
@@ -133,14 +136,13 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
         InInputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
         if(AnterWeapon != nullptr)
         {
-            InInputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
+            //InInputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
             InInputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
         }
     }
 
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
@@ -175,10 +177,14 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                 {
                     AnterMovement->Velocity.Z = 0.0f;
                 }
-            }           
-        }
+            }        
 
-        //30 jan 2022 we need to go on from here
+            /* Update Weapon component */
+            if(InAxisValue != 0.0f)
+            {
+                UpdateWeaponDirection();
+            }
+        }
 
         else
         {
@@ -211,7 +217,6 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
         }
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::HandleJump()
 {
@@ -225,7 +230,6 @@ void AAnterPaperCharacter::HandleJump()
     }
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
     ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
@@ -236,9 +240,17 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
         return;
     }
 }   
-PRAGMA_ENABLE_OPTIMIZATION
 
-PRAGMA_DISABLE_OPTIMIZATION
+void AAnterPaperCharacter::UpdateWeaponDirection()
+{
+    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+    if(AnterWeapon != nullptr && AnterMovement != nullptr)
+    {
+        FVector LaserDirection = FVector(AnterMovement->Velocity.X > 0.0f ? 1.0f : - 1.0f, 0.0f, 0.0f);
+        AnterWeapon->SetLaserDirection(LaserDirection);
+    }
+}
+
 void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
     ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
@@ -273,7 +285,6 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
         }
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::SetCanJump(bool InCanJump)
 {
@@ -297,8 +308,6 @@ void AAnterPaperCharacter::SetIsFalling(bool InIsFalling)
     bIsFalling = InIsFalling;
 }
 
-
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, EPlatformCollisionType InPlatformCollisionType)
 {
     auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToAdd](TPair <AActor*,EPlatformCollisionType> PlatformPair)
@@ -313,9 +322,7 @@ void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, EP
         RegisteredVerticalPlatformCollisions.Add(PlatformToAdd);        
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemove)
 {
     auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToRemove](TPair <AActor*,EPlatformCollisionType> PlatformPair)
@@ -329,8 +336,6 @@ void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemov
     }
 
 }
-PRAGMA_ENABLE_OPTIMIZATION
-
 
 bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind)
 {
@@ -342,7 +347,6 @@ bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatf
     return (PlatformToFind != nullptr);
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::AdjustVelocity()
 {
     if(bIsFalling == false)
@@ -354,7 +358,6 @@ void AAnterPaperCharacter::AdjustVelocity()
         }
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::ImposeGeometry(float InAngle)
 {

@@ -33,7 +33,7 @@ void AEnemyManager::BeginPlay()
         FillEnemyPositions();
     }
     
-    InjectEnemyLoopBehavior();
+    InjectEnemyBehavior();
 }
 
 void AEnemyManager::FillEnemyPositions()
@@ -50,7 +50,7 @@ void AEnemyManager::FillEnemyPositions()
     }
 }
 
-void AEnemyManager::InjectEnemyLoopBehavior()
+void AEnemyManager::InjectEnemyBehavior()
 {
     if(Enemy != nullptr)
     {

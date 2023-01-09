@@ -19,5 +19,5 @@ public:
     virtual void FillEnemyPositions() = 0;
 
     UFUNCTION()
-    virtual void InjectEnemyLoopBehavior() = 0;
+    virtual void InjectEnemyBehavior() = 0;
 };
