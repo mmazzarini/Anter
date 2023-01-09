@@ -8,7 +8,6 @@ bCanShoot(true)
     //void at the moment
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void UAnterWeaponComponent::ShootLaser()
 {
     //AAnterFire* FireShot = NewObject<AAnterFire>(dGetTransientPackage(),LaserSubClass);
@@ -31,7 +30,6 @@ void UAnterWeaponComponent::ShootLaser()
         }
     }
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void UAnterWeaponComponent::SetCanShoot(bool InCanShoot)
 {
@@ -43,17 +41,3 @@ void UAnterWeaponComponent::OnTimerEnded()
     GetOwner()->GetWorldTimerManager().ClearTimer(FireTimerHandle);
     SetCanShoot(true);
 }
-
-/*
-void UAnterWeaponComponent::OnOwnerMoving(float InAxisValue)
-{
-    if(InAxisValue > 0.0f)
-    {
-        MovementDirectionScaleFactor = 1.0f;
-    }
-    else if(InAxisValue < 0.0f)
-    {
-        MovementDirectionScaleFactor = -1.0f;
-    }
-}
-*/

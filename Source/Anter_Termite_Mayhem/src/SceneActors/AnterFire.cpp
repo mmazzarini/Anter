@@ -63,10 +63,8 @@ void AAnterFire::CheckScreenLocation()
     }
 }
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterFire::SetMovementToRight(FVector InMovementDirection)
 {
     ProjectileMovement->Velocity.X = EditableVelocity*InMovementDirection.X;
     ProjectileMovement->Velocity.Z = EditableVelocity*InMovementDirection.Z;
 }
-PRAGMA_ENABLE_OPTIMIZATION
