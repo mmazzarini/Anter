@@ -24,15 +24,14 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
         UFUNCTION(BlueprintCallable)
         void ShootLaser();
 
-        UFUNCTION(BlueprintCallable)
-        void SetCanShoot(bool InCanShoot);
-
         UFUNCTION()
         void OnTimerEnded();
 
         //void OnOwnerMoving(float InAxisValue);
 
         void SetLaserDirection(FVector InLaserDirection){LaserDirection = InLaserDirection;}
+
+        bool CanShoot(){return bCanShoot;}
 
     protected:
     UPROPERTY(EditDefaultsOnly)
@@ -43,6 +42,9 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 
     UPROPERTY(EditAnywhere)
     float InFireRate = 0.2f;
+
+    UFUNCTION(BlueprintCallable)
+    void SetCanShoot(bool InCanShoot);
 
     bool bCanShoot;
 
