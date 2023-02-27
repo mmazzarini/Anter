@@ -7,7 +7,8 @@ UEnemyAIComponent::UEnemyAIComponent()
 TargetLocation(FVector(0.0f,0.0f,0.0f)),
 EnemyWeapon(nullptr)
 {
-    
+    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bStartWithTickEnabled = true;  
 }
 
 void UEnemyAIComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
@@ -32,7 +33,7 @@ void UEnemyAIComponent::SetTargetLocation()
 {
     if(AnterPtr != nullptr && GetOwner() != nullptr)
     {
-        TargetLocation = FVector(AnterPtr->GetActorLocation().X-GetOwner()->GetActorLocation().X,0.0f,GetOwner()->GetActorLocation().Z);
+        TargetLocation = FVector(AnterPtr->GetActorLocation().X-GetOwner()->GetActorLocation().X,0.0f,AnterPtr->GetActorLocation().Z-GetOwner()->GetActorLocation().Z);
     }
 }
 
@@ -47,7 +48,8 @@ void UEnemyAIComponent::EvaluateShoot()
             */
         if(EnemyWeapon->CanShoot())
         {
-            EnemyWeapon->SetLaserDirection(TargetLocation-GetOwner()->GetActorLocation());
+            FVector OwnerPosition = GetOwner()->GetActorLocation();
+            EnemyWeapon->SetLaserDirection(TargetLocation/TargetLocation.Size());
             EnemyWeapon->ShootLaser();
         }
         //}

@@ -92,8 +92,8 @@ public:
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UCollisionSupportComponent* BaseEnemyCollisionSupport;
 
-    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-    UAnterWeaponComponent* BaseEnemyWeaponComponent;
+    //UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    //UAnterWeaponComponent* BaseEnemyWeaponComponent;
 
     //Interface overridden functions
     void UpdateAttack();
