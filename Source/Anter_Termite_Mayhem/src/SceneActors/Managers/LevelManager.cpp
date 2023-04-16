@@ -9,6 +9,11 @@ void ALevelManager::BeginPlay()
     GenerateCheckpoints();
 }
 
+void ALevelManager::EndPlay()
+{
+    DeleteBindings();
+}
+
 void ALevelManager::GenerateCheckpoints()
 {
     if(CheckpointClass != nullptr)
@@ -19,9 +24,9 @@ void ALevelManager::GenerateCheckpoints()
             if(NewCheckpoint != nullptr)
             {
                 NewCheckpoint->OnActivatedCheckpointDelegate.AddDynamic(this,&ALevelManager::OnCheckpointActivated);
-                LevelCheckpoints.Add(NewCheckpoint);
-            }
-            
+                TPair<ALevelCheckpoint*,bool> CheckpointPair(NewCheckpoint,false);
+                LevelCheckpoints.AddUnique(CheckpointPair);
+            }          
         }
     }
 }
@@ -39,8 +44,18 @@ void ALevelManager::DeleteBindings()
 
 void ALevelManager::OnCheckpointActivated(ALevelCheckpoint* InCheckpoint)
 {
-    CurrentCheckpointIndex = LevelCheckpoints.IndexOfByPredicate([=InCheckpoint](ALevelCheckpoint* LC)
+    /* Update current checkpoint ptr */
+    if(InCheckpoint != nullptr)
     {
-        return LC == InCheckpoint;
-    });
+        CurrentCheckpoint = InCheckpoint;
+    }
+    
+    /*If checkpoint was not activated before (bool == false), we activate it*/
+    bool* CheckpointBoolPtr = LevelCheckpoints.Find(InCheckpoint);
+    if(CheckpointBoolPtr != nullptr && *CheckpointBoolPtr == false)
+    {
+        *CheckpointBoolPtr = true;
+        //Activate delegate to notify about checkpoint activation
+        OnActivatedOneCheckpointDelegate.Broadcast();
+    }    
 }
