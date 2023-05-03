@@ -1,49 +1,42 @@
 #include "AnterGameModes/AnterBaseLevelGameMode.h"
 #include "SceneActors/Managers/EnemyManager.h"
 #include "SceneActors/Managers/CrateManager.h"
+#include "ActorComponents/LevelManagerComponent.h"
 
-void AAnterBaseLevelGameMode::BeginPlay()
+
+void AAnterBaseLevelGameMode::OnLevelFinished()
 {
-    Super::BeginPlay();
-    GetLevelGoalReference();
-
 
 }
 
-void AAnterBaseLevelGameMode::GetLevelGoalReference()
+void AAnterBaseLevelGameMode::StartPlay()
 {
-    /*Get the level goal reference*/
-    TArray<AActor*> LevelGoalsArray;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), LevelGoalClass, LevelGoalsArray);
-    if(LevelGoalsArray.Num() > 0)
-    {
-        LevelGoal = LevelGoalsArray[0];
-    }   
+    Super::StartPlay();
+    /*After calling start play on super (GameModeBase::StartPlay()), calls Start Level
+    -- evaluate if using a timer in order to start level.
+    */   
+    StartLevel();
+    //GetLevelGoalReference();
+    rES
 }
 
-void AAnterBaseLevelGameMode::BindToManagers()
+void AAnterBaseLevelGameMode::StartLevel()
 {
-    /*Get all enemy managers reference*/
-    EnemyManagers.Empty();
-    TArray<AActor*> ActorEnemyManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorEnemyManagers);
-    for (auto* ActorEnemyManager : ActorEnemyManagers)
+    /* Call component to start level elements */
+    ULevelManagerComponent* LevelManager = Cast<ULevelManagerComponent>(FindComponentByClass(LevelManagerClass);
+    if(LevelManager != nullptr)
     {
-        if(AEnemyManager* TempEnemyManager = Cast<AEnemyManger*>(ActorEnemyManager))
-        {
-            EnemyManagers.Add(TempEnemyManager);
-        }
-    }
-
-    /*Get all crate managers refernce*/
-    CrateManagers.Empty();
-    TArray<AActor*> ActorCrateManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorCrateManagers);
-    for (auto* ActorCrateManager : ActorCrateManagers)
-    {
-        if(AEnemyManager* TempCrateManager = Cast<AEnemyManger*>(ActorCrateManager))
-        {
-            CrateManagers.Add(TempCrateManager);
-        }
+        LevelManager->SetupLevelElements();
     }
 }
+
+void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
+{
+    Super::RestartLevel(NewPlayer);
+}
+
+void AAnterBaseLevelGameMode::StartFSM()
+{
+
+}
+

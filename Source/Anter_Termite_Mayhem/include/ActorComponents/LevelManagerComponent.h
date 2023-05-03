@@ -7,9 +7,11 @@ struct FConfigurablePlaceable;
 class ALevelCheckpoint;
 
 /* 
-Level manager component class: it controls the flow of execution of levels: gneerates checkpoints, respawns 
-player, triggers enemy spawning by enemy managers etc.
-It can be plugged into the Game Mode class specific for levels.  
+Level manager component class: it controls the flow of execution of levels: 
+- it generates checkpoints, 
+- it respawns player,
+- it triggers enemy/object spawning by means of enemy managers etc.
+It can be plugged into the Game Mode class that is specific for levels.  
 */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOneCheckpointActivatedDelegate)
@@ -23,11 +25,22 @@ public:
 
     ULevelManagerComponent(){}
 
-    void BeginPlay() override;
+    /*
+    This function is used to setup all elements in the level
+    - enemy manager
+    - crate manager
+    - object initializers etc
+    */
+    void SetupLevelElements() override;
 
     void EndPlay() override;
 
     FOneCheckpointActivatedDelegate OnActivatedOneCheckpointDelegate;
+
+    /*Components that define specific behaviors. E.g. Level checkpoints are managed through a specific component*/
+    void GetLevelGoalReference();
+
+    void BindToEnemyManagers();
 
 protected:
 
@@ -51,5 +64,15 @@ protected:
     ALevelCheckpoint* CurrentCheckpoint;
 
     AGameMode* OwnerGameMode = nullptr;
+
+    /*We need a Goal object, that represents the logical end of the level*/
+    AActor* LevelGoal; 
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AActor> LevelGoalClass;
+
+    TArray<AEnemyManager*> EnemyManagers;
+
+    TArray<ACrateManager*> CrateManagers;
 
 };

@@ -1,21 +1,20 @@
 #include "ActorComponents/LevelManagerComponent.h"
 #include "SceneUtilities/SceneStructs.h"
 #include "SceneActors/Items/LevelCheckpoint.h"
-#include "LevelManager.h"
 
 
-void ALevelManagerComponent::BeginPlay()
+void ULevelManagerComponent::SetupLevelElements()
 {
-    OwnerGameMode = GetOwner();
+    OwnerGameMode = Cast<AGameMode>(GetOwner());
     GenerateCheckpoints();
 }
 
-void ALevelManagerComponent::EndPlay()
+void ULevelManagerComponent::EndPlay()
 {
     DeleteBindings();
 }
 
-void ALevelManagerComponent::GenerateCheckpoints()
+void ULevelManagerComponent::GenerateCheckpoints()
 {
     if(CheckpointClass != nullptr)
     {
@@ -32,7 +31,7 @@ void ALevelManagerComponent::GenerateCheckpoints()
     }
 }
 
-void ALevelManagerComponent::DeleteBindings()
+void ULevelManagerComponent::DeleteBindings()
 {
     for(auto* Checkpoint : LevelCheckpoints)
     {
@@ -43,7 +42,7 @@ void ALevelManagerComponent::DeleteBindings()
     }
 }
 
-void ALevelManagerComponent::OnCheckpointActivated(ALevelCheckpoint* InCheckpoint)
+void ULevelManagerComponent::OnCheckpointActivated(ALevelCheckpoint* InCheckpoint)
 {
     /* Update current checkpoint ptr */
     if(InCheckpoint != nullptr)
@@ -59,4 +58,42 @@ void ALevelManagerComponent::OnCheckpointActivated(ALevelCheckpoint* InCheckpoin
         //Activate delegate to notify about checkpoint activation
         OnActivatedOneCheckpointDelegate.Broadcast();
     }    
+}
+
+void ULevelManagerComponent::GetLevelGoalReference()
+{
+    /*Get the level goal reference*/
+    TArray<AActor*> LevelGoalsArray;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), LevelGoalClass, LevelGoalsArray);
+    if(LevelGoalsArray.Num() > 0)
+    {
+        LevelGoal = LevelGoalsArray[0];
+    }
+}
+
+void ULevelManagerComponent::BindToManagers()
+{
+    /*Get all enemy managers reference*/
+    EnemyManagers.Empty();
+    TArray<AActor*> ActorEnemyManagers;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorEnemyManagers);
+    for (auto* ActorEnemyManager : ActorEnemyManagers)
+    {
+        if(AEnemyManager* TempEnemyManager = Cast<AEnemyManger*>(ActorEnemyManager))
+        {
+            EnemyManagers.Add(TempEnemyManager);
+        }
+    }
+
+    /*Get all crate managers references*/
+    CrateManagers.Empty();
+    TArray<AActor*> ActorCrateManagers;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorCrateManagers);
+    for (auto* ActorCrateManager : ActorCrateManagers)
+    {
+        if(AEnemyManager* TempCrateManager = Cast<AEnemyManger*>(ActorCrateManager))
+        {
+            CrateManagers.Add(TempCrateManager);
+        }
+    }
 }
