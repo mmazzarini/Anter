@@ -52,7 +52,7 @@ public:
 
     /*Executes the operations to start the level and spawn the first elements in the scene*/
     UFUNCTION()
-    virtual void StartLevel() override;
+    virtual void StartLevel();
 
     //override base function from GameModeBase. We need to understand how to develop it
     virtual void RestartPlayer(AController* NewPlayer) override;
@@ -64,7 +64,7 @@ public:
 protected:
 
     /*Protected variable for LevelManager*/
-    ULevelManagerComponent* LevelManager
+    //ULevelManagerComponent* LevelManager;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ULevelManagerComponent> LevelManagerClass;

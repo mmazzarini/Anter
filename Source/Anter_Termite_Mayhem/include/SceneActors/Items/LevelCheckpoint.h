@@ -3,7 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "LevelCheckpoint.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_One_Param(FCheckpointActivatedDelegate, ALevelCheckpoint*, CurrentCheckpointPtr)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckpointActivatedDelegate, ALevelCheckpoint*, CurrentCheckpointPtr);
 
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API ALevelCheckpoint : public AActor

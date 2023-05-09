@@ -17,13 +17,12 @@ void AAnterBaseLevelGameMode::StartPlay()
     */   
     StartLevel();
     //GetLevelGoalReference();
-    rES
 }
 
 void AAnterBaseLevelGameMode::StartLevel()
 {
     /* Call component to start level elements */
-    ULevelManagerComponent* LevelManager = Cast<ULevelManagerComponent>(FindComponentByClass(LevelManagerClass);
+    ULevelManagerComponent* LevelManager = Cast<ULevelManagerComponent>(FindComponentByClass(LevelManagerClass));
     if(LevelManager != nullptr)
     {
         LevelManager->SetupLevelElements();
@@ -32,11 +31,11 @@ void AAnterBaseLevelGameMode::StartLevel()
 
 void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
 {
-    Super::RestartLevel(NewPlayer);
+    Super::RestartPlayer(NewPlayer);
 }
 
 void AAnterBaseLevelGameMode::StartFSM()
 {
-
+    //empty for now
 }
 

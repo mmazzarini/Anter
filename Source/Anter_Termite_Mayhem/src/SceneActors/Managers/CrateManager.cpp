@@ -3,5 +3,5 @@
 
 void ACrateManager::BeginPlay()
 {
-    
+    Super::BeginPlay();
 }

@@ -1,7 +1,15 @@
 #include "ActorComponents/LevelManagerComponent.h"
 #include "SceneUtilities/SceneStructs.h"
 #include "SceneActors/Items/LevelCheckpoint.h"
+#include "GameFramework/GameMode.h"
+#include "SceneActors/Managers/CrateManager.h"
+#include "SceneActors/Managers/EnemyManager.h"
+#include "Kismet/GameplayStatics.h"
 
+ULevelManagerComponent::ULevelManagerComponent(const FObjectInitializer& Obj)
+{
+
+}
 
 void ULevelManagerComponent::SetupLevelElements()
 {
@@ -9,23 +17,24 @@ void ULevelManagerComponent::SetupLevelElements()
     GenerateCheckpoints();
 }
 
-void ULevelManagerComponent::EndPlay()
+void ULevelManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     DeleteBindings();
+    Super::EndPlay(EndPlayReason);
 }
 
 void ULevelManagerComponent::GenerateCheckpoints()
 {
     if(CheckpointClass != nullptr)
     {
-        for(FConfigurablePlaceable CheckpointConfig : CheckpointsConfigurations)
+        for(const FVector& CheckpointConfig : CheckpointsConfigurations)
         {
-            ALevelCheckpoint* NewCheckpoint = GetWorld()->SpawnActor<ALevelCheckpoint>(CheckpointClass,CheckpointConfig.PlaceablePosition,FQuat::Identity); 
+            ALevelCheckpoint* NewCheckpoint = GetWorld()->SpawnActor<ALevelCheckpoint>(CheckpointClass,CheckpointConfig,FRotator(0.0f,0.0f,0.0f)); 
             if(NewCheckpoint != nullptr)
             {
-                NewCheckpoint->OnActivatedCheckpointDelegate.AddDynamic(this,&ALevelManager::OnCheckpointActivated);
+                NewCheckpoint->OnActivatedCheckpointDelegate.AddDynamic(this,&ThisClass::OnCheckpointActivated);
                 TPair<ALevelCheckpoint*,bool> CheckpointPair(NewCheckpoint,false);
-                LevelCheckpoints.AddUnique(CheckpointPair);
+                LevelCheckpoints.Add(CheckpointPair);
             }          
         }
     }
@@ -33,11 +42,11 @@ void ULevelManagerComponent::GenerateCheckpoints()
 
 void ULevelManagerComponent::DeleteBindings()
 {
-    for(auto* Checkpoint : LevelCheckpoints)
+    for(const TPair<ALevelCheckpoint*, bool >& Checkpoint : LevelCheckpoints)
     {
-        if(Checkpoint != nullptr)
+        if(Checkpoint.Key != nullptr)
         {
-            Checkpoint->OnActivatedCheckpointDelegate.RemoveDynamic(this,&ALevelManager::OnCheckpointActivated);
+            Checkpoint.Key->OnActivatedCheckpointDelegate.RemoveDynamic(this,&ThisClass::OnCheckpointActivated);
         }
     }
 }
@@ -76,10 +85,10 @@ void ULevelManagerComponent::BindToManagers()
     /*Get all enemy managers reference*/
     EnemyManagers.Empty();
     TArray<AActor*> ActorEnemyManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorEnemyManagers);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager::StaticClass(), ActorEnemyManagers);
     for (auto* ActorEnemyManager : ActorEnemyManagers)
     {
-        if(AEnemyManager* TempEnemyManager = Cast<AEnemyManger*>(ActorEnemyManager))
+        if(AEnemyManager* TempEnemyManager = Cast<AEnemyManager>(ActorEnemyManager))
         {
             EnemyManagers.Add(TempEnemyManager);
         }
@@ -88,10 +97,10 @@ void ULevelManagerComponent::BindToManagers()
     /*Get all crate managers references*/
     CrateManagers.Empty();
     TArray<AActor*> ActorCrateManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager, ActorCrateManagers);
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACrateManager::StaticClass(), ActorCrateManagers);
     for (auto* ActorCrateManager : ActorCrateManagers)
     {
-        if(AEnemyManager* TempCrateManager = Cast<AEnemyManger*>(ActorCrateManager))
+        if(ACrateManager* TempCrateManager = Cast<ACrateManager>(ActorCrateManager))
         {
             CrateManagers.Add(TempCrateManager);
         }

@@ -36,15 +36,16 @@ enum class EEnemyLoopBehavior : uint8
     GoesBackward
 };
 
-USTRUCT()
+/*
+USTRUCT(BlueprintType)
 struct FConfigurablePlaceable
 {
     GENERATED_BODY()
 
-    FConfigurablePlaceable()
-    {}
+    FConfigurablePlaceable(){}
 
     //Default values
     FVector PlaceablePosition  = FVector(0.0f,0.0f,0.0f);
     
-}
+};
+*/

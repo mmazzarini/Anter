@@ -1,10 +1,14 @@
 #pragma once
 
 #include "Components/ActorComponent.h"
+
 #include "LevelManagerComponent.generated.h"
 
-struct FConfigurablePlaceable;
+//struct FConfigurablePlaceable;
 class ALevelCheckpoint;
+class AEnemyManager;
+class ACrateManager;
+class AGameMode;
 
 /* 
 Level manager component class: it controls the flow of execution of levels: 
@@ -14,7 +18,7 @@ Level manager component class: it controls the flow of execution of levels:
 It can be plugged into the Game Mode class that is specific for levels.  
 */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOneCheckpointActivatedDelegate)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOneCheckpointActivatedDelegate);
 
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API ULevelManagerComponent : public UActorComponent
@@ -23,7 +27,7 @@ class ANTER_TERMITE_MAYHEM_API ULevelManagerComponent : public UActorComponent
  
 public:
 
-    ULevelManagerComponent(){}
+    ULevelManagerComponent(const FObjectInitializer& Obj);
 
     /*
     This function is used to setup all elements in the level
@@ -31,16 +35,16 @@ public:
     - crate manager
     - object initializers etc
     */
-    void SetupLevelElements() override;
-
-    void EndPlay() override;
+    void SetupLevelElements();
 
     FOneCheckpointActivatedDelegate OnActivatedOneCheckpointDelegate;
 
     /*Components that define specific behaviors. E.g. Level checkpoints are managed through a specific component*/
     void GetLevelGoalReference();
 
-    void BindToEnemyManagers();
+    void BindToManagers();
+
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 protected:
 
@@ -56,7 +60,7 @@ protected:
 
     //External array, configurable on BP
     UPROPERTY(EditInstanceOnly)
-    TArray<FConfigurablePlaceable> CheckpointsConfigurations;
+    TArray<FVector> CheckpointsConfigurations;
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ALevelCheckpoint> CheckpointClass;  

@@ -4,10 +4,8 @@
 
 #include "BaseDestroyable.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDestroyedObject, ABaseDestroyable, DestroyedObjectPtr)
-{
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDestroyedObject, ABaseDestroyable *, DestroyedObjectPtr);
 
-}
 
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API ABaseDestroyable : public AActor
@@ -16,8 +14,6 @@ class ANTER_TERMITE_MAYHEM_API ABaseDestroyable : public AActor
 
 public:
 
-    ABaseDestroyable();
-
-
+    ABaseDestroyable(){}
 
 };
