@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "GameFramework/Actor.h"
 #include "SceneUtilities/SceneStructs.h"
 #include "SceneActors/Managers/EnemyManagerInterface.h"
