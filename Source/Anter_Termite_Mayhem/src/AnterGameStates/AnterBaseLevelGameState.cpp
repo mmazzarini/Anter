@@ -11,6 +11,7 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
     {
         if(AAnterLevelPlayerState* CurrPlayerState = Cast<AAnterLevelPlayerState>(PlayerArray[0]))
         {
+            uint64 MyPlayerAddress = (uint64)CurrPlayerState;
             CurrPlayerState->BindToPawnDelegates();
         }
     }

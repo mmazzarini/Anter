@@ -17,6 +17,7 @@
 #include "AnterPaperCharacter.generated.h"
 
 class UInputComponent;
+class AController;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -110,7 +111,9 @@ public:
 
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
-    void HandleEnemy(const FCollisionGeometry& CollisionGeometry, AActor* Enemy);
+    //void HandleEnemy(const FCollisionGeometry& CollisionGeometry, AActor* Enemy);
+
+    virtual void PossessedBy(AController* NewController) override;
 
 /* Anter Components */
 

@@ -20,6 +20,12 @@ void UHealthComponent::UpdateHealth(float InNewHealth)
     {
         CoreHealth = InNewHealth;
     }
+    //Broadcast new health
+    if(OnHealthUpdated.IsBound())
+    {
+        OnHealthUpdated.Broadcast(CoreHealth);
+    }
+    //Then check if pawn is dead
     CheckDeath();
 }
 

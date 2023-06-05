@@ -17,6 +17,13 @@ public:
 
     void BindToPawnDelegates();
 
+    UFUNCTION()
+    void OnDeathReached();
+
+    UFUNCTION()
+    void OnHealthUpdated(float InNewHealth);
+
+
 private:
 
     /*private Pawn reference to bind to its delegates*/

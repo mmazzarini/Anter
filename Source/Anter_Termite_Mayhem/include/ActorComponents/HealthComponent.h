@@ -5,7 +5,11 @@
 
 #include "HealthComponent.generated.h"
 
+//Death reached dyn delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeathReachedDelegate);
+
+//Health dyn multicast delegate
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthUpdatedDelegate, float, NewHealthValue);
 
 /*
 *
@@ -41,6 +45,12 @@ public:
 
     float GetCoreHealth(){return CoreHealth;}
 
+    //Delegate to notify other objects of death reached
+    FOnDeathReachedDelegate OnDeathReached;
+
+    //Delegate to notify of health value updated.
+    FOnHealthUpdatedDelegate OnHealthUpdated;
+
     FOnDeathReachedDelegate GetDeathReachedDelegate(){return OnDeathReached;}
 
 protected:
@@ -55,9 +65,6 @@ private:
 
     // The true core health of the Pawn. 
     float CoreHealth = 0.0f;
-
-    //Delegate to use to notify other objects (e.g. the owning Pawn about the death event)
-    FOnDeathReachedDelegate OnDeathReached;
 
     private:
 

@@ -13,6 +13,17 @@
 *
 */
 
+
+//Weapon recharged dyn multicast delegate
+//NewWeaponValue: the new value of shots available in the weapon
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponRecharged, uint32, NewWeaponValue);
+
+//Weapon uncharged dyn multicast delegate
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponUncharged);
+
+
+
+
 UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 {

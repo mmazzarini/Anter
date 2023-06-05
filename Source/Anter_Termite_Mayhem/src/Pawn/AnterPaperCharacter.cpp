@@ -14,6 +14,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Components/PrimitiveComponent.h"
 #include "SceneActors/Platforms/BasePlatform.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/PlayerState.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -424,5 +426,16 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
                 }
             }
         }
+    }
+}
+
+void AAnterPaperCharacter::PossessedBy(AController* NewController)
+{
+    Super::PossessedBy(NewController);
+    APlayerState* DebugPlayerState = Controller->PlayerState;
+    if(DebugPlayerState != nullptr)
+    {
+        uint64 MyPlayerAddress = (uint64)DebugPlayerState;
+        DebugPlayerState->StartTime = 0.0f;
     }
 }
