@@ -16,6 +16,7 @@
 #include "SceneActors/Platforms/BasePlatform.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerState.h"
+#include "SceneActors/Enemies/BaseEnemy.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -46,7 +47,6 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
 } 
 
-PRAGMA_DISABLE_OPTIMIZATION
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
     AdjustVelocity();
@@ -55,7 +55,6 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     SetActorLocation(FVector(GetActorLocation().X,0.0f,GetActorLocation().Z));
     ConstrainJump();
 }
-PRAGMA_ENABLE_OPTIMIZATION
 
 void AAnterPaperCharacter::OnDeathEvent()
 {
@@ -223,12 +222,27 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 void AAnterPaperCharacter::HandleJump()
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if(AnterMovement != nullptr && bCanAnterJump == true)
+    if(AnterMovement != nullptr)
     {
-        FVector JumpVector = FVector(0.0f,0.0f,JumpScale);
-        UE_LOG(LogTemp, Warning,TEXT("Jump Impulse is %f"), JumpVector.Z);
-        AnterMovement->AddImpulse(JumpVector);
-        SetCanJump(false);
+        if(bCanAnterJump == true)
+        {
+            ProcessJump(JumpScale, AnterMovement);
+        }
+        else if(AnterHitStatus == EAnterHitableStatus::CannotBeHit)
+        {
+            //Depending on anter vertical velocity, we will treat the kick differently
+            if(AnterMovement->Velocity.Z >= 0.0f)
+            {
+                ProcessJump(JumpScale*AscendingJumpScaleMultiplier, AnterMovement);
+            }
+            else
+            {
+               ProcessJump(JumpScale*DescendingJumpScaleMultiplier, AnterMovement);
+            }
+            //FVector JumpVector = FVector(0.0f,0.0f,JumpScale*JumpScaleMultiplier);
+            //AnterMovement->AddImpulse(JumpVector);
+            //SetCanJump(false);
+        }
     }
 }
 
@@ -239,6 +253,14 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
     {   
         //Colliding object was a platform
         HandlePlatform(CollisionGeometry,Platform);
+        return;
+    }
+
+    ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor);
+    if(Enemy != nullptr)
+    {
+        //Colliding object was a platform
+        HandleEnemy(Enemy);
         return;
     }
 }   
@@ -429,6 +451,24 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
     }
 }
 
+void AAnterPaperCharacter::HandleEnemy(AActor* Enemy) 
+{
+    //Base functionality: jump vertically and for a few deactivate hittability.
+    if(AnterHitStatus == EAnterHitableStatus::CanBeHit)
+    {
+        GetWorldTimerManager().SetTimer(UnhittableTimerHandle, this, &AAnterPaperCharacter::OnUnhittableTimerEnded, UnhittableTimerDuration, false, UnhittableTimerDuration);
+        AnterHitStatus = EAnterHitableStatus::CannotBeHit;
+        //Get some extra kick. TODO in the future we may regulate this "jump" with a different value of kick.
+        HandleJump();
+        if(GEngine != nullptr)
+        {
+            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Has been hit!"));
+        }
+        UE_LOG(LogTemp, Warning,TEXT("Anter Has been hit!"));
+    }
+}
+
+// For debug purposes TODO delete
 void AAnterPaperCharacter::PossessedBy(AController* NewController)
 {
     Super::PossessedBy(NewController);
@@ -438,4 +478,25 @@ void AAnterPaperCharacter::PossessedBy(AController* NewController)
         uint64 MyPlayerAddress = (uint64)DebugPlayerState;
         DebugPlayerState->StartTime = 0.0f;
     }
+}
+
+void AAnterPaperCharacter::OnUnhittableTimerEnded()
+{
+    AnterHitStatus = EAnterHitableStatus::CanBeHit;
+    if(GEngine != nullptr)
+    {
+        GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Can be hit again!"));
+    }
+
+};
+
+void AAnterPaperCharacter::ProcessJump(float InJumpValue, UCharacterMovementComponent* InAnterMovement)
+{
+    FVector JumpVector = FVector(0.0f,0.0f,InJumpValue);
+    //We kick the pawn on the vertical direction with a JumpVector and using its movement component
+    if(InAnterMovement != nullptr)
+    {
+        InAnterMovement->AddImpulse(JumpVector);
+    }
+    SetCanJump(false);
 }

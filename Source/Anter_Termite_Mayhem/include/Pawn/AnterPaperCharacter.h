@@ -13,11 +13,13 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
 #include "SceneActors/SceneActorInterface.h"
+#include "TimerManager.h"
 
 #include "AnterPaperCharacter.generated.h"
 
 class UInputComponent;
 class AController;
+class UCharacterMovementComponent;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -25,6 +27,13 @@ enum class EPlatformCollisionType : uint8
     IsVerticallyColliding,
     IsCollidingFromRight,
     IsCollidingFromLeft
+};
+
+UENUM(BlueprintType)
+enum class EAnterHitableStatus : uint8
+{
+    CanBeHit,
+    CannotBeHit
 };
 
 
@@ -111,9 +120,12 @@ public:
 
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
-    //void HandleEnemy(const FCollisionGeometry& CollisionGeometry, AActor* Enemy);
+    void HandleEnemy(AActor* Enemy);
 
     virtual void PossessedBy(AController* NewController) override;
+
+    UFUNCTION()
+    void OnUnhittableTimerEnded();
 
 /* Anter Components */
 
@@ -143,6 +155,9 @@ UCollisionSupportComponent* AnterCollisionSupport;
 
 protected:
 
+    //Actual jump processing method
+    void ProcessJump(float InJumpValue, UCharacterMovementComponent* InAnterMovement);
+
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
@@ -157,6 +172,14 @@ float ZBrake = 1000.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Jump")
 float JumpScale = 100.0f;
+
+/*Jump scale corrector to handle jump correction when rising*/
+UPROPERTY(EditAnywhere, Category = "Anter Jump")
+float AscendingJumpScaleMultiplier = 3.0f;
+
+/*Jump scale corrector to handle jump correction when falling*/
+UPROPERTY(EditAnywhere, Category = "Anter Jump")
+float DescendingJumpScaleMultiplier = 6.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float FrictionScale = 0.5f;
@@ -209,6 +232,16 @@ FVector AnterSize = FVector(0.0f,0.0f,0.0f);
 
 UPROPERTY()
 bool bIsAnterColliding = false;
+
+//Default: can be hit by enemies. After being hit, it changes to cannot until a timer changes
+EAnterHitableStatus AnterHitStatus = EAnterHitableStatus::CanBeHit;
+
+UPROPERTY(EditDefaultsOnly)
+float UnhittableTimerDuration = 1.0f;
+
+FTimerDelegate UnhittableTimerDelegate;
+
+FTimerHandle UnhittableTimerHandle;
 
 };
 
