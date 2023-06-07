@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "ActorComponents/AnterMovementSupportComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
+#include "ActorComponents/DamageComponent.h"
 #include "ActorComponents/AnterInputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/AnterPlayerController.h"
@@ -224,6 +225,7 @@ void AAnterPaperCharacter::HandleJump()
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(AnterMovement != nullptr)
     {
+        
         if(bCanAnterJump == true)
         {
             ProcessJump(JumpScale, AnterMovement);
