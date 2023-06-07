@@ -27,10 +27,10 @@ public:
 
 private:
 
-    UPROPERTY(EditInstanceOnly)
+    UPROPERTY(EditDefaultsOnly)
     bool bIsPawnDamageComponent = false;
 
-    UPROPERTY(EditInstanceOnly)
+    UPROPERTY(EditDefaultsOnly)
     float DamageValue = 1.0f;
 
 };

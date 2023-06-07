@@ -94,6 +94,7 @@ public:
 
     bool GetCanJump(){return bCanAnterJump;}
 
+    //This function is used to prevent player from jumping when falling too fast
     void ConstrainJump();
 
     UFUNCTION()
@@ -158,6 +159,9 @@ protected:
     //Actual jump processing method
     void ProcessJump(float InJumpValue, UCharacterMovementComponent* InAnterMovement);
 
+    //Kick for collding an actor that damages Anter
+    void HandleKick(FVector InKickToReceive, UCharacterMovementComponent* InAnterMovement);
+
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float MovementMultiplier = 100.0f;
 
@@ -180,6 +184,10 @@ float AscendingJumpScaleMultiplier = 3.0f;
 /*Jump scale corrector to handle jump correction when falling*/
 UPROPERTY(EditAnywhere, Category = "Anter Jump")
 float DescendingJumpScaleMultiplier = 6.0f;
+
+/*Kick additional vertical corrector to avoid jump side-effects if hit horizontally*/
+UPROPERTY(EditAnywhere, Category = "Anter Jump")
+float KickVerticalScaleAddition = 10.0f;
 
 UPROPERTY(EditAnywhere, Category = "Anter Movement")
 float FrictionScale = 0.5f;

@@ -225,25 +225,9 @@ void AAnterPaperCharacter::HandleJump()
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(AnterMovement != nullptr)
     {
-        
         if(bCanAnterJump == true)
         {
             ProcessJump(JumpScale, AnterMovement);
-        }
-        else if(AnterHitStatus == EAnterHitableStatus::CannotBeHit)
-        {
-            //Depending on anter vertical velocity, we will treat the kick differently
-            if(AnterMovement->Velocity.Z >= 0.0f)
-            {
-                ProcessJump(JumpScale*AscendingJumpScaleMultiplier, AnterMovement);
-            }
-            else
-            {
-               ProcessJump(JumpScale*DescendingJumpScaleMultiplier, AnterMovement);
-            }
-            //FVector JumpVector = FVector(0.0f,0.0f,JumpScale*JumpScaleMultiplier);
-            //AnterMovement->AddImpulse(JumpVector);
-            //SetCanJump(false);
         }
     }
 }
@@ -455,13 +439,25 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
 
 void AAnterPaperCharacter::HandleEnemy(AActor* Enemy) 
 {
+    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     //Base functionality: jump vertically and for a few deactivate hittability.
-    if(AnterHitStatus == EAnterHitableStatus::CanBeHit)
+    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr)
     {
+        //Set timer for a few secs invincibility
         GetWorldTimerManager().SetTimer(UnhittableTimerHandle, this, &AAnterPaperCharacter::OnUnhittableTimerEnded, UnhittableTimerDuration, false, UnhittableTimerDuration);
         AnterHitStatus = EAnterHitableStatus::CannotBeHit;
-        //Get some extra kick. TODO in the future we may regulate this "jump" with a different value of kick.
-        HandleJump();
+        //Get some extra kick to the pawn in the direction opposite to the line connecting pawn and enemy
+        FVector KickToReceive = GetActorLocation()-Enemy->GetActorLocation();
+        //Normalize Kick to unity
+        KickToReceive /= KickToReceive.Size();
+        bool bIsAnterDescending = AnterMovement->Velocity.Z < 0.0f;
+        //Revert z-kick if it is negative, to avoid penetrating terrains if kicked
+        KickToReceive.Z *= ((KickToReceive.Z < 0.0f) ? -1.0f : 1.0f);
+        //Give different kick multiplier depending on original vertical movement (higher when descending to contrast vertical negative momentum)
+        KickToReceive *= (bIsAnterDescending ? DescendingJumpScaleMultiplier : AscendingJumpScaleMultiplier);
+        //Add extra z kick to avoid problems with jump
+        KickToReceive.Z += KickVerticalScaleAddition;
+        HandleKick(KickToReceive, AnterMovement);
         if(GEngine != nullptr)
         {
             GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Has been hit!"));
@@ -501,4 +497,16 @@ void AAnterPaperCharacter::ProcessJump(float InJumpValue, UCharacterMovementComp
         InAnterMovement->AddImpulse(JumpVector);
     }
     SetCanJump(false);
+}
+
+void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovementComponent* InAnterMovement)
+{
+    if(AnterHitStatus == EAnterHitableStatus::CannotBeHit && InAnterMovement != nullptr)
+    {
+        InAnterMovement->AddImpulse(InKickToReceive);
+        //FVector JumpVector = FVector(0.0f,0.0f,JumpScale*JumpScaleMultiplier);
+        //AnterMovement->AddImpulse(JumpVector);
+        //SetCanJump(false);
+        SetCanJump(false);
+    }
 }
