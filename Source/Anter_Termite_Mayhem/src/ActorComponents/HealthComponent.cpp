@@ -25,13 +25,17 @@ void UHealthComponent::UpdateHealth(float InNewHealth)
     {
         OnHealthUpdated.Broadcast(CoreHealth);
     }
+    if(GEngine != nullptr)
+    {
+        GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("New Health: ") + FString::SanitizeFloat(CoreHealth));
+    }
     //Then check if pawn is dead
     CheckDeath();
 }
 
 void UHealthComponent::IncreaseHealth(float InIncreaseHealth)
 {
-    int32 NewHealth = CoreHealth + InIncreaseHealth;
+    float NewHealth = CoreHealth + InIncreaseHealth;
     UpdateHealth(NewHealth);
 }
 

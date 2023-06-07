@@ -36,6 +36,7 @@ enum class EAnterHitableStatus : uint8
     CannotBeHit
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnterHitDelegate, float, DamageValue);
 
 //Little structure to be referenced by Pawn in order to impose its local geometry while moving
 
@@ -64,6 +65,7 @@ public:
     //Basic ticker
     void Tick(float DeltaTime) override;
 
+    UFUNCTION()
     void OnDeathEvent();
 
     virtual void BeginPlay() override;
@@ -153,6 +155,9 @@ UBoxComponent* AnterBox;
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UCollisionSupportComponent* AnterCollisionSupport;
+
+/*delegate for pawn hit event*/
+FAnterHitDelegate AnterHit;
 
 protected:
 

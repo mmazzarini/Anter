@@ -51,8 +51,6 @@ public:
     //Delegate to notify of health value updated.
     FOnHealthUpdatedDelegate OnHealthUpdated;
 
-    FOnDeathReachedDelegate GetDeathReachedDelegate(){return OnDeathReached;}
-
 protected:
     
     UPROPERTY(EditDefaultsOnly)

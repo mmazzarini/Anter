@@ -23,7 +23,7 @@ public:
     //Getter for is damage by pawn 
     bool IsPawnDamage(){return bIsPawnDamageComponent;}
 
-    bool GetDamageValue(){return DamageValue;}
+    float GetDamageValue(){return DamageValue;}
 
 private:
 
@@ -31,6 +31,6 @@ private:
     bool bIsPawnDamageComponent = false;
 
     UPROPERTY(EditDefaultsOnly)
-    float DamageValue = 1.0f;
+    float DamageValue = -1.0f;
 
 };

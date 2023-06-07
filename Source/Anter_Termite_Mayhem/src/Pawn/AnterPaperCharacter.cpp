@@ -61,7 +61,8 @@ void AAnterPaperCharacter::OnDeathEvent()
 {
     if(AnterHealth != nullptr)
     {
-        AnterHealth->GetDeathReachedDelegate().RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        AnterHealth->OnDeathReached.RemoveDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        AnterHit.RemoveDynamic(AnterHealth,&UHealthComponent::IncreaseHealth);
     }
     if(AnterMesh != nullptr && AnterCollisionSupport != nullptr)
     {
@@ -74,8 +75,8 @@ void AAnterPaperCharacter::OnDeathEvent()
             AnterMesh->OnComponentEndOverlap.RemoveDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
         }
     }
-    Destroy();
     RegisteredVerticalPlatformCollisions.Empty();
+    Destroy();
 }
 
 void AAnterPaperCharacter::BeginPlay()
@@ -109,7 +110,8 @@ void AAnterPaperCharacter::SetBindings()
 {
     if(AnterHealth != nullptr)
     {
-        AnterHealth->GetDeathReachedDelegate().AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        AnterHealth->OnDeathReached.AddDynamic(this,&AAnterPaperCharacter::OnDeathEvent);
+        AnterHit.AddDynamic(AnterHealth,&UHealthComponent::IncreaseHealth);
     }
 
     if(AnterMesh != nullptr && AnterCollisionSupport != nullptr)
@@ -441,7 +443,8 @@ void AAnterPaperCharacter::HandleEnemy(AActor* Enemy)
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     //Base functionality: jump vertically and for a few deactivate hittability.
-    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr)
+    UDamageComponent* EnemyDamage = Cast<UDamageComponent>(Enemy->FindComponentByClass<UDamageComponent>());
+    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr && EnemyDamage != nullptr && !(EnemyDamage->IsPawnDamage()))
     {
         //Set timer for a few secs invincibility
         GetWorldTimerManager().SetTimer(UnhittableTimerHandle, this, &AAnterPaperCharacter::OnUnhittableTimerEnded, UnhittableTimerDuration, false, UnhittableTimerDuration);
@@ -463,6 +466,9 @@ void AAnterPaperCharacter::HandleEnemy(AActor* Enemy)
             GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Has been hit!"));
         }
         UE_LOG(LogTemp, Warning,TEXT("Anter Has been hit!"));
+
+        //Update health now
+        AnterHit.Broadcast(EnemyDamage->GetDamageValue());
     }
 }
 
@@ -501,7 +507,7 @@ void AAnterPaperCharacter::ProcessJump(float InJumpValue, UCharacterMovementComp
 
 void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovementComponent* InAnterMovement)
 {
-    if(AnterHitStatus == EAnterHitableStatus::CannotBeHit && InAnterMovement != nullptr)
+    if(InAnterMovement != nullptr)
     {
         InAnterMovement->AddImpulse(InKickToReceive);
         //FVector JumpVector = FVector(0.0f,0.0f,JumpScale*JumpScaleMultiplier);
