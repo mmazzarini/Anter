@@ -123,7 +123,7 @@ public:
 
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
-    void HandleEnemy(AActor* Enemy);
+    void HandleDamage(AActor* Enemy);
 
     virtual void PossessedBy(AController* NewController) override;
 

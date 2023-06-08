@@ -236,20 +236,27 @@ void AAnterPaperCharacter::HandleJump()
 
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
-    ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
-    if(Platform != nullptr)
-    {   
-        //Colliding object was a platform
-        HandlePlatform(CollisionGeometry,Platform);
-        return;
-    }
-
-    ABaseEnemy* Enemy = Cast<ABaseEnemy>(OtherActor);
-    if(Enemy != nullptr)
+    //First check if object is potentially dangerous to trigger kick on Pawn
+    UDamageComponent* PotentialDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass<UDamageComponent>());
+    if(PotentialDamage != nullptr && !(PotentialDamage->IsPawnDamage()))
     {
-        //Colliding object was a platform
-        HandleEnemy(Enemy);
-        return;
+        if(PotentialDamage != nullptr)
+        {
+            //Colliding object was a platform
+            HandleDamage(OtherActor);
+            return;
+        }
+    }
+    else
+    {
+        //Then we check if it is platform
+        ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
+        if(Platform != nullptr)
+        {     
+            //Colliding object was a platform
+            HandlePlatform(CollisionGeometry,Platform);
+            return;
+        }
     }
 }   
 
@@ -439,7 +446,7 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
     }
 }
 
-void AAnterPaperCharacter::HandleEnemy(AActor* Enemy) 
+void AAnterPaperCharacter::HandleDamage(AActor* Enemy) 
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     //Base functionality: jump vertically and for a few deactivate hittability.
