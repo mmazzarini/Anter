@@ -242,8 +242,13 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
     {
         if(PotentialDamage != nullptr)
         {
-            //Colliding object was a platform
+            //Colliding object was an enemy/dangerous obstacle/laser
             HandleDamage(OtherActor);
+            //If laser, destroy it
+            if(AAnterFire* OtherFire = Cast<AAnterFire>(OtherActor))
+            {
+                OtherFire->Destroy();
+            }
             return;
         }
     }
