@@ -1,5 +1,6 @@
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "Pawn/AnterPaperCharacter.h"
+#include "Kismet/KismetMathLibrary.h"
 
 UAnterWeaponComponent::UAnterWeaponComponent()
 : 
@@ -24,6 +25,7 @@ void UAnterWeaponComponent::ShootLaser()
             if(Fire != nullptr)
             {
                 Fire->SetMovementToRight(LaserDirection); 
+                Fire->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(Fire->GetActorLocation(),Fire->GetActorLocation()+LaserDirection),ETeleportType::None);
             }
             SetCanShoot(false);
             OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
