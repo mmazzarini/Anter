@@ -69,7 +69,7 @@ public:
 
     virtual void HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor) override; //float InMovementSpeed){} 
 
-    virtual void UpdateWeaponDirection() override{}
+    virtual void UpdateWeaponDirection(float InLaserDirection) override{}
 
     //Setter method for PivotDistanceThreshold
     void SetPivotDistanceThreshold(float InPivotDistanceThreshold){PivotDistanceThreshold = InPivotDistanceThreshold;}

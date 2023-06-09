@@ -194,7 +194,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
             /* Update Weapon component */
             if(InAxisValue != 0.0f)
             {
-                UpdateWeaponDirection();
+                UpdateWeaponDirection(InAxisValue);
             }
         }
 
@@ -273,12 +273,11 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
     }
 }   
 
-void AAnterPaperCharacter::UpdateWeaponDirection()
+void AAnterPaperCharacter::UpdateWeaponDirection(float InLaserDirection)
 {
-    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if(AnterWeapon != nullptr && AnterMovement != nullptr)
+    if(AnterWeapon != nullptr)
     {
-        FVector LaserDirection = FVector(AnterMovement->Velocity.X > 0.0f ? 1.0f : - 1.0f, 0.0f, 0.0f);
+        FVector LaserDirection = FVector(InLaserDirection > 0.0f ? 1.0f : - 1.0f, 0.0f, 0.0f);
         AnterWeapon->SetLaserDirection(LaserDirection);
     }
 }

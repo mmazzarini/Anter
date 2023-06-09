@@ -28,5 +28,5 @@ public:
     virtual void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) = 0;
 
     UFUNCTION()
-    virtual void UpdateWeaponDirection() = 0;
+    virtual void UpdateWeaponDirection(float InLaserDirection) = 0;
 };

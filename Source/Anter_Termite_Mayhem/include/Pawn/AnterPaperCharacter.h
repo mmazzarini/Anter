@@ -120,7 +120,7 @@ public:
 
     void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) override;
 
-    virtual void UpdateWeaponDirection() override;
+    virtual void UpdateWeaponDirection(float InLaserDirection) override;
 
     void HandlePlatform(const FCollisionGeometry& InCollisionGeometry, AActor* Platform);
 
