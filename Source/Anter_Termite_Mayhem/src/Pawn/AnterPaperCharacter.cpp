@@ -18,6 +18,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerState.h"
 #include "SceneActors/Enemies/BaseEnemy.h"
+#include "Materials/MaterialInterface.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -103,6 +104,13 @@ void AAnterPaperCharacter::BeginPlay()
     if(AnterWeapon != nullptr)
     {
         AnterWeapon->SetLaserDirection(FVector(1.0f,0.0f,0.0f));
+    }
+
+    if(AnterMesh != nullptr)
+    {
+        TArray<UMaterialInterface*> Materials;
+        AnterMesh->GetUsedMaterials(Materials,false);
+        DefaultMaterial = ( Materials.Num() > 0 ? Materials[0] : nullptr );
     }
 }
 
@@ -478,6 +486,10 @@ void AAnterPaperCharacter::HandleDamage(AActor* Enemy)
             GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Has been hit!"));
         }
         UE_LOG(LogTemp, Warning,TEXT("Anter Has been hit!"));
+        if(AnterMesh != nullptr && FlickeringMaterial != nullptr)
+        {
+            AnterMesh->SetMaterial(0, FlickeringMaterial);
+        }
 
         //Update health now
         AnterHit.Broadcast(EnemyDamage->GetDamageValue());
@@ -502,6 +514,10 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
     if(GEngine != nullptr)
     {
         GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Can be hit again!"));
+    }
+    if(AnterMesh != nullptr && DefaultMaterial != nullptr)
+    {
+        AnterMesh->SetMaterial(0, DefaultMaterial);
     }
 
 };

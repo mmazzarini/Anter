@@ -20,6 +20,7 @@
 class UInputComponent;
 class AController;
 class UCharacterMovementComponent;
+class UMaterialInteface;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -255,6 +256,12 @@ float UnhittableTimerDuration = 1.0f;
 FTimerDelegate UnhittableTimerDelegate;
 
 FTimerHandle UnhittableTimerHandle;
+
+UPROPERTY(EditDefaultsOnly)
+UMaterialInterface* FlickeringMaterial;
+
+/*Internal default material*/
+UMaterialInterface* DefaultMaterial;
 
 };
 
