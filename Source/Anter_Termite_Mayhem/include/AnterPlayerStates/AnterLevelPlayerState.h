@@ -8,6 +8,9 @@
 Has a number of delegates we bind GameState to, in order to communicate the player situation and notify of changes in the state.
 */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerStateDeathReached);
+
+
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterLevelPlayerState : public APlayerState
 {
@@ -23,6 +26,7 @@ public:
     UFUNCTION()
     void OnHealthUpdated(float InNewHealth);
 
+    FOnPlayerStateDeathReached OnPlayerStateDeathDelegate;
 
 private:
 

@@ -27,6 +27,13 @@ public:
     void FillEnemyPositions() override;
 
     void InjectEnemyBehavior() override;
+
+    void SetBindings();
+
+    //We handle Enemy death through this manager function
+    UFUNCTION()
+    void OnEnemyDeath();
+
 protected:
 
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 

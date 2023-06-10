@@ -1,6 +1,7 @@
 #include "AnterGameStates/AnterBaseLevelGameState.h"
 #include "AnterPlayerStates/AnterLevelPlayerState.h"
-
+#include "PlayerControllers/AnterPlayerController.h"
+#include "Kismet/GameplayStatics.h"
 
 void AAnterBaseLevelGameState::HandleBeginPlay()
 {
@@ -13,6 +14,23 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
         {
             uint64 MyPlayerAddress = (uint64)CurrPlayerState;
             CurrPlayerState->BindToPawnDelegates();
+            CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnGameOver);
         }
+    }
+}
+
+void AAnterBaseLevelGameState::OnGameOver()
+{
+    AAnterPlayerController* PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (PlayerController != nullptr)
+    {
+       TArray<AActor*> GameOverActors;
+       UGameplayStatics::GetAllActorsWithTag(GetWorld(),"GameOver",GameOverActors);
+       if(GameOverActors.Num() > 0)
+       GameOverCameraActor = GameOverActors[0];
+       if(GameOverCameraActor != nullptr)
+       {
+           PlayerController->SetViewTarget(GameOverCameraActor); 
+       }
     }
 }

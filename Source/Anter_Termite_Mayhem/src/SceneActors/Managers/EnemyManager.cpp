@@ -2,6 +2,7 @@
 #include "SceneActors/Enemies/BaseEnemy.h"
 #include "SceneActors/Enemies/BaseEnemyBoundary.h"
 #include "SceneUtilities/SceneStructs.h"
+#include "ActorComponents/HealthComponent.h"
 
 #include "EngineUtils.h"
 
@@ -34,6 +35,9 @@ void AEnemyManager::BeginPlay()
     }
     
     InjectEnemyBehavior();
+
+    SetBindings();
+    
 }
 
 void AEnemyManager::FillEnemyPositions()
@@ -56,4 +60,30 @@ void AEnemyManager::InjectEnemyBehavior()
     {
         Enemy->SetLoopBehavior(EnemyLoopBehavior);
     }
+}
+
+void AEnemyManager::SetBindings()
+{
+    UHealthComponent* EnemyHealth = Cast<UHealthComponent>(Enemy->FindComponentByClass(UHealthComponent::StaticClass()));
+    if(EnemyHealth != nullptr)
+    {
+        EnemyHealth->OnDeathReached.AddDynamic(this,&AEnemyManager::OnEnemyDeath);
+    }
+}
+
+void AEnemyManager::OnEnemyDeath()
+{
+
+    if(Enemy != nullptr)
+    {
+        UHealthComponent* EnemyHealth = Cast<UHealthComponent>(Enemy->FindComponentByClass(UHealthComponent::StaticClass()));
+        if(EnemyHealth != nullptr)
+        {
+            if(EnemyHealth->OnDeathReached.IsBound())
+            {
+                EnemyHealth->OnDeathReached.RemoveDynamic(this,&AEnemyManager::OnEnemyDeath);
+            }
+        }
+        Enemy->Destroy();
+    }    
 }

@@ -22,6 +22,7 @@ void AAnterLevelPlayerState::BindToPawnDelegates()
 void AAnterLevelPlayerState::OnDeathReached()
 {
     // code to implement
+    OnPlayerStateDeathDelegate.Broadcast();
 }
 
 void AAnterLevelPlayerState::OnHealthUpdated(float InNewHealth)

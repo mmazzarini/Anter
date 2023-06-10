@@ -13,4 +13,12 @@ class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameState : public AGameStateBase
     GENERATED_BODY()
 
     virtual void HandleBeginPlay() override;
+
+    UFUNCTION()
+    void OnGameOver();
+
+private:
+
+    AActor* GameOverCameraActor;
+
 };

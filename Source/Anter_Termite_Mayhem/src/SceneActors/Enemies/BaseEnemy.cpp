@@ -2,8 +2,9 @@
 #include "AIController.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "SceneActors/Enemies/BaseEnemyBoundary.h"
-
+#include "SceneActors/AnterFire.h"
 #include "ActorComponents/BaseEnemyMovementComponent.h"
+#include "ActorComponents/DamageComponent.h"
 
 ABaseEnemy::ABaseEnemy()
 {
@@ -105,31 +106,25 @@ void ABaseEnemy::SwitchOrientation()
 
 void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
-    /*
-    ABaseEnemyBoundary* EnemyBoundary = Cast<ABaseEnemyBoundary>(OtherActor);
-    if(EnemyBoundary != nullptr)
+    AAnterFire* AnterFire = Cast<AAnterFire>(OtherActor);
+    if(AnterFire != nullptr)
     {
-        if(RootComponent != nullptr)
+        UDamageComponent* FireDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass(UDamageComponent::StaticClass()));
+        if(FireDamage != nullptr && FireDamage->IsPawnDamage() && BaseEnemyHealth != nullptr)
         {
-            RootComponent->ComponentVelocity.Set(0.0f,0.0f,0.0f);
-        }
-        MoveToNextPivot();
+            BaseEnemyHealth->IncreaseHealth(FireDamage->GetDamageValue());
+            AnterFire->Destroy();
+        }            
     }
-    */
 }
    
 void ABaseEnemy::SetBindings()
 { 
-    /*
-    if(BaseEnemyBox != nullptr && BaseEnemyMovement != nullptr)
-    {
-        BaseEnemyBox->OnComponentBeginOverlap.AddDynamic(BaseEnemyMovement,&UBaseEnemyMovementComponent::OnCollided);
-    }
+
     if(BaseEnemyMesh !=nullptr && BaseEnemyCollisionSupport != nullptr)
     {
         BaseEnemyMesh->OnComponentBeginOverlap.AddDynamic(BaseEnemyCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
     }
-    */
 }
 
 
