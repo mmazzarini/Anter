@@ -36,6 +36,18 @@ enum class EEnemyLoopBehavior : uint8
     GoesBackward
 };
 
+/*Used to identify the type of damage produced by actors*/
+UENUM(BlueprintType)
+enum class EHealthHarmlessType : uint8
+{
+    NoDamage,
+    YouLaserDamage,
+    EnemyLaserDamage,
+    AnterDamage,
+    EnemyDamage,
+    CrateDamage
+};
+
 /*
 USTRUCT(BlueprintType)
 struct FConfigurablePlaceable

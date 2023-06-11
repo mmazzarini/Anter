@@ -19,6 +19,7 @@
 #include "GameFramework/PlayerState.h"
 #include "SceneActors/Enemies/BaseEnemy.h"
 #include "Materials/MaterialInterface.h"
+#include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -244,21 +245,17 @@ void AAnterPaperCharacter::HandleJump()
 
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
-    //First check if object is potentially dangerous to trigger kick on Pawn
     UDamageComponent* PotentialDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass<UDamageComponent>());
-    if(PotentialDamage != nullptr && !(PotentialDamage->IsPawnDamage()))
+    if(UGameSpecificStaticLibrary::IsHealthDamageType(AnterHealth,PotentialDamage))
     {
-        if(PotentialDamage != nullptr)
+        //First check: Colliding object was an enemy/dangerous obstacle/laser
+        HandleDamage(OtherActor);
+        //If dangerous actor was a laser, destroy it
+        if(AAnterFire* OtherFire = Cast<AAnterFire>(OtherActor))
         {
-            //Colliding object was an enemy/dangerous obstacle/laser
-            HandleDamage(OtherActor);
-            //If laser, destroy it
-            if(AAnterFire* OtherFire = Cast<AAnterFire>(OtherActor))
-            {
-                OtherFire->Destroy();
-            }
-            return;
+            OtherFire->Destroy();
         }
+        return;
     }
     else
     {
@@ -463,7 +460,7 @@ void AAnterPaperCharacter::HandleDamage(AActor* Enemy)
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     //Base functionality: jump vertically and for a few deactivate hittability.
     UDamageComponent* EnemyDamage = Cast<UDamageComponent>(Enemy->FindComponentByClass<UDamageComponent>());
-    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr && EnemyDamage != nullptr && !(EnemyDamage->IsPawnDamage()))
+    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr && EnemyDamage != nullptr)
     {
         //Set timer for a few secs invincibility
         GetWorldTimerManager().SetTimer(UnhittableTimerHandle, this, &AAnterPaperCharacter::OnUnhittableTimerEnded, UnhittableTimerDuration, false, UnhittableTimerDuration);

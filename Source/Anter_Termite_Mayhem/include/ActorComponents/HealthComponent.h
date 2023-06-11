@@ -2,6 +2,7 @@
 
 #include "UObject/Object.h"
 #include "Components/SceneComponent.h"
+#include "SceneUtilities/SceneStructs.h"
 
 #include "HealthComponent.generated.h"
 
@@ -51,6 +52,8 @@ public:
     //Delegate to notify of health value updated.
     FOnHealthUpdatedDelegate OnHealthUpdated;
 
+    TArray<EHealthHarmlessType> GetTypesOfDamageAvailable(){return TypesOfDamageIsSensibleTo;}
+
 protected:
     
     UPROPERTY(EditDefaultsOnly)
@@ -58,6 +61,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly)
     float StartingHealth = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<EHealthHarmlessType> TypesOfDamageIsSensibleTo; 
 
 private:
 

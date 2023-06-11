@@ -2,6 +2,7 @@
 
 #include "UObject/Object.h"
 #include "Components/SceneComponent.h"
+#include "SceneUtilities/SceneStructs.h"
 
 #include "DamageComponent.generated.h"
 
@@ -20,15 +21,14 @@ public:
 
     UDamageComponent();
 
-    //Getter for is damage by pawn 
-    bool IsPawnDamage(){return bIsPawnDamageComponent;}
-
     float GetDamageValue(){return DamageValue;}
+
+    EHealthHarmlessType GetTypeOfDamage(){return TypeOfDamage;}
 
 private:
 
     UPROPERTY(EditDefaultsOnly)
-    bool bIsPawnDamageComponent = false;
+    EHealthHarmlessType TypeOfDamage = EHealthHarmlessType::NoDamage;
 
     UPROPERTY(EditDefaultsOnly)
     float DamageValue = -1.0f;

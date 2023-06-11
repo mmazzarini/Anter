@@ -5,6 +5,7 @@
 #include "SceneActors/AnterFire.h"
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 #include "ActorComponents/DamageComponent.h"
+#include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 
 ABaseEnemy::ABaseEnemy()
 {
@@ -106,15 +107,15 @@ void ABaseEnemy::SwitchOrientation()
 
 void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
-    AAnterFire* AnterFire = Cast<AAnterFire>(OtherActor);
-    if(AnterFire != nullptr)
+    UDamageComponent* FireDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass(UDamageComponent::StaticClass()));
+    if(BaseEnemyHealth != nullptr && FireDamage != nullptr && UGameSpecificStaticLibrary::IsHealthDamageType(BaseEnemyHealth,FireDamage))
     {
-        UDamageComponent* FireDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass(UDamageComponent::StaticClass()));
-        if(FireDamage != nullptr && FireDamage->IsPawnDamage() && BaseEnemyHealth != nullptr)
+        BaseEnemyHealth->IncreaseHealth(FireDamage->GetDamageValue());
+        AAnterFire* AnterFire = Cast<AAnterFire>(OtherActor);
+        if(AnterFire != nullptr)
         {
-            BaseEnemyHealth->IncreaseHealth(FireDamage->GetDamageValue());
             AnterFire->Destroy();
-        }            
+        }
     }
 }
    
