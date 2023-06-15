@@ -107,15 +107,9 @@ void ABaseEnemy::SwitchOrientation()
 
 void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) 
 {
-    UDamageComponent* FireDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass(UDamageComponent::StaticClass()));
-    if(BaseEnemyHealth != nullptr && FireDamage != nullptr && UGameSpecificStaticLibrary::IsHealthDamageType(BaseEnemyHealth,FireDamage))
+    if(UGameSpecificStaticLibrary::IsHealthDamageType(this,OtherActor))
     {
-        BaseEnemyHealth->IncreaseHealth(FireDamage->GetDamageValue());
-        AAnterFire* AnterFire = Cast<AAnterFire>(OtherActor);
-        if(AnterFire != nullptr)
-        {
-            AnterFire->Destroy();
-        }
+        HandleDamage(OtherActor);
     }
 }
    
@@ -176,4 +170,18 @@ void ABaseEnemy::AdjustVelocity()
 void ABaseEnemy::SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior)
 {
     LoopBehavior = InLoopBehavior;
+}
+
+void ABaseEnemy::HandleDamage(AActor* InDamagingActor)
+{
+    UDamageComponent* Damage = (InDamagingActor != nullptr) ? Cast<UDamageComponent>(InDamagingActor->FindComponentByClass(UDamageComponent::StaticClass())) : nullptr;
+    if(BaseEnemyHealth != nullptr && Damage != nullptr)
+    {
+        BaseEnemyHealth->IncreaseHealth(Damage->GetDamageValue());
+        AAnterFire* AnterFire = Cast<AAnterFire>(InDamagingActor);
+        if(AnterFire != nullptr)
+        {  
+            AnterFire->Destroy();
+        }
+    }
 }

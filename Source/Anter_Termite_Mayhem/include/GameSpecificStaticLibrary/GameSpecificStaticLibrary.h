@@ -10,6 +10,7 @@ The GameSpecificStaticLibrary is the class encapsulating all these.
 
 class UHealthComponent;
 class UDamageComponent;
+class AActor;
 
 UCLASS()
 class ANTER_TERMITE_MAYHEM_API UGameSpecificStaticLibrary : public UObject 
@@ -19,6 +20,6 @@ class ANTER_TERMITE_MAYHEM_API UGameSpecificStaticLibrary : public UObject
 
 public:
 
-    static bool IsHealthDamageType(UHealthComponent* Health, UDamageComponent* Damage);
+    static bool IsHealthDamageType(AActor* InDamagedActor, AActor* InDamagingActor);
 
 };

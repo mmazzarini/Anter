@@ -110,6 +110,8 @@ protected:
 
     void AdjustVelocity();
 
+    virtual void HandleDamage(AActor* InDamagingActor) override;
+
     UPROPERTY(BlueprintReadWrite)
     TArray<FVector> PivotPositions;
 

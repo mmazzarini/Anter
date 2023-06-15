@@ -246,7 +246,7 @@ void AAnterPaperCharacter::HandleJump()
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
     UDamageComponent* PotentialDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass<UDamageComponent>());
-    if(UGameSpecificStaticLibrary::IsHealthDamageType(AnterHealth,PotentialDamage))
+    if(UGameSpecificStaticLibrary::IsHealthDamageType(this,OtherActor))
     {
         //First check: Colliding object was an enemy/dangerous obstacle/laser
         HandleDamage(OtherActor);
@@ -455,18 +455,18 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
     }
 }
 
-void AAnterPaperCharacter::HandleDamage(AActor* Enemy) 
+void AAnterPaperCharacter::HandleDamage(AActor* InDamagingActor) 
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     //Base functionality: jump vertically and for a few deactivate hittability.
-    UDamageComponent* EnemyDamage = Cast<UDamageComponent>(Enemy->FindComponentByClass<UDamageComponent>());
-    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && Enemy != nullptr && AnterMovement != nullptr && EnemyDamage != nullptr)
+    UDamageComponent* EnemyDamage = (InDamagingActor != nullptr) ? Cast<UDamageComponent>(InDamagingActor->FindComponentByClass<UDamageComponent>()) : nullptr;
+    if(AnterHitStatus == EAnterHitableStatus::CanBeHit && AnterMovement != nullptr && EnemyDamage != nullptr)
     {
         //Set timer for a few secs invincibility
         GetWorldTimerManager().SetTimer(UnhittableTimerHandle, this, &AAnterPaperCharacter::OnUnhittableTimerEnded, UnhittableTimerDuration, false, UnhittableTimerDuration);
         AnterHitStatus = EAnterHitableStatus::CannotBeHit;
         //Get some extra kick to the pawn in the direction opposite to the line connecting pawn and enemy
-        FVector KickToReceive = GetActorLocation()-Enemy->GetActorLocation();
+        FVector KickToReceive = GetActorLocation()-InDamagingActor->GetActorLocation();
         //Normalize Kick to unity
         KickToReceive /= KickToReceive.Size();
         bool bIsAnterDescending = AnterMovement->Velocity.Z < 0.0f;

@@ -29,4 +29,9 @@ public:
 
     UFUNCTION()
     virtual void UpdateWeaponDirection(float InLaserDirection) = 0;
+
+protected:
+
+    UFUNCTION()
+    virtual void HandleDamage(AActor* OtherActor) = 0;
 };
