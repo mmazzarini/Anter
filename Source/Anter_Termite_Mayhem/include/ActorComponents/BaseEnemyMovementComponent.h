@@ -4,7 +4,7 @@
 
 #include "BaseEnemyMovementComponent.generated.h"
 
-class ABaseEnemy;
+class AActor;
 
 /*
 *
@@ -58,7 +58,7 @@ protected:
 
     // Reference to owner enemy
     UPROPERTY()
-    ABaseEnemy* OwnerEnemy;
+    AActor* OwnerEnemy;
 
     /* This is used to invert speed */
     void InvertSpeed();

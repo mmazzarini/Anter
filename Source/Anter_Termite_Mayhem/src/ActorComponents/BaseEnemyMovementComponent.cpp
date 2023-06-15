@@ -1,5 +1,5 @@
 #include "ActorComponents/BaseEnemyMovementComponent.h"
-#include "SceneActors/Enemies/BaseEnemy.h"
+#include "GameFramework/Actor.h"
 
 UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 {
@@ -12,7 +12,7 @@ void UBaseEnemyMovementComponent::Initialize()
 {
     SetMovement(InitialMovementGeometry);
     SetSpeed(InitialMovementSpeed);
-    OwnerEnemy = Cast<ABaseEnemy>(GetOwner());
+    OwnerEnemy = GetOwner();
 }
 
 void UBaseEnemyMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
