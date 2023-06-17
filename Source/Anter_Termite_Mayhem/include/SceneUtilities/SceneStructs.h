@@ -49,6 +49,28 @@ enum class EHealthHarmlessType : uint8
 };
 
 /*
+Enum to control the pivot arrays filling state of the enemy
+*/
+UENUM()
+enum class EEnemyPivotState : uint8
+{
+    IsWaitingToBeFilled,
+    HasBeenFilled,
+    HasStartedMoving
+};
+
+/*
+Enum to represent the running orientation of the enemy
+*/
+UENUM()
+enum class EEnemyRunningOrientation : uint8
+{
+    IsRunningForward,
+    IsRunningBackward
+};
+
+
+/*
 USTRUCT(BlueprintType)
 struct FConfigurablePlaceable
 {

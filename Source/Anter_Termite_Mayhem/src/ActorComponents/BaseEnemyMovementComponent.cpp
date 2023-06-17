@@ -24,7 +24,6 @@ void UBaseEnemyMovementComponent::SetMovement(FVector2D InGeometryVector)
 {
     InternalMovementGeometry.X = InGeometryVector.X;
     InternalMovementGeometry.Y = InGeometryVector.Y;
-    float trash = 1 +2;
 }
 
 void UBaseEnemyMovementComponent::SetSpeed(float InSpeed)

@@ -13,28 +13,6 @@
 #include "SceneActors/Enemies/EnemyInterface.h"
 #include "SceneUtilities/SceneStructs.h"
 #include "BaseEnemy.generated.h"
-
-/*
-Enum to control the pivot arrays filling state of the enemy
-*/
-UENUM()
-enum class EEnemyPivotState : uint8
-{
-    IsWaitingToBeFilled,
-    HasBeenFilled,
-    HasStartedMoving
-};
-
-/*
-Enum to represent the running orientation of the enemy
-*/
-UENUM()
-enum class EEnemyRunningOrientation : uint8
-{
-    IsRunningForward,
-    IsRunningBackward
-};
-
 /*
 Base Enemy class
 An Enemy that is able to move right/left or up/down according to what is 
@@ -96,9 +74,9 @@ public:
     //UAnterWeaponComponent* BaseEnemyWeaponComponent;
 
     //Interface overridden functions
-    void UpdateAttack();
+    virtual void UpdateAttack() override;
     
-    void UpdateMovement();
+    virtual void UpdateMovement() override;
 
     void SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior);
 
