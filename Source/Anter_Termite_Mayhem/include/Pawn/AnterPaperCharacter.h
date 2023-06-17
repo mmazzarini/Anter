@@ -131,6 +131,8 @@ public:
     UFUNCTION()
     void OnUnhittableTimerEnded();
 
+    TArray<TPair<AActor*,EPlatformCollisionType>> GetResigsteredPlatformCollisions(){return RegisteredVerticalPlatformCollisions;}
+
 /* Anter Components */
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)

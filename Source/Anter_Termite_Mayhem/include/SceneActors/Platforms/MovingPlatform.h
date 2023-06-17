@@ -4,6 +4,8 @@
 
 #include "MovingPlatform.generated.h"
 
+class AAnterPaperCharacter;
+
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AMovingPlatform : public ABasePlatform
 {
@@ -11,8 +13,21 @@ class ANTER_TERMITE_MAYHEM_API AMovingPlatform : public ABasePlatform
 
 public:
 
-    AMovingPlatform(){}
+    AMovingPlatform();
 
-    void BeginPlay() override {Super::BeginPlay();};
+    void BeginPlay() override;
+
+    void Tick(float DeltaTime) override;
+
+    void UpdateMovement();
+
+protected:
+
+    FVector OldPosition;
+
+    FVector NewPosition;
+
+    AAnterPaperCharacter* Anter;
+
     
 };
