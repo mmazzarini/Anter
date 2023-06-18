@@ -1,8 +1,6 @@
 #include "ActorComponents/MovingActorMovementSupportComponent.h"
 
 UMovingActorMovementSupportComponent::UMovingActorMovementSupportComponent()
-:
-Super()
 {
     PrimaryComponentTick.bCanEverTick = true;
     PrimaryComponentTick.bStartWithTickEnabled = true;  
