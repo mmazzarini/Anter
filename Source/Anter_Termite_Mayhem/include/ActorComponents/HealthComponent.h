@@ -29,6 +29,8 @@ public:
 
     UHealthComponent();
 
+    virtual void BeginPlay() override;
+
     //This function updates the core health of the health container
     UFUNCTION()
     virtual void UpdateHealth(float InNewHealth);

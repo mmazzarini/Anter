@@ -2,6 +2,11 @@
 
 UHealthComponent::UHealthComponent()
 {
+
+}
+
+void UHealthComponent::BeginPlay()
+{
     SetupHealth();
 }
 
