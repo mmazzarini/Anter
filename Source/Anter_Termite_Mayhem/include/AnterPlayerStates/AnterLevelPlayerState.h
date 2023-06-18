@@ -10,6 +10,8 @@ Has a number of delegates we bind GameState to, in order to communicate the play
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerStateDeathReached);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerLevelGoalReached);
+
 
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterLevelPlayerState : public APlayerState
@@ -26,7 +28,12 @@ public:
     UFUNCTION()
     void OnHealthUpdated(float InNewHealth);
 
+    UFUNCTION()
+    void OnLevelGoalReached();
+
     FOnPlayerStateDeathReached OnPlayerStateDeathDelegate;
+
+    FOnPlayerLevelGoalReached OnPlayerLevelGoalReachedDelegate;
 
 private:
 

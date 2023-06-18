@@ -1,6 +1,8 @@
 #include "AnterPlayerStates/AnterLevelPlayerState.h"
 #include "Pawn/AnterPaperCharacter.h"
 #include "ActorComponents/HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "SceneActors/Items/LevelGoal.h"
 
 void AAnterLevelPlayerState::BindToPawnDelegates()
 {
@@ -17,6 +19,19 @@ void AAnterLevelPlayerState::BindToPawnDelegates()
             //Do bindings to pawn delegates
         }
     }
+
+    TArray<AActor*> LevelGoals;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelGoal::StaticClass(), LevelGoals);
+    if(LevelGoals.Num() > 0)
+    {
+        ALevelGoal* LevelGoal = Cast<ALevelGoal>(LevelGoals[0]);
+        if(LevelGoal != nullptr)
+        {
+            LevelGoal->LevelGoalReached.AddDynamic(this,&AAnterLevelPlayerState::OnLevelGoalReached);
+        }
+
+    }
+
 }
 
 void AAnterLevelPlayerState::OnDeathReached()
@@ -30,3 +45,7 @@ void AAnterLevelPlayerState::OnHealthUpdated(float InNewHealth)
     // code to implement
 }
 
+void AAnterLevelPlayerState::OnLevelGoalReached()
+{
+    OnPlayerLevelGoalReachedDelegate.Broadcast();
+}

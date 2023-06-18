@@ -2,11 +2,31 @@
 #include "SceneActors/Managers/EnemyManager.h"
 #include "SceneActors/Managers/CrateManager.h"
 #include "ActorComponents/LevelManagerComponent.h"
-
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "GameFramework/PlayerController.h"
+#include "SceneActors/Items/LevelGoal.h"
 
 void AAnterBaseLevelGameMode::OnLevelFinished()
 {
+    GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnEndLevelTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
+}
 
+void AAnterBaseLevelGameMode::OnEndLevelTimerEnded()
+{
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    //Quit Game
+    APlayerController* CurrentPC;
+    TArray<AActor*> CurrentPCs;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), CurrentPCs);
+    if(CurrentPCs.Num() > 0)
+    {
+        CurrentPC = Cast<APlayerController>(CurrentPCs[0]);
+        if(CurrentPC != nullptr)
+        {
+            UKismetSystemLibrary::QuitGame(this, CurrentPC ,EQuitPreference::Quit, true);
+        }
+    }
 }
 
 void AAnterBaseLevelGameMode::StartPlay()
@@ -27,6 +47,19 @@ void AAnterBaseLevelGameMode::StartLevel()
     {
         LevelManager->SetupLevelElements();
     }
+
+    ALevelGoal* LevelGoal;
+    TArray<AActor*> LevelGoals;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelGoal::StaticClass(), LevelGoals);
+    if(LevelGoals.Num() > 0)
+    {
+        LevelGoal = Cast<ALevelGoal>(LevelGoals[0]);
+        if(LevelGoal != nullptr)
+        {
+            LevelGoal->LevelGoalReached.AddDynamic(this,&AAnterBaseLevelGameMode::OnLevelFinished);
+        }
+
+    }
 }
 
 void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
@@ -38,4 +71,3 @@ void AAnterBaseLevelGameMode::StartFSM()
 {
     //empty for now
 }
-

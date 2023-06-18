@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GameFramework/GameModeBase.h"
+#include "TimerManager.h"
 
 #include "AnterBaseLevelGameMode.generated.h"
 
@@ -44,6 +45,9 @@ public:
     UFUNCTION()
     void OnLevelFinished();
 
+    UFUNCTION()
+    void OnEndLevelTimerEnded();
+
     /*
     Override basic startplay function to call a series of initializations 
     to start the level
@@ -68,5 +72,11 @@ protected:
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ULevelManagerComponent> LevelManagerClass;
+
+    FTimerHandle EndLevelTimerHandle;
+
+    FTimerDelegate LevelEndedDelegate;
+
+    float NumSecondsForLevelEnd = 3.0f;
 
 };

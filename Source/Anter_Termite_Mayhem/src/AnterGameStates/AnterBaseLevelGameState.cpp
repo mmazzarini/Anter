@@ -15,8 +15,11 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
             uint64 MyPlayerAddress = (uint64)CurrPlayerState;
             CurrPlayerState->BindToPawnDelegates();
             CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnGameOver);
+            CurrPlayerState->OnPlayerLevelGoalReachedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnLevelCompleted);
         }
     }
+
+    SetLevelCompletionState(ELevelCompletionState::LevelStarted);
 }
 
 void AAnterBaseLevelGameState::OnGameOver()
@@ -27,10 +30,32 @@ void AAnterBaseLevelGameState::OnGameOver()
        TArray<AActor*> GameOverActors;
        UGameplayStatics::GetAllActorsWithTag(GetWorld(),"GameOver",GameOverActors);
        if(GameOverActors.Num() > 0)
-       GameOverCameraActor = GameOverActors[0];
+       {
+            GameOverCameraActor = GameOverActors[0];
+       }
        if(GameOverCameraActor != nullptr)
        {
            PlayerController->SetViewTarget(GameOverCameraActor); 
        }
     }
+    SetLevelCompletionState(ELevelCompletionState::LevelGameOver);
+}
+
+void AAnterBaseLevelGameState::OnLevelCompleted()
+{
+    AAnterPlayerController* PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+    if (PlayerController != nullptr)
+    {
+       TArray<AActor*> GameOverActors;
+       UGameplayStatics::GetAllActorsWithTag(GetWorld(),"LevelCompleted",GameOverActors);
+       if(GameOverActors.Num() > 0)
+       {
+           GameOverCameraActor = GameOverActors[0];
+       }
+       if(GameOverCameraActor != nullptr)
+       {
+           PlayerController->SetViewTarget(GameOverCameraActor); 
+       }
+    }
+    SetLevelCompletionState(ELevelCompletionState::LevelCompleted);
 }
