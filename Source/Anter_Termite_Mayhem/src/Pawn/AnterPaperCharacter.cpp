@@ -48,6 +48,9 @@ AAnterPaperCharacter::AAnterPaperCharacter()
     AnterCollisionSupport = CreateDefaultSubobject<UCollisionSupportComponent>(TEXT("AnterCollisionSupport"));
     AnterCollisionSupport->SetupAttachment(RootComponent);
 
+    AnterFloorHanging = CreateDefaultSubobject<UAnterFloorHangingComponent>(TEXT("AnterFloorHanging"));
+    AnterFloorHanging->SetupAttachment(RootComponent);
+
 } 
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
@@ -151,6 +154,12 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
         {
             //InInputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
             InInputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
+        }
+
+        if(AnterFloorHanging != nullptr)
+        {
+            InInputComponent->BindAction("FloorHanging",IE_Pressed,AnterFloorHanging,&UAnterFloorHangingComponent::AttemptRayCastByLineTrace);
+            InInputComponent->BindAction("FloorHanging",IE_Released,AnterFloorHanging,&UAnterFloorHangingComponent::DetachFromUpsideDownPlatform);
         }
     }
 

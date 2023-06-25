@@ -9,6 +9,7 @@
 #include "ActorComponents/AnterMovementSupportComponent.h"
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
+#include "ActorComponents/AnterFloorHangingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
@@ -27,7 +28,8 @@ enum class EPlatformCollisionType : uint8
 {
     IsVerticallyColliding,
     IsCollidingFromRight,
-    IsCollidingFromLeft
+    IsCollidingFromLeft,
+    IsCollidingUpsideDown
 };
 
 UENUM(BlueprintType)
@@ -35,6 +37,15 @@ enum class EAnterHitableStatus : uint8
 {
     CanBeHit,
     CannotBeHit
+};
+
+//Describing upside down movement 
+UENUM(BlueprintType)
+enum class EAnterVerticalMotionStatus : uint8
+{
+    NormalStatus,
+    MovingTowardsUp,
+    HangingUpsideDown
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnterHitDelegate, float, DamageValue);
@@ -133,6 +144,8 @@ public:
 
     TArray<TPair<AActor*,EPlatformCollisionType>> GetResigsteredPlatformCollisions(){return RegisteredVerticalPlatformCollisions;}
 
+    void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus){VerticalMotionStatus = InVerticalMotionStatus;}
+
 /* Anter Components */
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
@@ -158,6 +171,9 @@ UBoxComponent* AnterBox;
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
 UCollisionSupportComponent* AnterCollisionSupport;
+
+UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+UAnterFloorHangingComponent* AnterFloorHanging;
 
 /*delegate for pawn hit event*/
 FAnterHitDelegate AnterHit;
@@ -264,6 +280,8 @@ UMaterialInterface* FlickeringMaterial;
 
 /*Internal default material*/
 UMaterialInterface* DefaultMaterial;
+
+EAnterVerticalMotionStatus VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
 
 };
 
