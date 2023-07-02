@@ -552,6 +552,9 @@ void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovemen
 {
     if(InAnterMovement != nullptr)
     {
+        InAnterMovement->Velocity.X = 0.0f;
+        InAnterMovement->Velocity.Y = 0.0f;
+        InAnterMovement->Velocity.Z = 0.0f;
         InAnterMovement->AddImpulse(InKickToReceive);
         //FVector JumpVector = FVector(0.0f,0.0f,JumpScale*JumpScaleMultiplier);
         //AnterMovement->AddImpulse(JumpVector);
