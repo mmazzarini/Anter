@@ -302,7 +302,8 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
             if(AnterMovement != nullptr)
             {
                 //If there is no vertically colliding platform in the registered platforms array, then free fall
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVerticallyColliding) == false)
+                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVerticallyColliding) == false && 
+                   FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingUpsideDown) == false)
                 {
                     SetIsFalling(true);
                     AnterMovement->GravityScale = InputGravityScale;
@@ -409,7 +410,7 @@ void AAnterPaperCharacter::ResetGeometron()
 void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
 {
     //if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)/FMath::Abs(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)) >= VerticalTolerance)
-    if(CollisionGeometry.TopDist.Z >= -(AnterSize.Z))
+    if(CollisionGeometry.TopDist.Z >= -(AnterSize.Z) && VerticalMotionStatus == EAnterVerticalMotionStatus::NormalStatus)
     {
         /* Impact was from top: pawn is standing on platform. */ 
 
@@ -425,13 +426,17 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         }
         //Floor impenetrability condition
         FVector NewLocation = GetActorLocation();
-        //if(AnterBox != nullptr)
-        //{
-            //FVector AnterBoxExtent = AnterBox->GetScaledBoxExtent();
-            NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);// AnterSize.Z*VerticalImpenetrabilityFactor); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
-        //}
+        NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);// AnterSize.Z*VerticalImpenetrabilityFactor); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
         SetActorLocation(NewLocation);
     } 
+    else if(CollisionGeometry.TopDist.Z <= (AnterSize.Z) && VerticalMotionStatus == EAnterVerticalMotionStatus::MovingTowardsUp)
+    {
+        RegisterPlatformCollision(Platform,EPlatformCollisionType::IsCollidingUpsideDown);
+        //We are hanging upside-down
+        VerticalMotionStatus = EAnterVerticalMotionStatus::HangingUpsideDown;
+        SetCanJump(false);
+        SetIsFalling(false);
+    }
     else
     {
         if(FVector::DotProduct(CollisionGeometry.BottomDist,-CollisionGeometry.RotatedNormal) < VerticalTolerance)
@@ -462,6 +467,7 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
             }
         }
     }
+    
 }
 
 void AAnterPaperCharacter::HandleDamage(AActor* InDamagingActor) 
