@@ -146,6 +146,10 @@ public:
 
     void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus){VerticalMotionStatus = InVerticalMotionStatus;}
 
+    EAnterVerticalMotionStatus GetVerticalMotionStatus() const {return VerticalMotionStatus;}
+
+    float GetInputGravityScale(){return InputGravityScale;}
+
 /* Anter Components */
 
 UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
