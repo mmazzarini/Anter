@@ -161,6 +161,12 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
             InInputComponent->BindAction("FloorHanging",IE_Pressed,AnterFloorHanging,&UAnterFloorHangingComponent::AttemptRayCastByLineTrace);
             InInputComponent->BindAction("FloorHanging",IE_Released,AnterFloorHanging,&UAnterFloorHangingComponent::DetachFromUpsideDownPlatform);
         }
+
+        if(AnterMovementSupport != nullptr)
+        {
+            InInputComponent->BindAction("Slide",IE_Pressed,AnterMovementSupport,&UAnterMovementSupportComponent::HandleSlide);
+            InInputComponent->BindAxis("RightMovement",AnterMovementSupport,&UAnterMovementSupportComponent::SetMovementDirection);
+        }
     }
 
 }
