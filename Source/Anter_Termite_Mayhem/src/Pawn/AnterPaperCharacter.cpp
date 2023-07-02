@@ -307,6 +307,10 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
                 {
                     SetIsFalling(true);
                     AnterMovement->GravityScale = InputGravityScale;
+                    if(VerticalMotionStatus == EAnterVerticalMotionStatus::HangingUpsideDown)
+                    {
+                        VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
+                    }
                     ResetGeometron();
                 }
                 
