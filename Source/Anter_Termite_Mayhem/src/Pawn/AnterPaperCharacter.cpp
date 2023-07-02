@@ -429,7 +429,7 @@ void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeo
         NewLocation = FVector(GetActorLocation().X ,GetActorLocation().Y,CollisionGeometry.PlatformSurfaceCentre.Z + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);// AnterSize.Z*VerticalImpenetrabilityFactor); // AnterSize.Z*VerticalImpenetrabilityFactor);// + AnterSize.Z/2.0f*VerticalImpenetrabilityFactor);
         SetActorLocation(NewLocation);
     } 
-    else if(CollisionGeometry.TopDist.Z <= (AnterSize.Z) && VerticalMotionStatus == EAnterVerticalMotionStatus::MovingTowardsUp)
+    else if(CollisionGeometry.BottomDist.Z <= (AnterSize.Z) && VerticalMotionStatus >= EAnterVerticalMotionStatus::MovingTowardsUp)
     {
         RegisterPlatformCollision(Platform,EPlatformCollisionType::IsCollidingUpsideDown);
         //We are hanging upside-down
