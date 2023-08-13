@@ -28,6 +28,8 @@ void UAnterMovementSupportComponent::HandleSlide()
     {
         if(AnterMovement != nullptr)
         {
+            FVector SlideImpulse = FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier;
+            SlideStopThreshold = AnterMovement->Velocity.X + SlideImpulse;
             AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
         }
         Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementDurationTime, false, SlideMovementDurationTime);
@@ -38,13 +40,33 @@ void UAnterMovementSupportComponent::HandleSlide()
 void UAnterMovementSupportComponent::EndSlide()
 {
     
-    if(Anter != nullptr)
+    if(Anter != nullptr && AnterMovement != nullptr)
     {
-        if(AnterMovement != nullptr)
+
+        // TODO: MUST decide which threshold to evaluate: design-tuned? character mechanics-tuned?
+        if(Anter->GetCanJump() || AnterMovement->Velocity.X <= SlideStopThreshold)
         {
-            AnterMovement->Velocity.X /= SlideMovementDivider;
+            // Completely remove slide.
+            //Evaluate: if there is no input then velocity is set to 0, else divide below threshold.
+            if(InternalMovementDirection == 0.0f)
+            {
+                AnterMovement->Velocity.X = 0.0f;
+            }
+            else if(AnterMovement->Velocity.X*InternalMovementDirection > 0.0f)
+            {
+                //I.e. if we are moving in the direction of initial slide impulse
+                AnterMovement->Velocity.X /= SlideMovementMultiplier;
+            }
+
+            // We can reset the slide movement boolean
+            bCanSlideInternal = true;
         }
-        bCanSlideInternal = true;
+        else
+        {
+            //Remove slide partially, because it is in air, but reset timer
+            AnterMovement->Velocity.X /= SlideMovementMultiplier;
+            Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementAirDurationTime, false, SlideMovementAirDurationTime);
+        }
     }
 }
 

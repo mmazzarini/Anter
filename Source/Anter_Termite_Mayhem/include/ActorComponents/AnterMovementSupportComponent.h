@@ -45,12 +45,21 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
     float SlideMovementDurationTime = 1.0f;
+    
+    UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
+    float SlideMovementAirDurationTime = 0.5f;
 
     UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
     float SlideMovementMultiplier = 3.0f;
 
     UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
     float SlideMovementDivider = 2.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
+    float SlideMovementAirDivider = 2.0f;
+
+    //Internal, not exposable to BP, needed for mathematical corrections to horizontal trajectory
+    float SlideStopThreshold = 0.0f;
 
     UCharacterMovementComponent* AnterMovement = nullptr;
 
