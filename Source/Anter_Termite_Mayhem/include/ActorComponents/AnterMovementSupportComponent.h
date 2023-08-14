@@ -43,6 +43,8 @@ protected:
 
     AAnterPaperCharacter* Anter;
 
+    //Slide movement properties
+
     UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
     float SlideMovementDurationTime = 1.0f;
     
@@ -57,6 +59,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category="Slide Movement")
     float SlideMovementAirDivider = 2.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Slide Movement", meta=(ClampMin=0, ClampMax=1))
+    float SlideStopThresholdFraction = 0.8f;
 
     //Internal, not exposable to BP, needed for mathematical corrections to horizontal trajectory
     float SlideStopThreshold = 0.0f;

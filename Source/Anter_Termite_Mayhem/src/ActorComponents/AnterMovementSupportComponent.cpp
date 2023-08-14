@@ -29,7 +29,7 @@ void UAnterMovementSupportComponent::HandleSlide()
         if(AnterMovement != nullptr)
         {
             FVector SlideImpulse = FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier;
-            SlideStopThreshold = AnterMovement->Velocity.X + SlideImpulse;
+            SlideStopThreshold = AnterMovement->Velocity.X + SlideImpulse.X;
             AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
         }
         Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementDurationTime, false, SlideMovementDurationTime);
@@ -43,8 +43,8 @@ void UAnterMovementSupportComponent::EndSlide()
     if(Anter != nullptr && AnterMovement != nullptr)
     {
 
-        // TODO: MUST decide which threshold to evaluate: design-tuned? character mechanics-tuned?
-        if(Anter->GetCanJump() || AnterMovement->Velocity.X <= SlideStopThreshold)
+        // TODO: MUST decide which threshold to evaluate: design-tuned via fraction-like multiplier to SlideStopThreshold.
+        if(Anter->GetCanJump() || AnterMovement->Velocity.X <= SlideStopThreshold*SlideStopThresholdFraction)
         {
             // Completely remove slide.
             //Evaluate: if there is no input then velocity is set to 0, else divide below threshold.
