@@ -29,8 +29,8 @@ void UAnterMovementSupportComponent::HandleSlide()
         if(AnterMovement != nullptr)
         {
             FVector SlideImpulse = FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier;
-            SlideStopThreshold = AnterMovement->Velocity.X + SlideImpulse.X;
             AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
+            SlideStopThreshold = AnterMovement->Velocity.X;
         }
         Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementDurationTime, false, SlideMovementDurationTime);
         bCanSlideInternal = false;
@@ -44,7 +44,7 @@ void UAnterMovementSupportComponent::EndSlide()
     {
 
         // TODO: MUST decide which threshold to evaluate: design-tuned via fraction-like multiplier to SlideStopThreshold.
-        if(Anter->GetCanJump() || AnterMovement->Velocity.X <= SlideStopThreshold*SlideStopThresholdFraction)
+        if(Anter->GetCanJump() || abs(AnterMovement->Velocity.X) <= abs(SlideStopThreshold*SlideStopThresholdFraction))
         {
             // Completely remove slide.
             //Evaluate: if there is no input then velocity is set to 0, else divide below threshold.
@@ -55,7 +55,7 @@ void UAnterMovementSupportComponent::EndSlide()
             else if(AnterMovement->Velocity.X*InternalMovementDirection > 0.0f)
             {
                 //I.e. if we are moving in the direction of initial slide impulse
-                AnterMovement->Velocity.X /= SlideMovementMultiplier;
+                AnterMovement->Velocity.X /= SlideStopThreshold*SlideStopThresholdFraction;
             }
 
             // We can reset the slide movement boolean
@@ -64,7 +64,7 @@ void UAnterMovementSupportComponent::EndSlide()
         else
         {
             //Remove slide partially, because it is in air, but reset timer
-            AnterMovement->Velocity.X /= SlideMovementMultiplier;
+            AnterMovement->Velocity.X /= SlideMovementAirDivider;
             Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementAirDurationTime, false, SlideMovementAirDurationTime);
         }
     }
