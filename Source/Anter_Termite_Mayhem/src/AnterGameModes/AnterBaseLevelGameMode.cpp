@@ -1,4 +1,5 @@
 #include "AnterGameModes/AnterBaseLevelGameMode.h"
+#include "AnterGameStates/AnterBaseLevelGameState.h"
 #include "SceneActors/Managers/EnemyManager.h"
 #include "SceneActors/Managers/CrateManager.h"
 #include "ActorComponents/LevelManagerComponent.h"
@@ -36,6 +37,28 @@ void AAnterBaseLevelGameMode::OnEndLevelTimerEnded()
     }
 }
 
+void AAnterBaseLevelGameMode::OnLevelGameOver()
+{
+    GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnLevelGameOverTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
+}
+
+void AAnterBaseLevelGameMode::OnLevelGameOverTimerEnded()
+{
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    //Quit Game
+    APlayerController* CurrentPC;
+    TArray<AActor*> CurrentPCs;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), CurrentPCs);
+    if(CurrentPCs.Num() > 0)
+    {
+        CurrentPC = Cast<APlayerController>(CurrentPCs[0]);
+        if(CurrentPC != nullptr)
+        {
+            RestartPlayer(CurrentPC);
+        }
+    }
+}
+
 void AAnterBaseLevelGameMode::StartPlay()
 {
     Super::StartPlay();
@@ -66,6 +89,14 @@ void AAnterBaseLevelGameMode::StartLevel()
         }
 
     }
+
+    if(GameState != nullptr)
+    {
+        if(AAnterBaseLevelGameState* CastedGameState = Cast<AAnterBaseLevelGameState>(GameState))
+        {
+            CastedGameState->OnDeathReached.AddDynamic(this,&AAnterBaseLevelGameMode::OnLevelGameOver); 
+        }
+    }
 }
 
 void AAnterBaseLevelGameMode::UpdatePlayerStartPosition(ALevelCheckpoint* InCheckpoint)
@@ -84,7 +115,7 @@ void AAnterBaseLevelGameMode::UpdatePlayerStartPosition(ALevelCheckpoint* InChec
                 if(LevelStart != nullptr)
                 {
                     FVector OldLocation = LevelStart->GetActorLocation();
-                    LevelStart->SetActorLocation(InCheckpoint->GetActorLocation());
+                    LevelStart->SetActorLocation(InCheckpoint->GetActorLocation() + FVector::UpVector*100.0f);
                     FVector NewLocation = LevelStart->GetActorLocation();
                     FVector DiffLocation = OldLocation-NewLocation;
                 }

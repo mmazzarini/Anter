@@ -48,6 +48,12 @@ public:
     UFUNCTION()
     void OnEndLevelTimerEnded();
 
+    UFUNCTION()
+    void OnLevelGameOver();
+
+    UFUNCTION()
+    void OnLevelGameOverTimerEnded();
+
     /*
     Override basic startplay function to call a series of initializations 
     to start the level

@@ -16,12 +16,14 @@ enum class ELevelCompletionState : uint8
     LevelCompleted
 };
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStateDeathReached);
 
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameState : public AGameStateBase
 {
     GENERATED_BODY()
+
+public:
 
     virtual void HandleBeginPlay() override;
 
@@ -31,9 +33,11 @@ class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameState : public AGameStateBase
     UFUNCTION()
     void OnLevelCompleted();
 
+    void SetLevelCompletionState(ELevelCompletionState InLevelCompletion){LevelCompletion = InLevelCompletion;}
+
     ELevelCompletionState GetLevelCompletionState(){return LevelCompletion;}
 
-    void SetLevelCompletionState(ELevelCompletionState InLevelCompletion){LevelCompletion = InLevelCompletion;}
+    FOnGameStateDeathReached OnDeathReached;
 
 private:
 

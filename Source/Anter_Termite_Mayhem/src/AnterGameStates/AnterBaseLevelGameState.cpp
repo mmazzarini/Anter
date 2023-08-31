@@ -39,6 +39,7 @@ void AAnterBaseLevelGameState::OnGameOver()
        }
     }
     SetLevelCompletionState(ELevelCompletionState::LevelGameOver);
+    OnDeathReached.Broadcast();
 }
 
 void AAnterBaseLevelGameState::OnLevelCompleted()
