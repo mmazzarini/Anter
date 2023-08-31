@@ -2,7 +2,7 @@
 
 #include "GameFramework/GameModeBase.h"
 #include "TimerManager.h"
-
+#include "SceneActors/Items/LevelCheckpoint.h"
 #include "AnterBaseLevelGameMode.generated.h"
 
 /*
@@ -35,7 +35,7 @@ class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameMode : public AGameModeBase
 
 public:
 
-    AAnterBaseLevelGameMode(){}
+    AAnterBaseLevelGameMode();
 
     /*Handles level completion for a series of operations:
     - restart level
@@ -58,7 +58,10 @@ public:
     UFUNCTION()
     virtual void StartLevel();
 
-    //override base function from GameModeBase. We need to understand how to develop it
+    UFUNCTION()
+    void UpdatePlayerStartPosition(ALevelCheckpoint* InCheckpoint);
+
+    //override base function from GameModeBase. This is to restart player after death
     virtual void RestartPlayer(AController* NewPlayer) override;
 
     /*Starts the Level FSM --- #TODO needs to be defined!!!! */
@@ -78,5 +81,11 @@ protected:
     FTimerDelegate LevelEndedDelegate;
 
     float NumSecondsForLevelEnd = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly)
+    FString AnterPlayerStartString = "AnterPlayerStart";
+
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    ULevelManagerComponent* LevelManager;
 
 };

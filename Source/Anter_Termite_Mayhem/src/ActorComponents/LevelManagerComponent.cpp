@@ -1,14 +1,20 @@
 #include "ActorComponents/LevelManagerComponent.h"
 #include "SceneUtilities/SceneStructs.h"
-#include "SceneActors/Items/LevelCheckpoint.h"
 #include "GameFramework/GameMode.h"
 #include "SceneActors/Managers/CrateManager.h"
 #include "SceneActors/Managers/EnemyManager.h"
 #include "Kismet/GameplayStatics.h"
 
-ULevelManagerComponent::ULevelManagerComponent(const FObjectInitializer& Obj)
+ULevelManagerComponent::ULevelManagerComponent()
 {
+    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bStartWithTickEnabled = true;  
+}
 
+void ULevelManagerComponent::BeginPlay() 
+{
+    Super::BeginPlay();
+    SetupLevelElements();
 }
 
 void ULevelManagerComponent::SetupLevelElements()
@@ -25,17 +31,15 @@ void ULevelManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void ULevelManagerComponent::GenerateCheckpoints()
 {
-    if(CheckpointClass != nullptr)
+    TArray<AActor*> Checkpoints;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelCheckpoint::StaticClass(), Checkpoints);
+    for(auto* Checkpoint : Checkpoints)
     {
-        for(const FVector& CheckpointConfig : CheckpointsConfigurations)
+        if(ALevelCheckpoint* CastedCheckpoint = Cast<ALevelCheckpoint>(Checkpoint))
         {
-            ALevelCheckpoint* NewCheckpoint = GetWorld()->SpawnActor<ALevelCheckpoint>(CheckpointClass,CheckpointConfig,FRotator(0.0f,0.0f,0.0f)); 
-            if(NewCheckpoint != nullptr)
-            {
-                NewCheckpoint->OnActivatedCheckpointDelegate.AddDynamic(this,&ThisClass::OnCheckpointActivated);
-                TPair<ALevelCheckpoint*,bool> CheckpointPair(NewCheckpoint,false);
-                LevelCheckpoints.Add(CheckpointPair);
-            }          
+            CastedCheckpoint->OnActivatedCheckpointDelegate.AddDynamic(this,&ThisClass::OnCheckpointActivated);
+            TPair<ALevelCheckpoint*,bool> CheckpointPair(CastedCheckpoint,false);
+            LevelCheckpoints.Add(CheckpointPair);       
         }
     }
 }
@@ -57,16 +61,8 @@ void ULevelManagerComponent::OnCheckpointActivated(ALevelCheckpoint* InCheckpoin
     if(InCheckpoint != nullptr)
     {
         CurrentCheckpoint = InCheckpoint;
+        OnActivatedOneCheckpointDelegate.Broadcast(InCheckpoint);
     }
-    
-    /*If checkpoint was not activated before (bool == false), we activate it*/
-    bool* CheckpointBoolPtr = LevelCheckpoints.Find(InCheckpoint);
-    if(CheckpointBoolPtr != nullptr && *CheckpointBoolPtr == false)
-    {
-        *CheckpointBoolPtr = true;
-        //Activate delegate to notify about checkpoint activation
-        OnActivatedOneCheckpointDelegate.Broadcast();
-    }    
 }
 
 void ULevelManagerComponent::GetLevelGoalReference()

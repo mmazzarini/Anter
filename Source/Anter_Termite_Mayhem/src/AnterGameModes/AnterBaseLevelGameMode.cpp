@@ -6,6 +6,13 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameFramework/PlayerController.h"
 #include "SceneActors/Items/LevelGoal.h"
+#include "SceneActors/Items/LevelCheckpoint.h"
+
+AAnterBaseLevelGameMode::AAnterBaseLevelGameMode()
+{
+    LevelManager = CreateDefaultSubobject<ULevelManagerComponent>(TEXT("LevelManager"));
+    LevelManager->SetupAttachment(RootComponent);
+}
 
 void AAnterBaseLevelGameMode::OnLevelFinished()
 {
@@ -42,10 +49,9 @@ void AAnterBaseLevelGameMode::StartPlay()
 void AAnterBaseLevelGameMode::StartLevel()
 {
     /* Call component to start level elements */
-    ULevelManagerComponent* LevelManager = Cast<ULevelManagerComponent>(FindComponentByClass(LevelManagerClass));
     if(LevelManager != nullptr)
     {
-        LevelManager->SetupLevelElements();
+        LevelManager->OnActivatedOneCheckpointDelegate.AddDynamic(this,&AAnterBaseLevelGameMode::UpdatePlayerStartPosition);
     }
 
     ALevelGoal* LevelGoal;
@@ -59,6 +65,31 @@ void AAnterBaseLevelGameMode::StartLevel()
             LevelGoal->LevelGoalReached.AddDynamic(this,&AAnterBaseLevelGameMode::OnLevelFinished);
         }
 
+    }
+}
+
+void AAnterBaseLevelGameMode::UpdatePlayerStartPosition(ALevelCheckpoint* InCheckpoint)
+{
+    if(InCheckpoint != nullptr)
+    {
+        APlayerController* CurrentPC;
+        TArray<AActor*> CurrentPCs;
+        UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), CurrentPCs);
+        if(CurrentPCs.Num() > 0)
+        {
+            CurrentPC = Cast<APlayerController>(CurrentPCs[0]);
+            if(CurrentPC != nullptr)
+            {
+                AActor* LevelStart = FindPlayerStart(CurrentPC,AnterPlayerStartString);
+                if(LevelStart != nullptr)
+                {
+                    FVector OldLocation = LevelStart->GetActorLocation();
+                    LevelStart->SetActorLocation(InCheckpoint->GetActorLocation());
+                    FVector NewLocation = LevelStart->GetActorLocation();
+                    FVector DiffLocation = OldLocation-NewLocation;
+                }
+            }
+        }
     }
 }
 

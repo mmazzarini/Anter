@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Components/ActorComponent.h"
+#include "Components/SceneComponent.h"
+#include "SceneActors/Items/LevelCheckpoint.h"
 
 #include "LevelManagerComponent.generated.h"
 
 //struct FConfigurablePlaceable;
-class ALevelCheckpoint;
+
 class AEnemyManager;
 class ACrateManager;
 class AGameMode;
@@ -18,16 +19,16 @@ Level manager component class: it controls the flow of execution of levels:
 It can be plugged into the Game Mode class that is specific for levels.  
 */
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOneCheckpointActivatedDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneCheckpointActivatedDelegate, ALevelCheckpoint*, CurrentCheckpointPtr);
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API ULevelManagerComponent : public UActorComponent
+class ANTER_TERMITE_MAYHEM_API ULevelManagerComponent : public USceneComponent
 {
     GENERATED_BODY()
  
 public:
 
-    ULevelManagerComponent(const FObjectInitializer& Obj);
+    ULevelManagerComponent();
 
     /*
     This function is used to setup all elements in the level
@@ -43,6 +44,8 @@ public:
     void GetLevelGoalReference();
 
     void BindToManagers();
+
+    virtual void BeginPlay() override;
 
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
