@@ -44,7 +44,10 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 
         bool CanShoot(){return bCanShoot;}
 
-    protected:
+        void IncreaseAmmos(float InAmmos){InternalAmmosCounter = InAmmos;}
+
+protected:
+
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AAnterFire> LaserSubClass;
 
@@ -68,6 +71,9 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 
     //Vector representing the module-1-scaled geoemtry of the laser movement
     FVector LaserDirection;
+
+    //Only for internal representation, can be accessed through Getter/Setter.
+    float InternalAmmosCounter = 50.0f;
 
 };
 

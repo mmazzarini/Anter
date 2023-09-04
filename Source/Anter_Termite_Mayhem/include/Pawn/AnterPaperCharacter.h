@@ -22,6 +22,7 @@ class UInputComponent;
 class AController;
 class UCharacterMovementComponent;
 class UMaterialInteface;
+class AAnterBaseAnt;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -93,6 +94,8 @@ public:
     void HandleStop();
 
     void HandleJump();
+
+    void HandleAnt(AAnterBaseAnt* InAnt);
 
     void SetLeftMovementFree(bool InUnlocked){bIsLeftUnlocked = InUnlocked;}
 

@@ -20,6 +20,7 @@
 #include "SceneActors/Enemies/BaseEnemy.h"
 #include "Materials/MaterialInterface.h"
 #include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
+#include "SceneActors/Items/AnterBaseAnt.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -258,6 +259,41 @@ void AAnterPaperCharacter::HandleJump()
     }
 }
 
+void AAnterPaperCharacter::HandleAnt(AAnterBaseAnt* InAnt)
+{
+    if(InAnt != nullptr)
+    {
+        switch(InAnt->GetAntType())
+        {
+            case EAntCollectibleType::HealthBarRecharge:
+            {
+                if(AnterHealth != nullptr)
+                {
+                    AnterHealth->IncreaseHealth(InAnt->GetAntCollectiblePoints());
+                }
+                break;
+            }
+            case EAntCollectibleType::WeaponRecharge:
+            {
+                if(AnterWeapon != nullptr)
+                {
+                    AnterWeapon->IncreaseAmmos(InAnt->GetAntCollectiblePoints());
+                }
+                break;
+            }
+            case EAntCollectibleType::SpecialPowerRecharge:
+            {
+                //TODO we need to implement Anter powerup recharge system
+                break;
+            }
+            default:
+            {
+                //Do nothing
+            }
+        }
+    }
+}
+
 void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor)
 {
     UDamageComponent* PotentialDamage = Cast<UDamageComponent>(OtherActor->FindComponentByClass<UDamageComponent>());
@@ -281,6 +317,16 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
             //Colliding object was a platform
             HandlePlatform(CollisionGeometry,Platform);
             return;
+        }
+
+        //Else we check for Ant collectible
+        AAnterBaseAnt* AntCollectible = Cast<AAnterBaseAnt>(OtherActor);
+        if(AntCollectible != nullptr)
+        {
+             //Colliding object was a platform
+            HandleAnt(AntCollectible);
+            AntCollectible->Destroy();
+            return;           
         }
     }
 }   
