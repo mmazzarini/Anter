@@ -3,6 +3,7 @@
 
 void AAnterBaseAnt::BeginPlay()
 {
+    Super::BeginPlay();
 /*
     if(AnterSphere != nullptr)
     {

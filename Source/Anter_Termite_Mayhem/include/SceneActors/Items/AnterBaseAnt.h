@@ -18,7 +18,7 @@ enum class EAntCollectibleType : uint8
     SpecialPowerRecharge
 };
 
-UCLASS()
+UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterBaseAnt : public AActor
 {
     GENERATED_BODY()
