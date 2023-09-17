@@ -38,13 +38,15 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
         UFUNCTION()
         void OnTimerEnded();
 
+        //Updates the Internal Ammos Counter.
+        //NB InAmmosDifference can be both positive and negative, and must be specified.
+        void UpdateAmmos(float InAmmosDifference);
+
         //void OnOwnerMoving(float InAxisValue);
 
         void SetLaserDirection(FVector InLaserDirection){LaserDirection = InLaserDirection;}
 
         bool CanShoot(){return bCanShoot;}
-
-        void IncreaseAmmos(float InAmmos){InternalAmmosCounter = InAmmos;}
 
 protected:
 
@@ -74,6 +76,12 @@ protected:
 
     //Only for internal representation, can be accessed through Getter/Setter.
     float InternalAmmosCounter = 50.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Weapon Counting")
+    float MaxWeaponCounter = 100.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Weapon Counting")
+    bool ShouldUseWeaponCounter = false;
 
 };
 

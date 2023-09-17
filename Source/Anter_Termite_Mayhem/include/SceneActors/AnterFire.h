@@ -29,7 +29,9 @@ class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
 
     void SetMovementToRight(FVector InMovementDirection);
 
-    protected:
+    float GetConsumptionAmount(){return ConsumptionAmount;}
+
+protected:
 
     FVector MovementVector;
 
@@ -62,4 +64,7 @@ class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
     UPROPERTY(EditAnywhere, Category = "Fire Movement")
     float MovementMultiplier = 100.0f;
 
+    //Indicates how much weapon recharge this fire weapon consumes
+    UPROPERTY(EditAnywhere, Category = "Fire Consumption")
+    float ConsumptionAmount = 1.0f;
 };

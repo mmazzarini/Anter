@@ -1,6 +1,7 @@
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "Pawn/AnterPaperCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Math/UnrealMathUtility.h"
 
 UAnterWeaponComponent::UAnterWeaponComponent()
 : 
@@ -21,14 +22,21 @@ void UAnterWeaponComponent::ShootLaser()
             FRotator AnterRotation = OwnerActor->GetTransform().Rotator();
             FVector FirePosition = AnterPosition;
             FirePosition.X = AnterPosition.X + WeaponSpawnRange*LaserDirection.X;
-            AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
-            if(Fire != nullptr)
+            if(!ShouldUseWeaponCounter || (ShouldUseWeaponCounter && InternalAmmosCounter > 0.0f))
             {
-                Fire->SetMovementToRight(LaserDirection); 
-                Fire->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(Fire->GetActorLocation(),Fire->GetActorLocation()+LaserDirection),ETeleportType::None);
+                AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
+                if(Fire != nullptr)
+                {
+                    Fire->SetMovementToRight(LaserDirection); 
+                    Fire->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(Fire->GetActorLocation(),Fire->GetActorLocation()+LaserDirection),ETeleportType::None);
+                    if(ShouldUseWeaponCounter)
+                    {
+                        UpdateAmmos(-Fire->GetConsumptionAmount());
+                    }
+                }
+                SetCanShoot(false);
+                OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
             }
-            SetCanShoot(false);
-            OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
         }
     }
 }
@@ -42,4 +50,18 @@ void UAnterWeaponComponent::OnTimerEnded()
 {
     GetOwner()->GetWorldTimerManager().ClearTimer(FireTimerHandle);
     SetCanShoot(true);
+}
+
+void UAnterWeaponComponent::UpdateAmmos(float InAmmosDifference)
+{
+    if(InAmmosDifference > 0.0f || (InternalAmmosCounter >= abs(InAmmosDifference)))
+    {
+        InternalAmmosCounter += InAmmosDifference;
+        if(GEngine != nullptr)
+        {
+            GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("New Weapon number: ") + FString::SanitizeFloat(InternalAmmosCounter));
+        }
+    }
+
+    FMath::Clamp<float>(InternalAmmosCounter,0.0f,MaxWeaponCounter);
 }

@@ -277,7 +277,7 @@ void AAnterPaperCharacter::HandleAnt(AAnterBaseAnt* InAnt)
             {
                 if(AnterWeapon != nullptr)
                 {
-                    AnterWeapon->IncreaseAmmos(InAnt->GetAntCollectiblePoints());
+                    AnterWeapon->UpdateAmmos(InAnt->GetAntCollectiblePoints());
                 }
                 break;
             }
