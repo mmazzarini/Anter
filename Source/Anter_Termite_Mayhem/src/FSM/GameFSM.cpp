@@ -15,10 +15,10 @@ UGameFSM::~UGameFSM()
 }
 */
 
-void UGameFSM::AnterInitializer(UAnterFSMComponent* ContextObject)
+void UGameFSM::InitializeFSM(UObject* ContextObject)
 {
+    CurrentState.Reset();
     CreateFSMStates();
-    GetFSMStateIdentifiers();
     SetCurrentState(InitialStateString);
     if(ContextObject != nullptr)
     {
@@ -28,17 +28,24 @@ void UGameFSM::AnterInitializer(UAnterFSMComponent* ContextObject)
 
 void UGameFSM::SetCurrentState(FString InState)
 {
+    if(CurrentState.IsValid())
+    {
+        CurrentState->EndState();
+        CurrentState.Reset();
+    }
+
     FFSMStateSpecifier* CurrentPair = InternalArrayOfStates.FindByPredicate([=](FFSMStateSpecifier StateSpecifier)
     {
         return StateSpecifier.StateID == InState;
     });
-    if(CurrentPair)
+
+    if(CurrentPair != nullptr)
     {
         CurrentState = CurrentPair->FSMState;
     }  
     else
     {
-        CurrentState = nullptr;
+        CurrentState.Reset();
     }
 }
  
@@ -58,9 +65,10 @@ void UGameFSM::CreateFSMStates()
 void UGameFSM::AddFSMState(const TSubclassOf<UGameFSMState>& InSubclass)
 {
     FFSMStateSpecifier StateSpecifier;
-    StateSpecifier.StateID = "";
     StateSpecifier.FSMState = NewObject<UGameFSMState>(this, InSubclass);
+    check(StateSpecifier.FSMState != nullptr);
     StateSpecifier.FSMState->SetOwnerFSM(this);
+    StateSpecifier.StateID = StateSpecifier.FSMState->GetFSMStateID();
     InternalArrayOfStates.Push(StateSpecifier);
 }
 
@@ -71,14 +79,15 @@ void UGameFSM::SetupFSMStates()
     */
 }
 
-void UGameFSM::GetFSMStateIdentifiers()
+void UGameFSM::TransitionToState(FString InNewState)
 {
-    for(auto FSMSpecifier : InternalArrayOfStates)
+    //TODO implement
+}
+
+void UGameFSM::StartFSM()
+{
+    if(CurrentState.IsValid())
     {
-        UGameFSMState* FSMState = FSMSpecifier.FSMState;
-        if(FSMState != nullptr)
-        {
-            FSMSpecifier.StateID = FSMState->GetFSMStateID();
-        }
+        CurrentState->StartState();
     }
 }

@@ -11,10 +11,10 @@
 /*
 *
 * Anter Jump FSM class for defining FSM. This is an implementation of the base class
-*
+* 12 OCT 2023 - this class may be deprecated!! Use GameFSM!
 */
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UAnterFSM : public UGameFSM 
 {
 public:

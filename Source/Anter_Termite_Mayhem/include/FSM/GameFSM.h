@@ -5,12 +5,14 @@
 #include "Containers/Array.h"
 #include "GameFramework/Actor.h"
 #include "Components/ActorComponent.h"
+#include "UObject/WeakObjectPtrTemplates.h"
 
 #include "GameFSM.generated.h"
 
 
 class UGameFSMState;
-class UAnterFSMComponent;
+// #TODO_REFACTORING Please attach The FSM to a FSMComponent in the game state
+//class UAnterFSMComponent;
 
 USTRUCT()
 struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier 
@@ -31,7 +33,7 @@ struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier
 *
 */
   
-UCLASS(BlueprintType)
+UCLASS(BlueprintType,Blueprintable)
 class ANTER_TERMITE_MAYHEM_API UGameFSM : public UObject 
 {
 
@@ -40,11 +42,11 @@ class ANTER_TERMITE_MAYHEM_API UGameFSM : public UObject
 public:
 
     //Base function initializer
-    virtual void AnterInitializer(UAnterFSMComponent* ContextObject);
+    virtual void InitializeFSM(UObject* ContextObject);
 
     //State getter 
     UFUNCTION()
-    virtual UGameFSMState* GetCurrentState(){return CurrentState;}
+    virtual UGameFSMState* GetCurrentState() const {return CurrentState.Get();}
 
     //State setter
     UFUNCTION()
@@ -57,20 +59,17 @@ public:
     void AddFSMState(const TSubclassOf<UGameFSMState>& InSubclass);
 
     UFUNCTION()
-    virtual void GetFSMStateIdentifiers();
-
-    UFUNCTION()
     virtual void SetupFSMStates();
 
+    //This is used to transition to new state
+    virtual void TransitionToState(FString InNewState);
 
+    virtual void StartFSM();
 
 protected:
 
     UPROPERTY()
-    UGameFSMState* CurrentState = nullptr;
-
-    UPROPERTY(BlueprintReadWrite)
-    UGameFSMState* PreviousState = nullptr;
+    TWeakObjectPtr<UGameFSMState> CurrentState;
 
     UPROPERTY(EditAnywhere)
     FString InitialStateString;
@@ -85,5 +84,6 @@ protected:
 
     //Pointer to the actor component that owns this FSM state
     UPROPERTY()
-    UAnterFSMComponent* OwnerComponent;  
+    UObject* OwnerComponent;  
+    //Refactor with AnterFSMComponent
 };

@@ -4,10 +4,10 @@
 #include "UObject/Object.h"
 #include "Containers/Map.h"
 
-
 #include "GameFSMState.generated.h"
 
 class UGameFSM;
+class UAnterBasePage;
 
 /*
 *
@@ -15,7 +15,7 @@ class UGameFSM;
 *
 */
 
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UGameFSMState : public UObject 
 {
 public:
@@ -31,9 +31,18 @@ public:
     UFUNCTION()
     void SetOwnerFSM(UGameFSM* InOwnerFSM);
 
+    virtual void StartState();
+
+    virtual void CreatePage();
+
+    virtual void StartPage();
+
     UFUNCTION()
     virtual void TransitionToState(FString InState);
 
+    //This function is called when a button or any other bound widget triggers an action.
+    //TODO please refactor and put an input parameter, corresponding to the action (e.g. a label, 
+    //e.g. to help transition to)
     UFUNCTION()
     virtual void OnActionExecuted();
    
@@ -41,13 +50,13 @@ public:
     UFUNCTION()
     FString GetFSMStateID();
 
+    UFUNCTION()
+    void EndState();
+
 protected:
 
     UPROPERTY(BlueprintReadWrite)    
     TMap<FString, TSubclassOf<UGameFSM> > MapOfStateTransitions; //default empty array of states
-
-    UFUNCTION()
-    void KillState();
 
     UPROPERTY(BlueprintReadWrite)
     UGameFSM* OwnerFSM = nullptr;
@@ -56,4 +65,14 @@ protected:
     FString FSMStateID = "GameFSMStateID"; //GameFSMStateID is the default identifier for the GameFSMStates. For each subclass,
     //this can be redefined via blueprint defaults. 
 
+    //Reference to Widget for the current state. 
+    //MainWidget may be a MenuPage, a HUDPage...therefore this is generic and must be specified in the derived classes
+    UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Page Config")
+    UAnterBasePage* MainPage;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Page Config")
+    TSubclassOf<UAnterBasePage> MainPageClass;
+
+    UPROPERTY(EditDefaultsOnly,Category = "Page Config")
+    FName MainPageName;
 };
