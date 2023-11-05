@@ -20,11 +20,24 @@ struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier
 
     GENERATED_BODY()
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY()
     FString StateID;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY()
     UGameFSMState* FSMState;
+};
+
+//Can be used to handle navigation between states with specific IDs, using a map of action-to-transition strings.
+USTRUCT()
+struct ANTER_TERMITE_MAYHEM_API FFSMStateNavigationHandler
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditInstanceOnly)
+    FString StateID;
+
+    UPROPERTY(EditInstanceOnly)
+    TMap<FString,FString> ActionTransitionMap;
 };
 
 /*
@@ -56,13 +69,13 @@ public:
     UFUNCTION()
     void CreateFSMStates();
 
-    void AddFSMState(const TSubclassOf<UGameFSMState>& InSubclass);
+    void AddFSMState(const FString& InClassID, const TSubclassOf<UGameFSMState>& InSubclass);
 
     UFUNCTION()
     virtual void SetupFSMStates();
 
     //This is used to transition to new state
-    virtual void TransitionToState(FString InNewState);
+    virtual void TransitionToState(FString InAction);
 
     virtual void StartFSM();
 
@@ -76,7 +89,7 @@ protected:
 
     //This array can be filled by designers in BP to create the set of states to build the array
     UPROPERTY(EditAnywhere)
-    TArray<TSubclassOf<UGameFSMState>> ArrayOfTSubclassStates;
+    TMap<FString,TSubclassOf<UGameFSMState>> MapOfTSubclassStates;
 
     //Actual Array of FSM States. This is the core property.
     UPROPERTY()
@@ -86,4 +99,7 @@ protected:
     UPROPERTY()
     UObject* OwnerComponent;  
     //Refactor with AnterFSMComponent
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<FFSMStateNavigationHandler> FSMNavigator;
 };

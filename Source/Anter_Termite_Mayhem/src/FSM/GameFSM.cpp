@@ -10,7 +10,7 @@ UGameFSM::UGameFSM(const FObjectInitializer& ObjectInitializer)
 }
 
 
-UGameFSM::~UGameFSM()
+UGameFSM::~UGameFSM()z
 {
 }
 */
@@ -24,6 +24,7 @@ void UGameFSM::InitializeFSM(UObject* ContextObject)
     {
         OwnerComponent = ContextObject;
     }
+    StartFSM();
 }
 
 void UGameFSM::SetCurrentState(FString InState)
@@ -52,23 +53,26 @@ void UGameFSM::SetCurrentState(FString InState)
 //Create the FSM States
 void UGameFSM::CreateFSMStates()
 {
-    if(ArrayOfTSubclassStates.Num()!=0)
+    if(MapOfTSubclassStates.Num()!=0)
     {
-        for(auto FSMStateSubclass : ArrayOfTSubclassStates)
+        for(auto FSMStatePair : MapOfTSubclassStates)
         {
-            AddFSMState(FSMStateSubclass);
+            AddFSMState(FSMStatePair.Key, FSMStatePair.Value);
         }
     }
  
 }
 
-void UGameFSM::AddFSMState(const TSubclassOf<UGameFSMState>& InSubclass)
+void UGameFSM::AddFSMState(const FString& InClassID, const TSubclassOf<UGameFSMState>& InSubclass)
 {
+    //Let's build the internal Array of states, by adding a new state and ID
     FFSMStateSpecifier StateSpecifier;
     StateSpecifier.FSMState = NewObject<UGameFSMState>(this, InSubclass);
     check(StateSpecifier.FSMState != nullptr);
     StateSpecifier.FSMState->SetOwnerFSM(this);
-    StateSpecifier.StateID = StateSpecifier.FSMState->GetFSMStateID();
+    StateSpecifier.StateID = InClassID;
+    // #TODO Remove  this, check it is not useful.
+    StateSpecifier.FSMState->SetFSMStateID(InClassID);
     InternalArrayOfStates.Push(StateSpecifier);
 }
 
@@ -79,9 +83,23 @@ void UGameFSM::SetupFSMStates()
     */
 }
 
-void UGameFSM::TransitionToState(FString InNewState)
+void UGameFSM::TransitionToState(FString InAction)
 {
-    //TODO implement
+    FString CurrID = (CurrentState != nullptr ? CurrentState->GetFSMStateID() : "");
+
+    FFSMStateNavigationHandler* NavElementRef = FSMNavigator.FindByPredicate([CurrID](const FFSMStateNavigationHandler& NavElem)
+    {
+        return NavElem.StateID == CurrID;
+    });
+    if(NavElementRef != nullptr)
+    {
+        SetCurrentState(NavElementRef->ActionTransitionMap[InAction]);
+    }
+
+    if(CurrentState != nullptr)
+    {
+        CurrentState->StartState();        
+    }
 }
 
 void UGameFSM::StartFSM()

@@ -44,24 +44,26 @@ public:
     //TODO please refactor and put an input parameter, corresponding to the action (e.g. a label, 
     //e.g. to help transition to)
     UFUNCTION()
-    virtual void OnActionExecuted();
+    virtual void OnActionExecuted(FString InTriggerName);
    
     //Getter function for the identifier of the FSMState
     UFUNCTION()
     FString GetFSMStateID();
+
+    void SetFSMStateID(const FString& InStateID){FSMStateID = InStateID;}
 
     UFUNCTION()
     void EndState();
 
 protected:
 
-    UPROPERTY(BlueprintReadWrite)    
-    TMap<FString, TSubclassOf<UGameFSM> > MapOfStateTransitions; //default empty array of states
+    UPROPERTY(EditInstanceOnly)    
+    TMap<FString, FString > MapOfStateTransitions; //default empty array of states
 
     UPROPERTY(BlueprintReadWrite)
     UGameFSM* OwnerFSM = nullptr;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY()
     FString FSMStateID = "GameFSMStateID"; //GameFSMStateID is the default identifier for the GameFSMStates. For each subclass,
     //this can be redefined via blueprint defaults. 
 

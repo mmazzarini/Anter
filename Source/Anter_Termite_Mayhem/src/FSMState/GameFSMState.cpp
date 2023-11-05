@@ -16,7 +16,7 @@ void UGameFSMState::SetOwnerFSM(UGameFSM* InOwnerFSM)
 
 void UGameFSMState::StartState()
 {
-
+    CreatePage();
 }
 
 void UGameFSMState::CreatePage()
@@ -30,19 +30,23 @@ void UGameFSMState::StartPage()
 {
     if(MainPage != nullptr)
     {
-        MainPage->Initialize();
+        MainPage->AddToViewport();
+        MainPage->InitializePage();
+        MainPage->ActionDelegate.AddDynamic(this,&UGameFSMState::OnActionExecuted);
     }
 }
+
 void UGameFSMState::TransitionToState(FString InState)
 {
     if(OwnerFSM != nullptr)
     {
-        OwnerFSM->TransitionToState(InState);
+        OwnerFSM->TransitionToState(MapOfStateTransitions[InState]);
     }
 }
 
-void UGameFSMState::OnActionExecuted()
+void UGameFSMState::OnActionExecuted(FString InTriggerName)
 {
+    TransitionToState(InTriggerName);
     //This should handle execution of actions triggered by a bound widget
 }
 
@@ -53,7 +57,12 @@ FString UGameFSMState::GetFSMStateID()
 
 void UGameFSMState::EndState()
 {
-    //this->BeginDestroy();
-    //Do operations to End FSMState's execution (e.g. unbind from page etc)
+    if(MainPage != nullptr)
+    {
+        MainPage->ActionDelegate.RemoveDynamic(this,&UGameFSMState::OnActionExecuted);
+        MainPage->UninitializePage();
+        MainPage->RemoveFromViewport();
+        MainPage = nullptr;
+    }
 }
 
