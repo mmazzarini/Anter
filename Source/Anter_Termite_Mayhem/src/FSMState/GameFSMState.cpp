@@ -3,8 +3,9 @@
 #include "UI/AnterWidgets/AnterBasePage.h"
 #include "FSM/GameFSM.h"
 
-UGameFSMState::UGameFSMState()
+UGameFSMState::UGameFSMState(const FObjectInitializer& ObjectInitializer)
 :
+Super(ObjectInitializer),
 OwnerFSM(nullptr)
 {   
 }
@@ -21,7 +22,10 @@ void UGameFSMState::StartState()
 
 void UGameFSMState::CreatePage()
 {
-    MainPage = CreateWidget<UAnterBasePage>(GetWorld(),MainPageClass,MainPageName);
+    if(MainPage == nullptr)
+    {
+        MainPage = CreateWidget<UAnterBasePage>(GetWorld(),MainPageClass,MainPageName);
+    }
     check(MainPage != nullptr);
     StartPage();
 }
@@ -40,7 +44,10 @@ void UGameFSMState::TransitionToState(FString InState)
 {
     if(OwnerFSM != nullptr)
     {
-        OwnerFSM->TransitionToState(MapOfStateTransitions[InState]);
+        if(FString* RequestedString = MapOfStateTransitions.Find(InState))
+        {
+            OwnerFSM->TransitionToState(*RequestedString);
+        }
     }
 }
 
@@ -62,7 +69,13 @@ void UGameFSMState::EndState()
         MainPage->ActionDelegate.RemoveDynamic(this,&UGameFSMState::OnActionExecuted);
         MainPage->UninitializePage();
         MainPage->RemoveFromViewport();
-        MainPage = nullptr;
     }
 }
 
+void UGameFSMState::SetMapOfStateTransitions(const TMap<FString, FString >& InMapOfStateTransitions)
+{
+    for(auto& StateElem : InMapOfStateTransitions)
+    {
+        MapOfStateTransitions.Add(StateElem);
+    }
+}

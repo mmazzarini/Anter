@@ -19,6 +19,7 @@ void UGameFSM::InitializeFSM(UObject* ContextObject)
 {
     CurrentState.Reset();
     CreateFSMStates();
+    SetupFSMStates();
     SetCurrentState(InitialStateString);
     if(ContextObject != nullptr)
     {
@@ -78,13 +79,27 @@ void UGameFSM::AddFSMState(const FString& InClassID, const TSubclassOf<UGameFSMS
 
 void UGameFSM::SetupFSMStates()
 {
-    /*
-
-    */
+    for(FFSMStateSpecifier InternalState : InternalArrayOfStates)
+    {
+        if(InternalState.FSMState != nullptr)
+        {
+            FFSMStateNavigationHandler* RequestedElem = FSMNavigator.FindByPredicate([&InternalState](const FFSMStateNavigationHandler NavigatorElem)
+            {
+                return NavigatorElem.StateID == InternalState.StateID;
+            });
+            if(RequestedElem != nullptr)
+            {
+                InternalState.FSMState->SetMapOfStateTransitions(RequestedElem->ActionTransitionMap);
+            }
+        }
+    }
 }
 
-void UGameFSM::TransitionToState(FString InAction)
+void UGameFSM::TransitionToState(FString InStateID)
 {
+
+    SetCurrentState(*InStateID);
+    /*
     FString CurrID = (CurrentState != nullptr ? CurrentState->GetFSMStateID() : "");
 
     FFSMStateNavigationHandler* NavElementRef = FSMNavigator.FindByPredicate([CurrID](const FFSMStateNavigationHandler& NavElem)
@@ -93,8 +108,13 @@ void UGameFSM::TransitionToState(FString InAction)
     });
     if(NavElementRef != nullptr)
     {
-        SetCurrentState(NavElementRef->ActionTransitionMap[InAction]);
+        if(FString* RequestedString = NavElementRef->ActionTransitionMap.Find(InState))
+        {
+            SetCurrentState(*RequestedString);
+        }
+        
     }
+    */
 
     if(CurrentState != nullptr)
     {

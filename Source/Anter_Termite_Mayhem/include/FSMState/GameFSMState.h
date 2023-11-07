@@ -22,7 +22,7 @@ public:
 
     GENERATED_BODY()
     //Constructor
-    UGameFSMState();
+    UGameFSMState(const FObjectInitializer& ObjectInitializer);
  
   //State getter 
     UFUNCTION()
@@ -55,10 +55,9 @@ public:
     UFUNCTION()
     void EndState();
 
-protected:
+    void SetMapOfStateTransitions(const TMap<FString, FString >& InMapOfStateTransitions);
 
-    UPROPERTY(EditInstanceOnly)    
-    TMap<FString, FString > MapOfStateTransitions; //default empty array of states
+protected:
 
     UPROPERTY(BlueprintReadWrite)
     UGameFSM* OwnerFSM = nullptr;
@@ -74,6 +73,10 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Page Config")
     TSubclassOf<UAnterBasePage> MainPageClass;
+
+    //Internal map of state transitions. Filled by FSM, read to communicate transition to FSM
+    UPROPERTY()
+    TMap<FString, FString > MapOfStateTransitions;
 
     UPROPERTY(EditDefaultsOnly,Category = "Page Config")
     FName MainPageName;

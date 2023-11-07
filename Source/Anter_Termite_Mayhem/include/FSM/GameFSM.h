@@ -71,11 +71,12 @@ public:
 
     void AddFSMState(const FString& InClassID, const TSubclassOf<UGameFSMState>& InSubclass);
 
+    //Used to fill array of transitions in FSMStates
     UFUNCTION()
     virtual void SetupFSMStates();
 
     //This is used to transition to new state
-    virtual void TransitionToState(FString InAction);
+    virtual void TransitionToState(FString InStateID);
 
     virtual void StartFSM();
 

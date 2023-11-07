@@ -12,10 +12,10 @@ void UAnterBaseButton::FireAction()
 
 void UAnterBaseButton::InitializeAnterWidget()
 {
-    OnPressed.AddDynamic(this,&UAnterBaseButton::FireAction);
+    OnClicked.AddDynamic(this,&UAnterBaseButton::FireAction);
 }
 
 void UAnterBaseButton::UninitializeAnterWidget()
 {
-    OnPressed.RemoveDynamic(this,&UAnterBaseButton::FireAction);
+    OnClicked.RemoveDynamic(this,&UAnterBaseButton::FireAction);
 }

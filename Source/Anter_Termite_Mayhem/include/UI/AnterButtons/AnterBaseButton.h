@@ -17,7 +17,7 @@ public:
 
     UAnterBaseButton(const FObjectInitializer& ObjectInitializer);
 
-    UFUNCTION()
+    UFUNCTION(BlueprintCallable)
     void FireAction();
 
     virtual void InitializeAnterWidget() override;
