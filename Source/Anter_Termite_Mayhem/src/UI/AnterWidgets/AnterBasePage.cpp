@@ -30,7 +30,7 @@ void UAnterBasePage::UninitializePage()
                 CastedChild->UninitializeAnterWidget();
                 CastedChild->OnActionFired.RemoveDynamic(this,&UAnterBasePage::OnActionExecuted);
             }
-            ChildWidget->RemoveFromParent();
+            //ChildWidget->RemoveFromParent();
         }
     }
 }

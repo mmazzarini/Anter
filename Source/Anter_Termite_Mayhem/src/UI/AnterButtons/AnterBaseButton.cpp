@@ -5,17 +5,19 @@ UAnterBaseButton::UAnterBaseButton(const FObjectInitializer& ObjectInitializer)
 {
 }
 
-void UAnterBaseButton::FireAction()
+FReply UAnterBaseButton::NativeOnMouseButtonUp(const FGeometry & InGeometry, const FPointerEvent & InMouseEvent)
 {
+    Super::NativeOnMouseButtonUp(InGeometry, InMouseEvent);
     OnActionFired.Broadcast(ButtonAction);
+    return FReply::Handled();
 }
 
 void UAnterBaseButton::InitializeAnterWidget()
 {
-    OnClicked.AddDynamic(this,&UAnterBaseButton::FireAction);
+    //OnClicked.AddDynamic(this,&UAnterBaseButton::FireAction);
 }
 
 void UAnterBaseButton::UninitializeAnterWidget()
 {
-    OnClicked.RemoveDynamic(this,&UAnterBaseButton::FireAction);
+    //OnClicked.RemoveDynamic(this,&UAnterBaseButton::FireAction);
 }
