@@ -2,7 +2,6 @@
 
 #include "GameFramework/Actor.h"
 #include "PaperCharacter.h"
-#include "ActorComponents/AnterFSMComponent.h"
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 #include "Components/StaticMeshComponent.h"

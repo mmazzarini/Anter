@@ -14,6 +14,7 @@ class UGameFSMState;
 // #TODO_REFACTORING Please attach The FSM to a FSMComponent in the game state
 //class UAnterFSMComponent;
 
+/*
 USTRUCT()
 struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier 
 {
@@ -26,6 +27,7 @@ struct ANTER_TERMITE_MAYHEM_API FFSMStateSpecifier
     UPROPERTY()
     UGameFSMState* FSMState;
 };
+*/
 
 //Can be used to handle navigation between states with specific IDs, using a map of action-to-transition strings.
 USTRUCT()
@@ -63,22 +65,25 @@ public:
 
     //State setter
     UFUNCTION()
-    virtual void SetCurrentState(FString InState);
+    virtual void SetCurrentState(FString InStateID);
 
     //This function is called at construction time to create instances of the states
     UFUNCTION()
-    void CreateFSMStates();
-
-    void AddFSMState(const FString& InClassID, const TSubclassOf<UGameFSMState>& InSubclass);
+    void RegisterFSMStates();
 
     //Used to fill array of transitions in FSMStates
+    /*
     UFUNCTION()
     virtual void SetupFSMStates();
+    */
 
     //This is used to transition to new state
     virtual void TransitionToState(FString InStateID);
 
+    //Used to start the FSM from the first assigned state
     virtual void StartFSM();
+
+    UObject* GetOwnerComponent(){return OwnerComponent;}
 
 protected:
 
@@ -89,12 +94,12 @@ protected:
     FString InitialStateString;
 
     //This array can be filled by designers in BP to create the set of states to build the array
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditDefaultsOnly)
     TMap<FString,TSubclassOf<UGameFSMState>> MapOfTSubclassStates;
 
     //Actual Array of FSM States. This is the core property.
-    UPROPERTY()
-    TArray<FFSMStateSpecifier> InternalArrayOfStates; //array of FSM states
+    UPROPERTY(EditDefaultsOnly, Instanced)
+    TArray<UGameFSMState*> InternalArrayOfStates; //array of FSM states
 
     //Pointer to the actor component that owns this FSM state
     UPROPERTY()

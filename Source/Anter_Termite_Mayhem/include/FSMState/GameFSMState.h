@@ -15,7 +15,7 @@ class UAnterBasePage;
 *
 */
 
-UCLASS(Blueprintable, BlueprintType)
+UCLASS(Blueprintable, BlueprintType, EditInlineNew)
 class ANTER_TERMITE_MAYHEM_API UGameFSMState : public UObject 
 {
 public:
@@ -31,7 +31,8 @@ public:
     UFUNCTION()
     void SetOwnerFSM(UGameFSM* InOwnerFSM);
 
-    virtual void StartState();
+    UFUNCTION(BlueprintNativeEvent)
+    void StartState();
 
     virtual void CreatePage();
 
@@ -62,22 +63,19 @@ protected:
     UPROPERTY(BlueprintReadWrite)
     UGameFSM* OwnerFSM = nullptr;
 
-    UPROPERTY()
+    UPROPERTY(EditInstanceOnly, Category = "State ID")
     FString FSMStateID = "GameFSMStateID"; //GameFSMStateID is the default identifier for the GameFSMStates. For each subclass,
     //this can be redefined via blueprint defaults. 
 
     //Reference to Widget for the current state. 
     //MainWidget may be a MenuPage, a HUDPage...therefore this is generic and must be specified in the derived classes
-    UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Page Config")
+    UPROPERTY()
     UAnterBasePage* MainPage;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Page Config")
+    UPROPERTY(EditInstanceOnly, Category = "Page Config")
     TSubclassOf<UAnterBasePage> MainPageClass;
 
     //Internal map of state transitions. Filled by FSM, read to communicate transition to FSM
-    UPROPERTY()
+    UPROPERTY(EditInstanceOnly, Category = "Transitions map")
     TMap<FString, FString > MapOfStateTransitions;
-
-    UPROPERTY(EditDefaultsOnly,Category = "Page Config")
-    FName MainPageName;
 };

@@ -15,7 +15,7 @@ void UGameFSMState::SetOwnerFSM(UGameFSM* InOwnerFSM)
     OwnerFSM = InOwnerFSM;
 }
 
-void UGameFSMState::StartState()
+void UGameFSMState::StartState_Implementation()
 {
     CreatePage();
 }
@@ -24,10 +24,12 @@ void UGameFSMState::CreatePage()
 {
     if(MainPage == nullptr)
     {
-        MainPage = CreateWidget<UAnterBasePage>(GetWorld(),MainPageClass,MainPageName);
+        MainPage = CreateWidget<UAnterBasePage>(GetWorld(),MainPageClass,TEXT(""));
     }
-    check(MainPage != nullptr);
-    StartPage();
+    if(MainPage != nullptr)
+    {
+        StartPage();
+    }
 }
 
 void UGameFSMState::StartPage()
