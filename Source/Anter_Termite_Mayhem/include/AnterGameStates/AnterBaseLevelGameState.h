@@ -35,6 +35,8 @@ public:
 
     void SetLevelCompletionState(ELevelCompletionState InLevelCompletion){LevelCompletion = InLevelCompletion;}
 
+    void BindToPlayerStates();
+
     ELevelCompletionState GetLevelCompletionState(){return LevelCompletion;}
 
     FOnGameStateDeathReached OnDeathReached;

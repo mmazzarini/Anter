@@ -1,10 +1,9 @@
 #pragma once 
 
 #include "SceneActors/Platforms/BasePlatform.h"
+#include "Pawn/AnterPaperCharacter.h"
 
 #include "MovingPlatform.generated.h"
-
-class AAnterPaperCharacter;
 
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AMovingPlatform : public ABasePlatform
@@ -29,5 +28,6 @@ protected:
 
     AAnterPaperCharacter* Anter;
 
+    TPair<AActor*,EPlatformCollisionType>* CandidateCollision;
     
 };

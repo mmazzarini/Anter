@@ -260,7 +260,6 @@ float LastVelocityX;
 //Array of information about vertical collisions with platforms
 TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
 
-
 FGeometron AnterGeometron;
 
 UPROPERTY()
@@ -288,6 +287,12 @@ UMaterialInterface* FlickeringMaterial;
 UMaterialInterface* DefaultMaterial;
 
 EAnterVerticalMotionStatus VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
+
+/*Subclass for lethal objects*/
+
+//You die as you touch it
+UPROPERTY(EditDefaultsOnly)
+TSubclassOf<AActor> LethalInstantActorClass;
 
 };
 

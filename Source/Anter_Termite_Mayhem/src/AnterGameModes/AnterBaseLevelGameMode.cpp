@@ -127,6 +127,13 @@ void AAnterBaseLevelGameMode::UpdatePlayerStartPosition(ALevelCheckpoint* InChec
 void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
+    if(GameState != nullptr)
+    {
+        if(AAnterBaseLevelGameState* CastedGameState = Cast<AAnterBaseLevelGameState>(GameState))
+        {
+            CastedGameState->BindToPlayerStates(); 
+        }
+    }
 }
 
 void AAnterBaseLevelGameMode::StartFSM()

@@ -31,6 +31,10 @@ public:
 
     virtual void SetSpeed(float InSpeed);
 
+    virtual void PauseSpeed();
+
+    virtual void ResetSpeed();
+
     virtual void UpdateMovement();
 
     /*
@@ -62,5 +66,8 @@ protected:
 
     /* This is used to invert speed */
     void InvertSpeed();
+
+    /* This is used to store speed when paused */
+    float BackupSpeed;
 
 };

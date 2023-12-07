@@ -24,6 +24,7 @@ void UMovingActorMovementSupportComponent::TickComponent(float DeltaTime, enum E
 {
     UpdateMovement();
 }
+
 void UMovingActorMovementSupportComponent::StartToMove()
 {
     PivotState = EEnemyPivotState::HasStartedMoving; 
@@ -44,17 +45,20 @@ void UMovingActorMovementSupportComponent::MoveToNextPivot()
 
 void UMovingActorMovementSupportComponent::UpdateMovement()
 {
-    if(PivotState == EEnemyPivotState::HasBeenFilled)
+    if(bIsMovementActive)
     {
-        StartToMove();
-    }
-    if(OwningActor != nullptr)
-    {
-        FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
-        float PivotDist = FVector::Dist(OwningActor->GetActorLocation(),CurrentPositionToReach);
-        if(CurrentPivotPositions.Num()>0 && PivotDist < PivotDistanceThreshold)
+        if(PivotState == EEnemyPivotState::HasBeenFilled)
         {
-            MoveToNextPivot();
+            StartToMove();
+        }
+        if(OwningActor != nullptr)
+        {
+            FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
+            float PivotDist = FVector::Dist(OwningActor->GetActorLocation(),CurrentPositionToReach);
+            if(CurrentPivotPositions.Num()>0 && PivotDist < PivotDistanceThreshold)
+            {
+                MoveToNextPivot();
+            }
         }
     }
 }
@@ -63,7 +67,19 @@ void UMovingActorMovementSupportComponent::SwitchOrientation()
 {
     if(LoopBehavior == EEnemyLoopBehavior::GoesBackward)
     {
-        CurrentPivotPositions = (( CurrentPivotPositions == PivotPositions ) ? ReversePivotPositions : PivotPositions);
+        if(CurrentPivotPositions == PivotPositions)
+        {
+            CurrentPivotPositions = ReversePivotPositions;
+        }
+        else
+        {
+            CurrentPivotPositions = PivotPositions;
+            OnMovementCompleted.Broadcast();
+        }
+    }
+    else
+    {
+        OnMovementCompleted.Broadcast();
     }
     PivotArrayIndex = 0;
 }

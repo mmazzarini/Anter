@@ -1,5 +1,4 @@
 #include "SceneActors/Platforms/MovingPlatform.h"
-#include "Pawn/AnterPaperCharacter.h"
 #include "Kismet/GameplayStatics.h"
 
 AMovingPlatform::AMovingPlatform()
@@ -30,7 +29,7 @@ void AMovingPlatform::UpdateMovement()
     if(Anter != nullptr)
     {
         TArray<TPair<AActor*,EPlatformCollisionType>> PlatformCollisions = Anter->GetResigsteredPlatformCollisions();
-        TPair<AActor*,EPlatformCollisionType>* CandidateCollision = PlatformCollisions.FindByPredicate([this](TPair<AActor*,EPlatformCollisionType> TPAEColl)
+        CandidateCollision = PlatformCollisions.FindByPredicate([this](TPair<AActor*,EPlatformCollisionType> TPAEColl)
         {
             return (TPAEColl.Key == this);
         });

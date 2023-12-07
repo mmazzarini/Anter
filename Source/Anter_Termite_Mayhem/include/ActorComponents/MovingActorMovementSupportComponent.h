@@ -13,6 +13,8 @@ This class is used to handle movement of moving actors, can be attached to any m
 enemies, that alreadty have integrated movement support. So this is a generalization for future moving-actor implementations.
 */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMovementCompletedDelegate);
+
 UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UMovingActorMovementSupportComponent : public USceneComponent
 {
@@ -51,6 +53,12 @@ public:
 
     void SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior);
 
+    void SetIsMovementActive(bool InMovementActive){bIsMovementActive = InMovementActive;}
+
+    bool GetIsMovementActive(){return bIsMovementActive;}
+
+    FOnMovementCompletedDelegate OnMovementCompleted;
+
 protected:
 
     UPROPERTY(BlueprintReadWrite)
@@ -80,5 +88,8 @@ protected:
 
     //Internal reference to owning actor
     AActor* OwningActor;
+
+    //Used to block or activate movement update
+    bool bIsMovementActive = true;
 
 };

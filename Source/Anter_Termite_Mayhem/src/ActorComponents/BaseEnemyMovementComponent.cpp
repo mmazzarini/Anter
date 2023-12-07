@@ -31,6 +31,16 @@ void UBaseEnemyMovementComponent::SetSpeed(float InSpeed)
     InternalMovementSpeed = InSpeed;
 }
 
+void UBaseEnemyMovementComponent::PauseSpeed()
+{
+    BackupSpeed = InternalMovementSpeed;
+    SetSpeed(0.0f);
+} 
+
+void UBaseEnemyMovementComponent::ResetSpeed()
+{
+    SetSpeed(BackupSpeed);
+}
 void UBaseEnemyMovementComponent::UpdateMovement()
 {
     if(OwnerEnemy != nullptr)

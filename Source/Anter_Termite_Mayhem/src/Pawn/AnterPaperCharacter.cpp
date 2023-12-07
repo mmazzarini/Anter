@@ -328,6 +328,16 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
             AntCollectible->Destroy();
             return;           
         }
+
+        if(OtherActor->GetClass()->IsChildOf(LethalInstantActorClass))
+        {
+            if(AnterHealth != nullptr)
+            {   
+                //Kill
+                AnterHealth->UpdateHealth(0.0f);
+            }
+
+        }
     }
 }   
 
