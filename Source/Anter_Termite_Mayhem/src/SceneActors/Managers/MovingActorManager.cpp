@@ -10,43 +10,32 @@ void AMovingActorManager::BeginPlay()
     Super::BeginPlay();
 
     CreateActor();
-    
-    if(MovingActor != nullptr)
-    {
-        MovingActorMovementSupport = Cast<UMovingActorMovementSupportComponent>(MovingActor->FindComponentByClass(UMovingActorMovementSupportComponent::StaticClass()));
-        if(MovingActorMovementSupport != nullptr)
-        {
-            MovingActorMovementSupport->SetPivotDistanceThreshold(MovingActorPivotDistanceThreshold);
-        }
-    }
 
-    if(MovingActorPositions.Num() > 0)
-    {
-        FillActorPositions();
-    }
-    
+    FillActorPositions();
+        
     InjectActorBehavior();
 
 }
 
 void AMovingActorManager::FillActorPositions()
 {
-    TArray<FVector> CorrectedPositions;
-    for(FVector MovingActorPosition : MovingActorPositions)
+    if(MovingActorPositions.Num() > 0)
     {
-        CorrectedPositions.Add(MovingActorPosition + this->GetActorLocation());
-    } 
+        TArray<FVector> CorrectedPositions;
+        for(FVector MovingActorPosition : MovingActorPositions)
+        {
+            CorrectedPositions.Add(MovingActorPosition + this->GetActorLocation());
+        } 
 
-    if(MovingActorMovementSupport != nullptr)
-    {
-        MovingActorMovementSupport->FillPositionArrays(CorrectedPositions);
+        if(MovingActorMovementSupport != nullptr)
+        {
+            MovingActorMovementSupport->FillPositionArrays(CorrectedPositions);
+        }
     }
-
 }
 
 void AMovingActorManager::InjectActorBehavior()
 {
-    
     if(MovingActorMovementSupport != nullptr)
     {
         MovingActorMovementSupport->SetLoopBehavior(MovingActorLoopBehavior);
@@ -55,8 +44,9 @@ void AMovingActorManager::InjectActorBehavior()
 
 void AMovingActorManager::CreateActor()
 {
-    if(MovingActor == nullptr)
+    if((MovingActor != nullptr && MovingActor->IsPendingKill()) || MovingActor == nullptr)
     {
+        MovingActor = nullptr;
         if(MovingActorPositions.Num() > 0)
         {   
             MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,MovingActorPositions[0]+GetActorLocation(),GetActorRotation());
@@ -64,6 +54,15 @@ void AMovingActorManager::CreateActor()
         else
         {
             MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,GetActorLocation(),GetActorRotation());
+        }
+    }
+
+    if(MovingActor != nullptr)
+    {
+        MovingActorMovementSupport = Cast<UMovingActorMovementSupportComponent>(MovingActor->FindComponentByClass(UMovingActorMovementSupportComponent::StaticClass()));
+        if(MovingActorMovementSupport != nullptr)
+        {
+            MovingActorMovementSupport->SetPivotDistanceThreshold(MovingActorPivotDistanceThreshold);
         }
     }
 }

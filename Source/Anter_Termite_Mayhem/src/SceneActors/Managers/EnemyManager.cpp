@@ -3,6 +3,8 @@
 #include "SceneActors/Enemies/BaseEnemyBoundary.h"
 #include "SceneUtilities/SceneStructs.h"
 #include "ActorComponents/HealthComponent.h"
+#include "AnterGameModes/AnterBaseLevelGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "EngineUtils.h"
 
@@ -11,34 +13,34 @@ void AEnemyManager::BeginPlay()
     Super::BeginPlay();
     CreateActor();
     //The following has to be moved into CreateEnemy
-    
-    if(Enemy != nullptr)
-    {
-        Enemy->SetPivotDistanceThreshold(EnemyPivotDistanceThreshold);
-    }
 
-    if(EnemyPositions.Num() > 0)
-    {
-        FillActorPositions();
-    }
+    FillActorPositions();
     
     InjectActorBehavior();
 
     SetBindings();
-    
+
+    if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(this)))
+    {
+        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&AEnemyManager::SetBindings);
+    }
+
 }
 
 void AEnemyManager::FillActorPositions()
 {
-    TArray<FVector> CorrectedPositions;
-    for(FVector EnemyPosition : EnemyPositions)
+    if(EnemyPositions.Num() > 0)
     {
-        CorrectedPositions.Add(EnemyPosition + this->GetActorLocation());
-    } 
+        TArray<FVector> CorrectedPositions;
+        for(FVector EnemyPosition : EnemyPositions)
+        {
+            CorrectedPositions.Add(EnemyPosition + this->GetActorLocation());
+        } 
 
-    if(Enemy != nullptr)
-    {
-        Enemy->FillPositionArrays(CorrectedPositions);
+        if(Enemy != nullptr)
+        {
+            Enemy->FillPositionArrays(CorrectedPositions);
+        }
     }
 }
 
@@ -78,8 +80,9 @@ void AEnemyManager::OnEnemyDeath()
 
 void AEnemyManager::CreateActor()
 {
-    if(Enemy == nullptr)
+    if((Enemy != nullptr && Enemy->IsPendingKill()) || Enemy == nullptr)
     {
+        Enemy = nullptr;
         if(EnemyPositions.Num() > 0)
         {   
             Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,EnemyPositions[0]+GetActorLocation(),GetActorRotation());
@@ -88,5 +91,10 @@ void AEnemyManager::CreateActor()
         {
             Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
         }
+    }
+
+    if(Enemy != nullptr)
+    {
+        Enemy->SetPivotDistanceThreshold(EnemyPivotDistanceThreshold);
     }
 }

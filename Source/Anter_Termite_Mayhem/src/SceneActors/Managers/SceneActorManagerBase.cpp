@@ -14,4 +14,6 @@ void ASceneActorManagerBase::ProceedToActorCreation()
 {
     //This must be overridden
     CreateActor();
+    FillActorPositions();
+    InjectActorBehavior();
 }

@@ -25,6 +25,7 @@ public:
 
     void InjectActorBehavior() override;
 
+    UFUNCTION()
     void SetBindings();
 
     //We handle Enemy death through this manager function
