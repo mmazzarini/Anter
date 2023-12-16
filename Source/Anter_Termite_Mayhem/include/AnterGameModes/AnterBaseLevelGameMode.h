@@ -28,6 +28,9 @@ class AEnemyManager;
 class ACrateManager;
 class ULevelManagerComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelRestarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerRestarted);
+
 UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameMode : public AGameModeBase
 {
@@ -70,9 +73,9 @@ public:
     //override base function from GameModeBase. This is to restart player after death
     virtual void RestartPlayer(AController* NewPlayer) override;
 
-    /*Starts the Level FSM --- #TODO needs to be defined!!!! */
-    UFUNCTION()
-    void StartFSM();
+    FOnLevelRestarted LevelRestartedDelegate;
+    
+    FOnPlayerRestarted PlayerRestartedDelegate;
 
 protected:
 
@@ -87,9 +90,6 @@ protected:
     FTimerDelegate LevelEndedDelegate;
 
     float NumSecondsForLevelEnd = 3.0f;
-
-    UPROPERTY(EditDefaultsOnly)
-    FString AnterPlayerStartString = "AnterPlayerStart";
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     ULevelManagerComponent* LevelManager;

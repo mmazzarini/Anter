@@ -9,20 +9,8 @@
 void AEnemyManager::BeginPlay()
 {
     Super::BeginPlay();
-    if(EnemyPositions.Num() > 0)
-    {   
-        /*
-        for(int32 PositionIndex = 0;PositionIndex <EnemyPositions.Num();PositionIndex++)
-        {
-            GetWorld()->SpawnActor<ABaseEnemyBoundary>(EnemyBoundaryClass,EnemyPositions[PositionIndex],GetActorRotation());
-        }
-        */
-        Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,EnemyPositions[0]+GetActorLocation(),GetActorRotation());
-    }
-    else
-    {
-        Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
-    }
+    CreateActor();
+    //The following has to be moved into CreateEnemy
     
     if(Enemy != nullptr)
     {
@@ -31,16 +19,16 @@ void AEnemyManager::BeginPlay()
 
     if(EnemyPositions.Num() > 0)
     {
-        FillEnemyPositions();
+        FillActorPositions();
     }
     
-    InjectEnemyBehavior();
+    InjectActorBehavior();
 
     SetBindings();
     
 }
 
-void AEnemyManager::FillEnemyPositions()
+void AEnemyManager::FillActorPositions()
 {
     TArray<FVector> CorrectedPositions;
     for(FVector EnemyPosition : EnemyPositions)
@@ -54,7 +42,7 @@ void AEnemyManager::FillEnemyPositions()
     }
 }
 
-void AEnemyManager::InjectEnemyBehavior()
+void AEnemyManager::InjectActorBehavior()
 {
     if(Enemy != nullptr)
     {
@@ -86,4 +74,19 @@ void AEnemyManager::OnEnemyDeath()
         }
         Enemy->Destroy();
     }    
+}
+
+void AEnemyManager::CreateActor()
+{
+    if(Enemy == nullptr)
+    {
+        if(EnemyPositions.Num() > 0)
+        {   
+            Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,EnemyPositions[0]+GetActorLocation(),GetActorRotation());
+        }
+        else
+        {
+            Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
+        }
+    }
 }

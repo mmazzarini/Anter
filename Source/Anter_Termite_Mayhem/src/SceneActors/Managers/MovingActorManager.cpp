@@ -8,14 +8,8 @@
 void AMovingActorManager::BeginPlay()
 {
     Super::BeginPlay();
-    if(MovingActorPositions.Num() > 0)
-    {   
-        MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,MovingActorPositions[0]+GetActorLocation(),GetActorRotation());
-    }
-    else
-    {
-        MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,GetActorLocation(),GetActorRotation());
-    }
+
+    CreateActor();
     
     if(MovingActor != nullptr)
     {
@@ -28,14 +22,14 @@ void AMovingActorManager::BeginPlay()
 
     if(MovingActorPositions.Num() > 0)
     {
-        FillMovingActorPositions();
+        FillActorPositions();
     }
     
-    InjectMovingActorBehavior();
+    InjectActorBehavior();
 
 }
 
-void AMovingActorManager::FillMovingActorPositions()
+void AMovingActorManager::FillActorPositions()
 {
     TArray<FVector> CorrectedPositions;
     for(FVector MovingActorPosition : MovingActorPositions)
@@ -50,11 +44,26 @@ void AMovingActorManager::FillMovingActorPositions()
 
 }
 
-void AMovingActorManager::InjectMovingActorBehavior()
+void AMovingActorManager::InjectActorBehavior()
 {
     
     if(MovingActorMovementSupport != nullptr)
     {
         MovingActorMovementSupport->SetLoopBehavior(MovingActorLoopBehavior);
+    }
+}
+
+void AMovingActorManager::CreateActor()
+{
+    if(MovingActor == nullptr)
+    {
+        if(MovingActorPositions.Num() > 0)
+        {   
+            MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,MovingActorPositions[0]+GetActorLocation(),GetActorRotation());
+        }
+        else
+        {
+            MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,GetActorLocation(),GetActorRotation());
+        }
     }
 }

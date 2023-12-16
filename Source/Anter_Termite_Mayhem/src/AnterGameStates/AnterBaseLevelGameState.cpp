@@ -1,6 +1,7 @@
 #include "AnterGameStates/AnterBaseLevelGameState.h"
 #include "AnterPlayerStates/AnterLevelPlayerState.h"
 #include "PlayerControllers/AnterPlayerController.h"
+#include "AnterGameModes/AnterBaseLevelGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 void AAnterBaseLevelGameState::HandleBeginPlay()
@@ -11,6 +12,11 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
     BindToPlayerStates();
 
     SetLevelCompletionState(ELevelCompletionState::LevelStarted);
+    
+    if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(AuthorityGameMode))
+    {
+        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::BindToPlayerStates);
+    }
 }
 
 void AAnterBaseLevelGameState::OnGameOver()
@@ -59,8 +65,11 @@ void AAnterBaseLevelGameState::BindToPlayerStates()
         if(AAnterLevelPlayerState* CurrPlayerState = Cast<AAnterLevelPlayerState>(PlayerArray[0]))
         {
             CurrPlayerState->BindToPawnDelegates();
-            CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnGameOver);
-            CurrPlayerState->OnPlayerLevelGoalReachedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnLevelCompleted);
+            if(!CurrPlayerState->OnPlayerStateDeathDelegate.IsBound())
+            {
+                CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnGameOver);
+                CurrPlayerState->OnPlayerLevelGoalReachedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnLevelCompleted);
+            }
         }
     }
 }

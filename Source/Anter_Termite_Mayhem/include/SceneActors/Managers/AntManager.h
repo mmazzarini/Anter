@@ -1,6 +1,7 @@
 #pragma once 
 
 #include "GameFramework/Actor.h"
+#include "SceneActors/Managers/SceneActorManagerBase.h"
 
 #include "AntManager.generated.h"
 
@@ -11,15 +12,19 @@ Manager class for crates. It is used to manage crate spawning and destruction st
 class AAnterBaseAnt;
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AAntManager : public AActor
+class ANTER_TERMITE_MAYHEM_API AAntManager : public ASceneActorManagerBase
 {
     GENERATED_BODY()
 
 public:
 
     virtual void BeginPlay() override;
+    
+    void CreateActor() override;
 
-    AAntManager(){}
+    void FillActorPositions() override {}
+
+    void InjectActorBehavior()override {}
 
 protected:
 

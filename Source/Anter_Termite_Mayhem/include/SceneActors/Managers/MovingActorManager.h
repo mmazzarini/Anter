@@ -2,6 +2,8 @@
 
 #include "GameFramework/Actor.h"
 #include "SceneUtilities/SceneStructs.h"
+#include "SceneActors/Managers/SceneActorManagerBase.h"
+
 #include "MovingActorManager.generated.h"
 
 /*
@@ -12,19 +14,19 @@ class UMovingActorMovementSupportComponent;
 
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AMovingActorManager : public AActor
+class ANTER_TERMITE_MAYHEM_API AMovingActorManager : public ASceneActorManagerBase
 {
     GENERATED_BODY()
-
-    AMovingActorManager(){}
 
 public:
 
     void BeginPlay() override;
 
-    void FillMovingActorPositions();
+    void FillActorPositions() override;
 
-    void InjectMovingActorBehavior();
+    void InjectActorBehavior() override;
+
+    void CreateActor() override;
 
 protected:
 

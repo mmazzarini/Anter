@@ -21,6 +21,9 @@ public:
 
     virtual void BeginPlay() override;
 
-    ACrateManager(){}
+    void CreateActor(){}
 
+    void FillActorPositions(){}
+    
+    void InjectActorBehavior(){}
 };

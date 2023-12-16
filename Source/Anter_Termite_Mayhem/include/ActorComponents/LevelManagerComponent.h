@@ -9,7 +9,9 @@
 
 class AEnemyManager;
 class ACrateManager;
-class AGameMode;
+class AAntManager;
+class AMovingActorManager;
+class AAnterBaseLevelGameMode;
 
 /* 
 Level manager component class: it controls the flow of execution of levels: 
@@ -43,8 +45,6 @@ public:
     /*Components that define specific behaviors. E.g. Level checkpoints are managed through a specific component*/
     void GetLevelGoalReference();
 
-    void BindToManagers();
-
     virtual void BeginPlay() override;
 
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -58,6 +58,9 @@ protected:
     UFUNCTION()
     void OnCheckpointActivated(ALevelCheckpoint* InCheckpoint);
 
+    //This is used to bind all managers to gamemode
+    void BindManagers();
+
     //Internal map, used to generate and keep track of all checkpoints
     TMap<ALevelCheckpoint*, bool> LevelCheckpoints;
 
@@ -70,7 +73,7 @@ protected:
 
     ALevelCheckpoint* CurrentCheckpoint;
 
-    AGameMode* OwnerGameMode = nullptr;
+    AAnterBaseLevelGameMode* OwnerGameMode = nullptr;
 
     /*We need a Goal object, that represents the logical end of the level*/
     AActor* LevelGoal; 
@@ -81,5 +84,12 @@ protected:
     TArray<AEnemyManager*> EnemyManagers;
 
     TArray<ACrateManager*> CrateManagers;
+
+    TArray<AAntManager*> AntManagers;
+
+    TArray<AMovingActorManager*> PlatformManagers;
+
+    UPROPERTY(EditInstanceOnly)
+    FString AnterPlayerStartString = "AnterPlayerStart";
 
 };

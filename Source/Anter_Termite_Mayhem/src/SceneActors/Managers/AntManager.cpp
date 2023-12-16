@@ -6,5 +6,13 @@
 void AAntManager::BeginPlay()
 {
     Super::BeginPlay();
-    Ant = GetWorld()->SpawnActor<AAnterBaseAnt>(AntClass,GetActorLocation(),GetActorRotation());
+    CreateActor();
+}
+
+void AAntManager::CreateActor()
+{
+    if(Ant == nullptr)
+    {
+        Ant = GetWorld()->SpawnActor<AAnterBaseAnt>(AntClass,GetActorLocation(),GetActorRotation());
+    }
 }

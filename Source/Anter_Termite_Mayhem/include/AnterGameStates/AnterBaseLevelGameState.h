@@ -35,6 +35,7 @@ public:
 
     void SetLevelCompletionState(ELevelCompletionState InLevelCompletion){LevelCompletion = InLevelCompletion;}
 
+    UFUNCTION()
     void BindToPlayerStates();
 
     ELevelCompletionState GetLevelCompletionState(){return LevelCompletion;}

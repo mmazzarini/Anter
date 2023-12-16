@@ -101,42 +101,14 @@ void AAnterBaseLevelGameMode::StartLevel()
 
 void AAnterBaseLevelGameMode::UpdatePlayerStartPosition(ALevelCheckpoint* InCheckpoint)
 {
-    if(InCheckpoint != nullptr)
-    {
-        APlayerController* CurrentPC;
-        TArray<AActor*> CurrentPCs;
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerController::StaticClass(), CurrentPCs);
-        if(CurrentPCs.Num() > 0)
-        {
-            CurrentPC = Cast<APlayerController>(CurrentPCs[0]);
-            if(CurrentPC != nullptr)
-            {
-                AActor* LevelStart = FindPlayerStart(CurrentPC,AnterPlayerStartString);
-                if(LevelStart != nullptr)
-                {
-                    FVector OldLocation = LevelStart->GetActorLocation();
-                    LevelStart->SetActorLocation(InCheckpoint->GetActorLocation() + FVector::UpVector*100.0f);
-                    FVector NewLocation = LevelStart->GetActorLocation();
-                    FVector DiffLocation = OldLocation-NewLocation;
-                }
-            }
-        }
-    }
+    //TODO may be deprecated
 }
 
 void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
 {
     Super::RestartPlayer(NewPlayer);
-    if(GameState != nullptr)
-    {
-        if(AAnterBaseLevelGameState* CastedGameState = Cast<AAnterBaseLevelGameState>(GameState))
-        {
-            CastedGameState->BindToPlayerStates(); 
-        }
-    }
-}
 
-void AAnterBaseLevelGameMode::StartFSM()
-{
-    //empty for now
+    //Methodology: we just broadcast the restart, who needs to bind to this does that before.
+    //Advantage: we leave the different objects and components (GState, LevelManager) independent and flexibly organised.
+    PlayerRestartedDelegate.Broadcast();
 }

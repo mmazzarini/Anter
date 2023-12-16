@@ -1,8 +1,7 @@
 #include "ActorComponents/LevelManagerComponent.h"
 #include "SceneUtilities/SceneStructs.h"
-#include "GameFramework/GameMode.h"
-#include "SceneActors/Managers/CrateManager.h"
-#include "SceneActors/Managers/EnemyManager.h"
+#include "AnterGameModes/AnterBaseLevelGameMode.h"
+#include "SceneActors/Managers/SceneActorManagerBase.h"
 #include "Kismet/GameplayStatics.h"
 
 ULevelManagerComponent::ULevelManagerComponent()
@@ -15,11 +14,14 @@ void ULevelManagerComponent::BeginPlay()
 {
     Super::BeginPlay();
     SetupLevelElements();
+    //BindToLevelRestartPoints();
+    //This binds all managers to delegate from game mode
+    BindManagers();
 }
 
 void ULevelManagerComponent::SetupLevelElements()
 {
-    OwnerGameMode = Cast<AGameMode>(GetOwner());
+    OwnerGameMode = Cast<AAnterBaseLevelGameMode>(GetOwner());
     GenerateCheckpoints();
 }
 
@@ -58,8 +60,26 @@ void ULevelManagerComponent::DeleteBindings()
 void ULevelManagerComponent::OnCheckpointActivated(ALevelCheckpoint* InCheckpoint)
 {
     /* Update current checkpoint ptr */
-    if(InCheckpoint != nullptr)
+    if(InCheckpoint != nullptr && OwnerGameMode != nullptr)
     {
+        APlayerController* CurrentPC;
+        TArray<AActor*> CurrentPCs;
+        UGameplayStatics::GetAllActorsOfClass(OwnerGameMode->GetWorld(), APlayerController::StaticClass(), CurrentPCs);
+        if(CurrentPCs.Num() > 0)
+        {
+            CurrentPC = Cast<APlayerController>(CurrentPCs[0]);
+            if(CurrentPC != nullptr)
+            {
+                AActor* LevelStart = OwnerGameMode->FindPlayerStart(CurrentPC,AnterPlayerStartString);
+                if(LevelStart != nullptr)
+                {
+                    FVector OldLocation = LevelStart->GetActorLocation();
+                    LevelStart->SetActorLocation(InCheckpoint->GetActorLocation() + FVector::UpVector*100.0f);
+                    FVector NewLocation = LevelStart->GetActorLocation();
+                    FVector DiffLocation = OldLocation-NewLocation;
+                }
+            }
+        }
         CurrentCheckpoint = InCheckpoint;
         OnActivatedOneCheckpointDelegate.Broadcast(InCheckpoint);
     }
@@ -76,29 +96,15 @@ void ULevelManagerComponent::GetLevelGoalReference()
     }
 }
 
-void ULevelManagerComponent::BindToManagers()
+void ULevelManagerComponent::BindManagers()
 {
-    /*Get all enemy managers reference*/
-    EnemyManagers.Empty();
-    TArray<AActor*> ActorEnemyManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemyManager::StaticClass(), ActorEnemyManagers);
-    for (auto* ActorEnemyManager : ActorEnemyManagers)
+    TArray<AActor*> ActorsArray;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), ActorsArray);
+    for(auto* MyActor : ActorsArray)
     {
-        if(AEnemyManager* TempEnemyManager = Cast<AEnemyManager>(ActorEnemyManager))
+        if(ASceneActorManagerBase* MyCastedActor = Cast<ASceneActorManagerBase>(MyActor))
         {
-            EnemyManagers.Add(TempEnemyManager);
+            MyCastedActor->BindActorCreation(this);
         }
-    }
-
-    /*Get all crate managers references*/
-    CrateManagers.Empty();
-    TArray<AActor*> ActorCrateManagers;
-    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACrateManager::StaticClass(), ActorCrateManagers);
-    for (auto* ActorCrateManager : ActorCrateManagers)
-    {
-        if(ACrateManager* TempCrateManager = Cast<ACrateManager>(ActorCrateManager))
-        {
-            CrateManagers.Add(TempCrateManager);
-        }
-    }
+    }            
 }

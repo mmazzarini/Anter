@@ -1,8 +1,7 @@
 #pragma once 
 
-#include "GameFramework/Actor.h"
 #include "SceneUtilities/SceneStructs.h"
-#include "SceneActors/Managers/EnemyManagerInterface.h"
+#include "SceneActors/Managers/SceneActorManagerBase.h"
 #include "EnemyManager.generated.h"
 
 /*
@@ -14,25 +13,25 @@ class ABaseEnemy;
 class ABaseEnemyBoundary;
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API AEnemyManager : public AActor, public IEnemyManagerInterface
+class ANTER_TERMITE_MAYHEM_API AEnemyManager : public ASceneActorManagerBase
 {
     GENERATED_BODY()
-
-    AEnemyManager(){}
 
 public:
 
     void BeginPlay() override;
 
-    void FillEnemyPositions() override;
+    void FillActorPositions() override;
 
-    void InjectEnemyBehavior() override;
+    void InjectActorBehavior() override;
 
     void SetBindings();
 
     //We handle Enemy death through this manager function
     UFUNCTION()
     void OnEnemyDeath();
+
+    void CreateActor() override;
 
 protected:
 
