@@ -44,7 +44,7 @@ void AMovingActorManager::InjectActorBehavior()
 
 void AMovingActorManager::CreateActor()
 {
-    if((MovingActor != nullptr && MovingActor->IsPendingKill()) || MovingActor == nullptr)
+    if((MovingActor != nullptr && MovingActor->IsActorBeingDestroyed()) || MovingActor == nullptr)
     {
         MovingActor = nullptr;
         if(MovingActorPositions.Num() > 0)
@@ -56,6 +56,17 @@ void AMovingActorManager::CreateActor()
             MovingActor = GetWorld()->SpawnActor<AActor>(MovingActorClass,GetActorLocation(),GetActorRotation());
         }
     }
+    else
+    {
+        if(MovingActorPositions.Num() > 0)
+        {   
+            MovingActor->SetActorLocation(MovingActorPositions[0]+GetActorLocation());
+        }
+        else
+        {
+            MovingActor->SetActorLocation(GetActorLocation());
+        }
+    }
 
     if(MovingActor != nullptr)
     {
@@ -64,5 +75,13 @@ void AMovingActorManager::CreateActor()
         {
             MovingActorMovementSupport->SetPivotDistanceThreshold(MovingActorPivotDistanceThreshold);
         }
+    }
+}
+
+void AMovingActorManager::SetupActor()
+{
+    if(AMovingPlatform* MyPlatform = Cast<AMovingPlatform>(MovingActor))
+    {
+        MyPlatform->Setup();
     }
 }

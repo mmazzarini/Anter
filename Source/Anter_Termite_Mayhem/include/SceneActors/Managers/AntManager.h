@@ -26,6 +26,8 @@ public:
 
     void InjectActorBehavior()override {}
 
+    void SetupActor() override {}
+
 protected:
 
     UPROPERTY()

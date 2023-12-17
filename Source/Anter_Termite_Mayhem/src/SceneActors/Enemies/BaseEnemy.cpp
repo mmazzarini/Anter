@@ -172,6 +172,14 @@ void ABaseEnemy::SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior)
     LoopBehavior = InLoopBehavior;
 }
 
+void ABaseEnemy::ResetMovement()
+{
+    CurrentPivotPositions = PivotPositions;
+    PivotArrayIndex = 0;
+    SetActorLocation(CurrentPivotPositions[0]);
+    StartToMove();
+}
+
 void ABaseEnemy::HandleDamage(AActor* InDamagingActor)
 {
     UDamageComponent* Damage = (InDamagingActor != nullptr) ? Cast<UDamageComponent>(InDamagingActor->FindComponentByClass(UDamageComponent::StaticClass())) : nullptr;

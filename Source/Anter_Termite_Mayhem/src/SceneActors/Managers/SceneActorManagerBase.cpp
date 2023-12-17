@@ -16,4 +16,5 @@ void ASceneActorManagerBase::ProceedToActorCreation()
     CreateActor();
     FillActorPositions();
     InjectActorBehavior();
+    SetupActor();
 }

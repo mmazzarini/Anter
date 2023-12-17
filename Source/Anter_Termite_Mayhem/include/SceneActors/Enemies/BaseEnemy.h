@@ -81,6 +81,8 @@ public:
 
     void SetCanShoot(bool InCanShoot){bCanShoot = InCanShoot;}
 
+    void ResetMovement();
+
 protected:
 
     void SetBindings();

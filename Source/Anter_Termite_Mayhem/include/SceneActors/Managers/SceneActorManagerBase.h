@@ -23,4 +23,6 @@ public:
     //This is bound to GMode restart event
     UFUNCTION()
     virtual void ProceedToActorCreation();
+
+    virtual void SetupActor() PURE_VIRTUAL(ASceneActorManagerBase::SetupActor,);
 };

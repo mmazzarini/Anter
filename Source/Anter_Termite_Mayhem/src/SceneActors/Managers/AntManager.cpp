@@ -11,7 +11,7 @@ void AAntManager::BeginPlay()
 
 void AAntManager::CreateActor()
 {
-    if((Ant != nullptr && Ant->IsPendingKill()) || Ant == nullptr)
+    if((Ant != nullptr && Ant->IsActorBeingDestroyed()) || Ant == nullptr)
     {
         Ant = nullptr;
         Ant = GetWorld()->SpawnActor<AAnterBaseAnt>(AntClass,GetActorLocation(),GetActorRotation());

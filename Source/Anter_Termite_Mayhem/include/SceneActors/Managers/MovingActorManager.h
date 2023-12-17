@@ -28,6 +28,8 @@ public:
 
     void CreateActor() override;
 
+    void SetupActor() override;
+
 protected:
 
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 

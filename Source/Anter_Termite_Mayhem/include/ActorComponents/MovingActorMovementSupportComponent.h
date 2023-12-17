@@ -57,6 +57,8 @@ public:
 
     bool GetIsMovementActive(){return bIsMovementActive;}
 
+    void ResetMovement();
+
     FOnMovementCompletedDelegate OnMovementCompleted;
 
 protected:

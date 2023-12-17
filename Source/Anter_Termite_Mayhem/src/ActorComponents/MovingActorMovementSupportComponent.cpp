@@ -129,3 +129,14 @@ void UMovingActorMovementSupportComponent::SetLoopBehavior(EEnemyLoopBehavior In
 {
     LoopBehavior = InLoopBehavior;
 }
+
+void UMovingActorMovementSupportComponent::ResetMovement()
+{
+    CurrentPivotPositions = PivotPositions;
+    PivotArrayIndex = 0;
+    if(OwningActor != nullptr && CurrentPivotPositions.Num() > 0)
+    {
+        OwningActor->SetActorLocation(CurrentPivotPositions[0]);
+    }
+    StartToMove();
+}

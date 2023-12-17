@@ -80,7 +80,7 @@ void AEnemyManager::OnEnemyDeath()
 
 void AEnemyManager::CreateActor()
 {
-    if((Enemy != nullptr && Enemy->IsPendingKill()) || Enemy == nullptr)
+    if((Enemy != nullptr && Enemy->IsActorBeingDestroyed()) || Enemy == nullptr)
     {
         Enemy = nullptr;
         if(EnemyPositions.Num() > 0)
@@ -90,6 +90,13 @@ void AEnemyManager::CreateActor()
         else
         {
             Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
+        }
+    }
+    else
+    {
+        if(EnemyPositions.Num() > 0)
+        {
+            Enemy->ResetMovement();
         }
     }
 

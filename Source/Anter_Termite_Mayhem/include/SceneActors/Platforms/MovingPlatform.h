@@ -20,6 +20,8 @@ public:
 
     void UpdateMovement();
 
+    void Setup();
+
 protected:
 
     FVector OldPosition;

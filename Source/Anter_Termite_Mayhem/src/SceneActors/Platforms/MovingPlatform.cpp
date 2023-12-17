@@ -1,4 +1,5 @@
 #include "SceneActors/Platforms/MovingPlatform.h"
+#include "ActorComponents/MovingActorMovementSupportComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 AMovingPlatform::AMovingPlatform()
@@ -10,10 +11,10 @@ AMovingPlatform::AMovingPlatform()
 
 void AMovingPlatform::BeginPlay()
 {
-        Super::BeginPlay();
-        Anter = Cast<AAnterPaperCharacter>(UGameplayStatics::GetActorOfClass(this,AAnterPaperCharacter::StaticClass()));
-        OldPosition = FVector(0.0f,0.0f,0.0f);
-        NewPosition = GetActorLocation();
+    Super::BeginPlay();
+    Anter = Cast<AAnterPaperCharacter>(UGameplayStatics::GetActorOfClass(this,AAnterPaperCharacter::StaticClass()));
+    OldPosition = GetActorLocation();
+    NewPosition = GetActorLocation();
 }
 
 void AMovingPlatform::Tick(float DeltaTime)
@@ -37,5 +38,16 @@ void AMovingPlatform::UpdateMovement()
         {
             Anter->AddActorWorldOffset(NewPosition-OldPosition);
         }
+    }
+}
+
+void AMovingPlatform::Setup()
+{
+    if(UMovingActorMovementSupportComponent* ActorMovement = FindComponentByClass<UMovingActorMovementSupportComponent>())
+    {
+        Anter = Cast<AAnterPaperCharacter>(UGameplayStatics::GetActorOfClass(this,AAnterPaperCharacter::StaticClass()));
+        OldPosition = GetActorLocation();
+        NewPosition = GetActorLocation();
+        ActorMovement->ResetMovement();
     }
 }
