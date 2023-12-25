@@ -28,6 +28,8 @@ public:
 
     void SetupActor() override {}
 
+    void RefreshActor() override{}
+
 protected:
 
     UPROPERTY()

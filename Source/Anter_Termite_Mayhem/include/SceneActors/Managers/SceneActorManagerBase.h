@@ -17,12 +17,14 @@ public:
 
     virtual void CreateActor() PURE_VIRTUAL(ASceneActorManagerBase::CreateActor,);
 
+    virtual void SetupActor() PURE_VIRTUAL(ASceneActorManagerBase::SetupActor,);
+
+    virtual void RefreshActor() PURE_VIRTUAL(ASceneActorManagerBase::RefreshActor,);
+
     //This is used at beginplay to bind manager to gamemode
     virtual void BindActorCreation(const UObject* WorldContextObject);
 
     //This is bound to GMode restart event
     UFUNCTION()
-    virtual void ProceedToActorCreation();
-
-    virtual void SetupActor() PURE_VIRTUAL(ASceneActorManagerBase::SetupActor,);
+    virtual void ProceedToActorRefresh();
 };

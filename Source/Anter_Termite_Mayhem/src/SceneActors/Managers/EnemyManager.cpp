@@ -15,9 +15,7 @@ void AEnemyManager::BeginPlay()
     //The following has to be moved into CreateEnemy
 
     FillActorPositions();
-    
     InjectActorBehavior();
-
     SetBindings();
 
     if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(this)))
@@ -104,4 +102,14 @@ void AEnemyManager::CreateActor()
     {
         Enemy->SetPivotDistanceThreshold(EnemyPivotDistanceThreshold);
     }
+}
+
+void AEnemyManager::RefreshActor()
+{
+    CreateActor();
+    if(EnemyPositions.Num() == 0)
+    {
+        FillActorPositions();
+    }
+    InjectActorBehavior();
 }

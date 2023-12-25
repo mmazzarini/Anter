@@ -27,10 +27,11 @@ class ANTER_TERMITE_MAYHEM_API UEnemyAIComponent : public UActorComponent
         //Throws a random number and then calls Shoot() on weapon component
         virtual void EvaluateShoot();
 
-    protected:
-
         //We call this to make a check on Anter's position. Should be overridden in derived classes
+        UFUNCTION()
         void SetAnterPointer();
+
+    protected:
 
         //Pointer used to point to 
         UPROPERTY()

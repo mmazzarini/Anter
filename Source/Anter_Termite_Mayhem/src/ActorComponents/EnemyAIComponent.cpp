@@ -1,4 +1,5 @@
 #include "ActorComponents/EnemyAIComponent.h"
+#include "AnterGameModes/AnterBaseLevelGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
 
@@ -26,7 +27,10 @@ void UEnemyAIComponent::BeginPlay()
     {
         EnemyWeapon = Cast<UAnterWeaponComponent>(GetOwner()->FindComponentByClass(UAnterWeaponComponent::StaticClass()));
     }
-
+    if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(GetOwner())))
+    {
+        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&UEnemyAIComponent::SetAnterPointer);
+    }
 }
 
 void UEnemyAIComponent::SetTargetLocation()

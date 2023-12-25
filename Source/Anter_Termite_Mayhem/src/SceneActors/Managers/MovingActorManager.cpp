@@ -10,11 +10,8 @@ void AMovingActorManager::BeginPlay()
     Super::BeginPlay();
 
     CreateActor();
-
     FillActorPositions();
-        
     InjectActorBehavior();
-
 }
 
 void AMovingActorManager::FillActorPositions()
@@ -84,4 +81,15 @@ void AMovingActorManager::SetupActor()
     {
         MyPlatform->Setup();
     }
+}
+
+void AMovingActorManager::RefreshActor()
+{
+    CreateActor();
+    if(MovingActorPositions.Num() == 0)
+    {
+        FillActorPositions();
+    }
+    InjectActorBehavior();
+    SetupActor();
 }

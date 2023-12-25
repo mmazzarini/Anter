@@ -6,15 +6,17 @@ void ASceneActorManagerBase::BindActorCreation(const UObject* WorldContextObject
 {
     if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(WorldContextObject)))
     {
-        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&ASceneActorManagerBase::ProceedToActorCreation);
+        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&ASceneActorManagerBase::ProceedToActorRefresh);
     }
 }
 
-void ASceneActorManagerBase::ProceedToActorCreation()
+void ASceneActorManagerBase::ProceedToActorRefresh()
 {
+    //Implement refresh in specific class
+    RefreshActor();
     //This must be overridden
-    CreateActor();
-    FillActorPositions();
-    InjectActorBehavior();
-    SetupActor();
+    //CreateActor();
+    //FillActorPositions();
+    //InjectActorBehavior();
+    //SetupActor();
 }

@@ -6,7 +6,6 @@ AMovingPlatform::AMovingPlatform()
 {
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.bTickEvenWhenPaused = true;
-
 }
 
 void AMovingPlatform::BeginPlay()
