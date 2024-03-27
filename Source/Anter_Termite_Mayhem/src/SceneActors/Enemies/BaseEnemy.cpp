@@ -47,11 +47,14 @@ void ABaseEnemy::UpdateMovement()
         StartToMove();
     }
 
-    FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
-    float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
-    if(CurrentPivotPositions.Num()>0 && EnemyPivotDist < PivotDistanceThreshold)
+    if(ensure(CurrentPivotPositions.Num()))
     {
-        MoveToNextPivot();
+        FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
+        float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);
+        if(EnemyPivotDist < PivotDistanceThreshold)
+        {
+            MoveToNextPivot();
+        }
     }
 }
 
@@ -147,8 +150,12 @@ void ABaseEnemy::FillPositionArrays(TArray<FVector> InPositions)
 void ABaseEnemy::AdjustVelocity()
 {
     FVector CurrentLocation = GetActorLocation();
-    FVector NewLocation = CurrentPivotPositions[PivotArrayIndex];
-    FVector LocationDistance = NewLocation - CurrentLocation;
+    FVector LocationDistance  = FVector(0.0f,0.0f,0.0f);
+    if(ensure(CurrentPivotPositions.Num()))
+    {
+        FVector NewLocation = CurrentPivotPositions[PivotArrayIndex];
+        LocationDistance = NewLocation - CurrentLocation;
+    }
     
     // Normalize distance vector
     if(LocationDistance.Size() != 0 && BaseEnemyMovement != nullptr)
@@ -176,8 +183,11 @@ void ABaseEnemy::ResetMovement()
 {
     CurrentPivotPositions = PivotPositions;
     PivotArrayIndex = 0;
-    SetActorLocation(CurrentPivotPositions[0]);
-    StartToMove();
+    if(ensure(CurrentPivotPositions.Num()))
+    {
+        SetActorLocation(CurrentPivotPositions[0]);
+        StartToMove();
+    }
 }
 
 void ABaseEnemy::HandleDamage(AActor* InDamagingActor)

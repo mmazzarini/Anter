@@ -21,6 +21,7 @@
 #include "Materials/MaterialInterface.h"
 #include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 #include "SceneActors/Items/AnterBaseAnt.h"
+#include "SceneActors/Items/AnterBaseCrate.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -336,7 +337,24 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
                 //Kill
                 AnterHealth->UpdateHealth(0.0f);
             }
+            return;
+        }
 
+        if(AAnterBaseCrate* AnterCrate = Cast<AAnterBaseCrate>(OtherActor))
+        {
+            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+            if(AnterMovement != nullptr)
+            {  
+                if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
+                {
+                    FVector JumpVector = FVector(0.0f,0.0f,JumpScale*ZAscendingMultiplier);
+                    AnterMovement->Velocity.Z = 0.0f;
+                    AnterMovement->AddImpulse(JumpVector);
+                    SetCanJump(false);
+                    AnterCrate->Destroy();
+                }
+            }
+            return;
         }
     }
 }   
