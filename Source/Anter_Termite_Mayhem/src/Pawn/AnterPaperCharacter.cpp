@@ -342,18 +342,8 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
 
         if(AAnterBaseCrate* AnterCrate = Cast<AAnterBaseCrate>(OtherActor))
         {
-            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-            if(AnterMovement != nullptr)
-            {  
-                if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
-                {
-                    FVector JumpVector = FVector(0.0f,0.0f,JumpScale*ZAscendingMultiplier);
-                    AnterMovement->Velocity.Z = 0.0f;
-                    AnterMovement->AddImpulse(JumpVector);
-                    SetCanJump(false);
-                    AnterCrate->Destroy();
-                }
-            }
+            HandlePlatform(CollisionGeometry,AnterCrate);
+            HandleCrateVerticalCollision(AnterCrate);
             return;
         }
     }
@@ -370,39 +360,35 @@ void AAnterPaperCharacter::UpdateWeaponDirection(float InLaserDirection)
 
 void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-    ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
-    if(Platform != nullptr)
+    UStaticMeshComponent* OtherMesh = Cast<UStaticMeshComponent>(OtherComp);
+    if(OtherMesh != nullptr)
     {
-        UStaticMeshComponent* OtherMesh = Cast<UStaticMeshComponent>(OtherComp);
-        if(OtherMesh != nullptr)
+        //First, Deregister platform from colliding platforms
+        DeregisterPlatformCollision(OtherActor);
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if(AnterMovement != nullptr)
         {
-            //First, Deregister platform from colliding platforms
-            DeregisterPlatformCollision(Platform);
-            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-            if(AnterMovement != nullptr)
+            //If there is no vertically colliding platform in the registered platforms array, then free fall
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsVerticallyColliding) == false && 
+                FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingUpsideDown) == false)
             {
-                //If there is no vertically colliding platform in the registered platforms array, then free fall
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsVerticallyColliding) == false && 
-                   FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingUpsideDown) == false)
+                SetIsFalling(true);
+                AnterMovement->GravityScale = InputGravityScale;
+                if(VerticalMotionStatus == EAnterVerticalMotionStatus::HangingUpsideDown)
                 {
-                    SetIsFalling(true);
-                    AnterMovement->GravityScale = InputGravityScale;
-                    if(VerticalMotionStatus == EAnterVerticalMotionStatus::HangingUpsideDown)
-                    {
-                        VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
-                    }
-                    ResetGeometron();
+                    VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
                 }
-                
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
-                {
-                    SetRightMovementFree(true);                    
-                }
+                ResetGeometron();
+            }
+            
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromLeft) == false)
+            {
+                SetRightMovementFree(true);                    
+            }
 
-                if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
-                {
-                    SetLeftMovementFree(true);
-                }
+            if(FindAnyCollisionOfType(EPlatformCollisionType::IsCollidingFromRight) == false)
+            {
+                SetLeftMovementFree(true);
             }
         }
     }
@@ -447,16 +433,18 @@ void AAnterPaperCharacter::RegisterPlatformCollision(AActor* InPlatformToAdd, EP
 
 void AAnterPaperCharacter::DeregisterPlatformCollision(AActor* InPlatformToRemove)
 {
-    auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToRemove](TPair <AActor*,EPlatformCollisionType> PlatformPair)
+    if(InPlatformToRemove != nullptr)
     {
-        return PlatformPair.Key == InPlatformToRemove;
+        auto PlatformIndex = RegisteredVerticalPlatformCollisions.IndexOfByPredicate([InPlatformToRemove](TPair <AActor*,EPlatformCollisionType> PlatformPair)
+        {
+            return PlatformPair.Key == InPlatformToRemove;
+        }
+        );
+        if (PlatformIndex != INDEX_NONE)
+        {
+            RegisteredVerticalPlatformCollisions.RemoveAt(PlatformIndex);
+        }
     }
-    );
-    if (PlatformIndex != INDEX_NONE)
-    {
-        RegisteredVerticalPlatformCollisions.RemoveAt(PlatformIndex);
-    }
-
 }
 
 bool AAnterPaperCharacter::FindAnyCollisionOfType(EPlatformCollisionType InPlatformCollisionTypeToFind)
@@ -603,6 +591,21 @@ void AAnterPaperCharacter::PossessedBy(AController* NewController)
     }
 }
 
+void AAnterPaperCharacter::HandleCrateVerticalCollision(AAnterBaseCrate *InAnterCrate)
+{
+    UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+    if(AnterMovement != nullptr && InAnterCrate != nullptr)
+    {  
+        if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
+        {
+            FVector JumpVector = FVector(0.0f,0.0f,JumpScale*ZAscendingMultiplier);
+            AnterMovement->Velocity.Z = 0.0f;
+            AnterMovement->AddImpulse(JumpVector);
+            SetCanJump(false);
+            InAnterCrate->Destroy();
+        }
+    }
+}
 void AAnterPaperCharacter::OnUnhittableTimerEnded()
 {
     AnterHitStatus = EAnterHitableStatus::CanBeHit;
@@ -615,7 +618,7 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
         AnterMesh->SetMaterial(0, DefaultMaterial);
     }
 
-};
+}
 
 void AAnterPaperCharacter::ProcessJump(float InJumpValue, UCharacterMovementComponent* InAnterMovement)
 {

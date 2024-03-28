@@ -22,6 +22,7 @@ class AController;
 class UCharacterMovementComponent;
 class UMaterialInteface;
 class AAnterBaseAnt;
+class AAnterBaseCrate;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -140,6 +141,8 @@ public:
     virtual void HandleDamage(AActor* InDamagingActor) override;
 
     virtual void PossessedBy(AController* NewController) override;
+
+    void HandleCrateVerticalCollision(AAnterBaseCrate* InAnterCrate);
 
     UFUNCTION()
     void OnUnhittableTimerEnded();
