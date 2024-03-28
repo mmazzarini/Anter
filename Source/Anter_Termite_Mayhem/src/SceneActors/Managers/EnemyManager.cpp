@@ -12,16 +12,16 @@ void AEnemyManager::BeginPlay()
 {
     Super::BeginPlay();
     CreateActor();
-    //The following has to be moved into CreateEnemy
-
     FillActorPositions();
     InjectActorBehavior();
     SetBindings();
 
+    /*
     if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(this)))
     {
         LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&AEnemyManager::SetBindings);
     }
+    */
 
 }
 
@@ -90,13 +90,6 @@ void AEnemyManager::CreateActor()
             Enemy = GetWorld()->SpawnActor<ABaseEnemy>(EnemyClass,GetActorLocation(),GetActorRotation());
         }
     }
-    else
-    {
-        if(EnemyPositions.Num() > 0)
-        {
-            Enemy->ResetMovement();
-        }
-    }
 
     if(Enemy != nullptr)
     {
@@ -107,9 +100,16 @@ void AEnemyManager::CreateActor()
 void AEnemyManager::RefreshActor()
 {
     CreateActor();
-    if(EnemyPositions.Num() == 0)
-    {
-        FillActorPositions();
-    }
+    FillActorPositions();
     InjectActorBehavior();
+    SetBindings();
+    ResetActorMovement();
+}
+
+void AEnemyManager::ResetActorMovement()
+{
+    if(Enemy != nullptr)
+    {
+        Enemy->ResetMovement();
+    }
 }

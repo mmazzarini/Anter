@@ -25,6 +25,8 @@ public:
 
     void InjectActorBehavior() override;
 
+    void ResetActorMovement() override;
+
     UFUNCTION()
     void SetBindings();
 

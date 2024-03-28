@@ -19,6 +19,8 @@ public:
 
     virtual void SetupActor() PURE_VIRTUAL(ASceneActorManagerBase::SetupActor,);
 
+    virtual void ResetActorMovement() PURE_VIRTUAL(ASceneActorManagerBase::ResetActormovement,);
+
     virtual void RefreshActor() PURE_VIRTUAL(ASceneActorManagerBase::RefreshActor,);
 
     //This is used at beginplay to bind manager to gamemode

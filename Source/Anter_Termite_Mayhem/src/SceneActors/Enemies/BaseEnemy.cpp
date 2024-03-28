@@ -136,8 +136,8 @@ void ABaseEnemy::FillPositionArrays(TArray<FVector> InPositions)
         for(FVector InPosition : InPositions)
         {
             PivotPositions.Add(InPosition);
-            CurrentPivotPositions.Add(InPosition);
         }
+        CurrentPivotPositions = PivotPositions;
         //reverse loop
         for(int32 PositionIndex = InPositions.Num()-1; PositionIndex >= 0; PositionIndex--)
         {
@@ -164,12 +164,6 @@ void ABaseEnemy::AdjustVelocity()
         NewGeometry.X = LocationDistance.X/LocationDistance.Size();
         NewGeometry.Y = LocationDistance.Z/LocationDistance.Size();
         FVector2D New2DGeometry(NewGeometry.X,NewGeometry.Y);
-        /*
-        //Fix movement reset
-        BaseEnemyMovement->Velocity.X = 0.0f;
-        BaseEnemyMovement->Velocity.Y = 0.0f;
-        BaseEnemyMovement->Velocity.Z = 0.0f;
-        */
         BaseEnemyMovement->SetMovement(New2DGeometry);
     }
 }
@@ -181,7 +175,6 @@ void ABaseEnemy::SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior)
 
 void ABaseEnemy::ResetMovement()
 {
-    CurrentPivotPositions = PivotPositions;
     PivotArrayIndex = 0;
     if(ensure(CurrentPivotPositions.Num()))
     {
