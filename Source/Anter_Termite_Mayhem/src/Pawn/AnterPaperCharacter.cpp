@@ -602,7 +602,7 @@ void AAnterPaperCharacter::HandleCrateVerticalCollision(AAnterBaseCrate *InAnter
             AnterMovement->Velocity.Z = 0.0f;
             AnterMovement->AddImpulse(JumpVector);
             SetCanJump(false);
-            InAnterCrate->Destroy();
+            InAnterCrate->OnVerticallyHit();
         }
     }
 }
