@@ -596,7 +596,7 @@ void AAnterPaperCharacter::HandleCrateVerticalCollision(AAnterBaseCrate *InAnter
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(AnterMovement != nullptr && InAnterCrate != nullptr)
     {  
-        if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
+        if(InAnterCrate->IsBouncing() && AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
         {
             FVector JumpVector = FVector(0.0f,0.0f,JumpScale*ZAscendingMultiplier);
             AnterMovement->Velocity.Z = 0.0f;

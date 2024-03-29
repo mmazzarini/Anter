@@ -68,18 +68,3 @@ enum class EEnemyRunningOrientation : uint8
     IsRunningForward,
     IsRunningBackward
 };
-
-
-/*
-USTRUCT(BlueprintType)
-struct FConfigurablePlaceable
-{
-    GENERATED_BODY()
-
-    FConfigurablePlaceable(){}
-
-    //Default values
-    FVector PlaceablePosition  = FVector(0.0f,0.0f,0.0f);
-    
-};
-*/

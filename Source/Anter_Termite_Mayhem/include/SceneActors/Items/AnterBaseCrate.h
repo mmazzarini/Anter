@@ -11,6 +11,22 @@
 class UPrimitiveComponent;
 struct FHitResult;
 
+USTRUCT()
+struct ANTER_TERMITE_MAYHEM_API FCrateInteractions
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditDefaultsOnly)
+    bool bBouncing = false;
+
+    UPROPERTY(EditDefaultsOnly)
+    bool bCanBeVerticallyHit = false;
+
+    UPROPERTY(EditDefaultsOnly)
+    bool bCanBeDestroyed = false;
+};
+
+
 UCLASS(Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterBaseCrate : public AActor, public ISceneActorInterface
 {
@@ -33,6 +49,8 @@ public:
 
     void OnVerticallyHit();
 
+    const bool IsBouncing() const {return Interactions.bBouncing;}
+
 protected:
 
     UPROPERTY(EditDefaultsOnly)
@@ -43,5 +61,8 @@ protected:
 
     UFUNCTION()
     virtual void HandleDamage(AActor* OtherActor) override;
+
+    UPROPERTY(EditDefaultsOnly)
+    FCrateInteractions Interactions;
 
 };

@@ -44,11 +44,17 @@ void AAnterBaseCrate::HandleDamage(AActor* OtherActor)
     if(AAnterFire* AnterFire = Cast<AAnterFire>(OtherActor))
     {  
         AnterFire->Destroy();
-        Destroy();
+        if(Interactions.bCanBeDestroyed)
+        {
+            Destroy();
+        }
     }
 }
 
 void AAnterBaseCrate::OnVerticallyHit()
 {
-    this->Destroy();
+    if(Interactions.bCanBeVerticallyHit)
+    {
+        this->Destroy();
+    }
 }
