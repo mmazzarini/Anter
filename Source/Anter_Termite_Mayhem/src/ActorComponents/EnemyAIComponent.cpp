@@ -45,20 +45,13 @@ void UEnemyAIComponent::EvaluateShoot()
 {
     if(EnemyWeapon != nullptr && GetOwner() != nullptr)
     {
-        /*
-        float RandomNumber = FMath::RandRange(0.0f,1.0f);
-        if(RadomNumber >= RandomThresholdLimitForShooting)
-        {
-            */
         if(EnemyWeapon->CanShoot())
         {
             FVector OwnerPosition = GetOwner()->GetActorLocation();
             EnemyWeapon->SetLaserDirection(TargetLocation/TargetLocation.Size());
             EnemyWeapon->ShootLaser();
         }
-        //}
     }
-
 }
 
 void UEnemyAIComponent::SetAnterPointer()

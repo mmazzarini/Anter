@@ -23,6 +23,8 @@ public:
 
     virtual void RefreshActor() PURE_VIRTUAL(ASceneActorManagerBase::RefreshActor,);
 
+    virtual void SetBindings() PURE_VIRTUAL(ASceneActorManagerBase::RefreshActor,);
+
     //This is used at beginplay to bind manager to gamemode
     virtual void BindActorCreation(const UObject* WorldContextObject);
 

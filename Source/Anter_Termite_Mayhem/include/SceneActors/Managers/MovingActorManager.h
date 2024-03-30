@@ -34,6 +34,11 @@ public:
 
     void ResetActorMovement() override {};
 
+    void SetBindings() override;
+
+    UFUNCTION()
+    void OnActorDeath();
+
 protected:
 
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 

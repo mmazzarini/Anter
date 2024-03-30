@@ -2,7 +2,6 @@
 #include "SceneActors/Platforms/MovingPlatform.h"
 #include "ActorComponents/MovingActorMovementSupportComponent.h"
 #include "SceneUtilities/SceneStructs.h"
-
 #include "EngineUtils.h"
 
 void AMovingActorManager::BeginPlay()
@@ -12,6 +11,7 @@ void AMovingActorManager::BeginPlay()
     CreateActor();
     FillActorPositions();
     InjectActorBehavior();
+    SetBindings();
 }
 
 void AMovingActorManager::FillActorPositions()
@@ -84,4 +84,32 @@ void AMovingActorManager::RefreshActor()
     FillActorPositions();
     InjectActorBehavior();
     SetupActor();
+    SetBindings();
+}
+void AMovingActorManager::SetBindings()
+{
+    if(MovingActor != nullptr)
+    {
+        UHealthComponent* MovingActorHealth = Cast<UHealthComponent>(MovingActor->FindComponentByClass(UHealthComponent::StaticClass()));
+        if(MovingActorHealth != nullptr)
+        {
+            MovingActorHealth->OnDeathReached.AddDynamic(this,&AMovingActorManager::OnActorDeath);
+        }
+    }  
+}
+
+void AMovingActorManager::OnActorDeath()
+{
+    if(MovingActor != nullptr)
+    {
+        UHealthComponent* MovingActorHealth = Cast<UHealthComponent>(MovingActor->FindComponentByClass(UHealthComponent::StaticClass()));
+        if(MovingActorHealth != nullptr)
+        {
+            if(MovingActorHealth->OnDeathReached.IsBound())
+            {
+                MovingActorHealth->OnDeathReached.RemoveDynamic(this,&AMovingActorManager::OnActorDeath);
+            }
+        }
+        MovingActor->Destroy();
+    }    
 }

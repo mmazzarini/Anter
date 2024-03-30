@@ -5,7 +5,8 @@
 
 UAnterWeaponComponent::UAnterWeaponComponent()
 : 
-bCanShoot(true)
+bCanShoot(true),
+InternalSequentialShotCounter(0)
 {
     //void at the moment
 }
@@ -35,7 +36,16 @@ void UAnterWeaponComponent::ShootLaser()
                     }
                 }
                 SetCanShoot(false);
-                OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
+                InternalSequentialShotCounter++;
+                if(InternalSequentialShotCounter < MaxSequentialShots)
+                {
+                    OwnerActor->GetWorldTimerManager().SetTimer(SequentialFireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InSequentialFireRate, false, InSequentialFireRate);
+                }
+                else
+                {
+                    InternalSequentialShotCounter = 0;
+                    OwnerActor->GetWorldTimerManager().SetTimer(FireTimerHandle, this, &UAnterWeaponComponent::OnTimerEnded, InFireRate, false, InFireRate);
+                }
             }
         }
     }
@@ -49,7 +59,9 @@ void UAnterWeaponComponent::SetCanShoot(bool InCanShoot)
 void UAnterWeaponComponent::OnTimerEnded()
 {
     GetOwner()->GetWorldTimerManager().ClearTimer(FireTimerHandle);
+    GetOwner()->GetWorldTimerManager().ClearTimer(SequentialFireTimerHandle);
     SetCanShoot(true);
+
 }
 
 void UAnterWeaponComponent::UpdateAmmos(float InAmmosDifference)

@@ -33,7 +33,7 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
         UAnterWeaponComponent();
 
         UFUNCTION(BlueprintCallable)
-        void ShootLaser();
+        virtual void ShootLaser();
 
         UFUNCTION()
         void OnTimerEnded();
@@ -59,6 +59,12 @@ protected:
     UPROPERTY(EditAnywhere)
     float InFireRate = 0.2f;
 
+    UPROPERTY(EditAnywhere, Category="Sequential Fire")
+    float InSequentialFireRate = 0.2f;
+
+    UPROPERTY(EditDefaultsOnly, Category="Sequential Fire")
+    int32 MaxSequentialShots = 5;
+
     UFUNCTION(BlueprintCallable)
     void SetCanShoot(bool InCanShoot);
 
@@ -67,6 +73,10 @@ protected:
     FTimerDelegate FireTimerDelegate;
 
     FTimerHandle FireTimerHandle;
+
+    FTimerDelegate SequentialFireTimerDelegate;
+
+    FTimerHandle SequentialFireTimerHandle;
 
     //Can assume only 1 or -1, to flag character direction
     //float MovementDirectionScaleFactor;
@@ -82,6 +92,10 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category="Weapon Counting")
     bool ShouldUseWeaponCounter = false;
+
+private:
+
+    int32 InternalSequentialShotCounter = 0;
 
 };
 

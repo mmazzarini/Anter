@@ -1,0 +1,25 @@
+Allora
+
+Appunti sviluppo:
+
+Siamo a Marzo-Aprile 2024
+
+
+""""""""""""""""""""""""""""""""""
+
+30 march, 2024.
+
+We need to implement a few things.
+
+I believe we need first to implement new weaponry for the enemies. 
+So that we can pick new weapons.
+
+For the weapon component: I believe you should create a new weapon component. 
+
+Weaponry to add:
+- timed sequence
+- multiple shots
+- bombs
+
+We need to create: a new system to add weapons.
+

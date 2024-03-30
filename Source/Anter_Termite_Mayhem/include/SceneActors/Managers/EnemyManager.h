@@ -28,7 +28,7 @@ public:
     void ResetActorMovement() override;
 
     UFUNCTION()
-    void SetBindings();
+    virtual void SetBindings() override;
 
     //We handle Enemy death through this manager function
     UFUNCTION()
