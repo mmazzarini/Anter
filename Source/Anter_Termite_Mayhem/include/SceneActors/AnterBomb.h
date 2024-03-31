@@ -1,38 +1,54 @@
 #pragma once
 
-#include "GameFramework/Actor.h"
-//#include "PaperSpriteActor.h"
+#include "SceneActors/AnterFire.h"
+/*
 #include "PaperCharacter.h"
 #include "Components/StaticMeshComponent.h"
 #include "PlayerControllers/AnterPlayerController.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+*/
+#include "TimerManager.h"
+#include "SceneActors/SceneActorInterface.h"
 
-#include "AnterFire.generated.h"
+#include "AnterBomb.generated.h"
 
+class UCollisionSupportComponent;
 
 UCLASS(BlueprintType,Blueprintable)
-class ANTER_TERMITE_MAYHEM_API AAnterFire : public APaperCharacter
+class ANTER_TERMITE_MAYHEM_API AAnterBomb : public AAnterFire, public ISceneActorInterface
 {
     GENERATED_BODY()
 
     public:
-
-    AAnterFire();
-
-    void Tick(float DeltaSeconds) override;
+    
+    AAnterBomb();
 
     virtual void BeginPlay() override;
 
-    virtual void UpdatePosition();
+    UFUNCTION()
+    virtual void HandleCollision(const FCollisionGeometry& InCollisionGeometry, AActor* OtherActor) override;
 
-    void CheckScreenLocation();
+    UFUNCTION()
+    virtual void UpdateWeaponDirection(float InLaserDirection) override {};
 
     virtual void SetMovementToRight(FVector InMovementDirection);
 
-    float GetConsumptionAmount(){return ConsumptionAmount;}
+    void HandleDamage(AActor* OtherActor) override {};
 
 protected:
 
+    UFUNCTION()
+    void OnTimerEnded();
+
+    UPROPERTY(EditDefaultsOnly)
+    float BombGravityScale = 2.0f;
+
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UCollisionSupportComponent* BombCollisionSupport;
+
+    void BindToBombCollision();
+
+    /*
     FVector MovementVector;
 
     UPROPERTY(EditDefaultsOnly, Category="Laser Movement")
@@ -67,4 +83,13 @@ protected:
     //Indicates how much weapon recharge this fire weapon consumes
     UPROPERTY(EditAnywhere, Category = "Fire Consumption")
     float ConsumptionAmount = 1.0f;
+    */
+
+    FTimerHandle ExplosionHandle;
+
+    FTimerDelegate ExplosionDelegate;   
+
+    /*Explosion timer, to be set by design*/
+    UPROPERTY(EditDefaultsOnly)
+    float ExplosionTimer = 3.0f;
 };
