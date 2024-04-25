@@ -70,7 +70,7 @@ UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter, public ISceneActorInterface
 {
     GENERATED_BODY()
-
+    
 public:
 
     AAnterPaperCharacter();
