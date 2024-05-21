@@ -30,11 +30,6 @@ void UGameFSM::InitializeFSM(UObject* ContextObject)
 
 void UGameFSM::SetCurrentState(FString InStateID)
 {
-    if(CurrentState.IsValid())
-    {
-        CurrentState->EndState();
-        CurrentState.Reset();
-    }
 
     UGameFSMState** FoundState = InternalArrayOfStates.FindByPredicate([=](UGameFSMState* FSMState)
     {
@@ -43,12 +38,19 @@ void UGameFSM::SetCurrentState(FString InStateID)
 
     if(FoundState != nullptr && *FoundState != nullptr)
     {
+        if(CurrentState.IsValid())
+        {
+            CurrentState->EndState();
+            CurrentState.Reset();
+        }
         CurrentState = *FoundState;
     }  
+    /*
     else
     {
         CurrentState.Reset();
     }
+    */
 }
  
 //Create the FSM States
@@ -90,22 +92,6 @@ void UGameFSM::TransitionToState(FString InStateID)
 {
 
     SetCurrentState(*InStateID);
-    /*
-    FString CurrID = (CurrentState != nullptr ? CurrentState->GetFSMStateID() : "");
-
-    FFSMStateNavigationHandler* NavElementRef = FSMNavigator.FindByPredicate([CurrID](const FFSMStateNavigationHandler& NavElem)
-    {
-        return NavElem.StateID == CurrID;
-    });
-    if(NavElementRef != nullptr)
-    {
-        if(FString* RequestedString = NavElementRef->ActionTransitionMap.Find(InState))
-        {
-            SetCurrentState(*RequestedString);
-        }
-        
-    }
-    */
 
     if(CurrentState != nullptr)
     {

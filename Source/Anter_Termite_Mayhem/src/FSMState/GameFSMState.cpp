@@ -15,7 +15,7 @@ void UGameFSMState::SetOwnerFSM(UGameFSM* InOwnerFSM)
     OwnerFSM = InOwnerFSM;
 }
 
-void UGameFSMState::StartState_Implementation()
+void UGameFSMState::StartState()
 {
     CreatePage();
 }

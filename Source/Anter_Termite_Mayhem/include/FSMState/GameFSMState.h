@@ -31,8 +31,7 @@ public:
     UFUNCTION()
     void SetOwnerFSM(UGameFSM* InOwnerFSM);
 
-    UFUNCTION(BlueprintNativeEvent)
-    void StartState();
+    virtual void StartState();
 
     virtual void CreatePage();
 

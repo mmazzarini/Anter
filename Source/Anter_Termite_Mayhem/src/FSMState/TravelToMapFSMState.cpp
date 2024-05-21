@@ -6,8 +6,10 @@ UTravelToMapFSMState::UTravelToMapFSMState(const FObjectInitializer& ObjectIniti
 {
 }
 
-void UTravelToMapFSMState::StartState_Implementation()
+void UTravelToMapFSMState::StartState()
 {
+    Super::StartState();
+    
     if(GetOwnerFSM() != nullptr && GetOwnerFSM()->GetOwnerComponent() != nullptr)
     {
         if(AAnterBaseMenuGameState* GameState = Cast<AAnterBaseMenuGameState>(GetOwnerFSM()->GetOwnerComponent()))

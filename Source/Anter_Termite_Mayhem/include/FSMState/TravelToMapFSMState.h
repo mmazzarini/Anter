@@ -24,7 +24,7 @@ public:
  
   //State getter 
 
-    void StartState_Implementation() override;
+    void StartState() override;
 
 
 protected:
