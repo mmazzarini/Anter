@@ -10,6 +10,11 @@ void UMenuPlaceAnterAndCameraFSMState::StartState()
     CreateAnter();
 
     PlaceAnter(); 
+
+    if(bProceedAfterPlacement)
+    {
+        TransitionToState(ProceedTransitionLabel);
+    }
 }
 
 void UMenuPlaceAnterAndCameraFSMState::PlaceAnter()
@@ -29,9 +34,17 @@ void UMenuPlaceAnterAndCameraFSMState::PlaceAnter()
         TargetCameraActor = TargetCameraActors[0];
     }
 
-    if(AnterMenuPawnRef.IsValid() && TargetActor != nullptr)
+    APlayerController* PC = UGameplayStatics::GetPlayerController(this,0);
+    if(AnterMenuPawnRef.IsValid())
     {
-        AnterMenuPawnRef->SetActorLocation(TargetActor->GetActorLocation());
+        if(TargetActor != nullptr)
+        {
+            AnterMenuPawnRef->SetActorLocation(TargetActor->GetActorLocation());
+        }
+        if(PC != nullptr)
+        {
+            bEnableAnterInput ? AnterMenuPawnRef->EnableInput(PC) : AnterMenuPawnRef->DisableInput(PC);
+        }
     }
 
     if(AnterCameraActorRef.IsValid() && TargetCameraActor != nullptr)
@@ -41,12 +54,9 @@ void UMenuPlaceAnterAndCameraFSMState::PlaceAnter()
 
     if(bShouldActivateCamera)
     {
-        if(APlayerController* PC = UGameplayStatics::GetPlayerController(this,0))
+        if(PC != nullptr && AnterCameraActorRef.IsValid())
         {
-            if(AnterCameraActorRef.IsValid())
-            {
-                PC->SetViewTarget(AnterCameraActorRef.Get());
-            }
+            PC->SetViewTarget(AnterCameraActorRef.Get());
         }
     }
 }
@@ -66,7 +76,7 @@ void UMenuPlaceAnterAndCameraFSMState::CreateAnter()
     if(!AnterCameraActorRef.IsValid())
     {
         TArray<AActor*> AnterCameraArray;
-        UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACameraActor::StaticClass(), AnterCameraArray);
+        UGameplayStatics::GetAllActorsWithTag(this, CameraActorTag, AnterCameraArray);
         if(AnterCameraArray.Num())
         {
             AnterCameraActorRef = Cast<ACameraActor>(AnterCameraArray[0]);

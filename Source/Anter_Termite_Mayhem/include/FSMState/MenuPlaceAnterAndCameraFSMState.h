@@ -29,11 +29,23 @@ protected:
     FName CameraTargetMarkerTag;
 
     UPROPERTY(EditInstanceOnly)
+    FName CameraActorTag;
+
+    UPROPERTY(EditInstanceOnly)
     bool bShouldActivateCamera = false;
+
+    UPROPERTY(EditInstanceOnly)
+    bool bEnableAnterInput = false;
+
+    UPROPERTY(EditInstanceOnly)
+    FString ProceedTransitionLabel;
 
     void CreateAnter();
 
     void PlaceAnter();
+
+    UPROPERTY(EditInstanceOnly)
+    bool bProceedAfterPlacement = false;
 
 private:
 

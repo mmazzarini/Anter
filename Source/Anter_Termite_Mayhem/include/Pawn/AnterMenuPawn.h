@@ -17,9 +17,7 @@ public:
 
     void SetupPlayerInputComponent(UInputComponent* InInputComponent) override;
 
-    void MoveToLevelPivot();
-
-    void GetTargetPivot();
+    void MoveToNextMarker();
 
     //Movement functions
     void HandleMoveDown();
@@ -33,10 +31,32 @@ public:
     //Movement functions
     void HandleMoveRight();
 
+    void HandleLevelSelected();
+
+    void NavigateToNextMarker(const FString& InStartingMarkerTag);
+
+    void Tick(float DeltaTime) override;
+
+protected:
+
+    AActor* RetrieveTargetMarker(const FString& InStartingMarkerTag);
+
+    UPROPERTY(EditDefaultsOnly)
+    float NavigationSpeed = 50.f;
+
+    UPROPERTY(EditDefaultsOnly)
+    float MarkerDistanceThreshold = 50.f;
 
 private:
 
     UPROPERTY(EditDefaultsOnly)
-    float ThresholdToNextPivot = 10.0f;
+    float ThresholdToNextPivot = 50.0f;
+
+    //Map coupling the direction name with the destination marker.
+    TMap<FString,FString> InternalNavigationMap;
+
+    bool bIsMovingToMarker = false;
+
+    TWeakObjectPtr<AActor> MarkerRef;
 
 };
