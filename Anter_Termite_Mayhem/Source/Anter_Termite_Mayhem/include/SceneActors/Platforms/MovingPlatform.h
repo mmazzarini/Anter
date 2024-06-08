@@ -27,7 +27,7 @@ protected:
     FVector NewPosition;
 
     TWeakObjectPtr<AAnterPaperCharacter> AnterRef;
-
+     
     TPair<AActor*,EPlatformCollisionType>* CandidateCollision;
     
 };
