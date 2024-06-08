@@ -14,8 +14,6 @@ public:
 
     AMovingPlatform();
 
-    void BeginPlay() override;
-
     void Tick(float DeltaTime) override;
 
     void UpdateMovement();
@@ -28,7 +26,7 @@ protected:
 
     FVector NewPosition;
 
-    AAnterPaperCharacter* Anter;
+    TWeakObjectPtr<AAnterPaperCharacter> AnterRef;
 
     TPair<AActor*,EPlatformCollisionType>* CandidateCollision;
     
