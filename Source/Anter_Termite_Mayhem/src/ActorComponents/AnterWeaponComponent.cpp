@@ -75,5 +75,5 @@ void UAnterWeaponComponent::UpdateAmmos(float InAmmosDifference)
         }
     }
 
-    FMath::Clamp<float>(InternalAmmosCounter,0.0f,MaxWeaponCounter);
+    float ClampedCounter = FMath::Clamp<float>(InternalAmmosCounter,0.0f,MaxWeaponCounter);
 }
