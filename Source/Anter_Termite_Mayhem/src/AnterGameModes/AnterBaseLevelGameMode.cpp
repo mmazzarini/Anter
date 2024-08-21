@@ -67,10 +67,12 @@ void AAnterBaseLevelGameMode::StartPlay()
     */   
     StartLevel();
     //GetLevelGoalReference();
+    /*
     if (GEngine != nullptr)
     {
         GEngine->SetMaxFPS(60);
     }
+    */
 }
 
 void AAnterBaseLevelGameMode::StartLevel()

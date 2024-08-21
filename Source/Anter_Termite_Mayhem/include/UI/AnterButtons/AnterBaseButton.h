@@ -24,10 +24,32 @@ public:
 
     virtual void UninitializeAnterWidget() override;
 
+    //virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
+
+   //virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
+
     virtual FReply NativeOnMouseButtonUp(const FGeometry & InGeometry, const FPointerEvent & InMouseEvent) override;
+
+    //virtual FReply NativeOnKeyDown ( const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+    virtual FReply NativeOnKeyUp ( const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
+
+
 
 protected:
 
     UPROPERTY(EditInstanceOnly, Category = "Interaction")
     FString ButtonAction = "NoAction";
+
+    UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Interaction")
+    FLinearColor FocusColor = FLinearColor::Transparent;
+
+    UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Interaction")
+    FLinearColor UnfocusColor = FLinearColor::Transparent;
+
+    UPROPERTY(EditInstanceOnly, BlueprintReadOnly, Category = "Interaction")
+    FLinearColor StartingColor = FLinearColor::Transparent;
+
+    UPROPERTY(EditInstanceOnly, Category = "Interaction")
+    FString InteractionString = "Enter";
 };
