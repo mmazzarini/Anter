@@ -40,23 +40,3 @@ void UAnterBaseButton::UninitializeAnterWidget()
 {
     //OnClicked.RemoveDynamic(this,&UAnterBaseButton::FireAction);
 }
-
-    /*
-FReply UAnterBaseButton::NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent)
-{
-
-    Super::NativeOnFocusReceived(InGeometry, InFocusEvent);
-    ForegroundColor = FocusColor;
-    return FReply::Handled();
-
-}
-    */
-    /*
-void UAnterBaseButton::NativeOnFocusLost(const FFocusEvent& InFocusEvent)
-{
-
-    Super::NativeOnFocusLost(InFocusEvent);
-    ForegroundColor = UnfocusColor;
-
-}
-    */

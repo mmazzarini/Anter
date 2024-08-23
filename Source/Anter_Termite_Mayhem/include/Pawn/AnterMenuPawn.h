@@ -4,6 +4,8 @@
 
 #include "AnterMenuPawn.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMapLevelHitDelegate, FString, LevelName);
+
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterMenuPawn : public APaperCharacter
 {
@@ -36,6 +38,8 @@ public:
     void NavigateToNextMarker(const FString& InStartingMarkerTag);
 
     void Tick(float DeltaTime) override;
+
+    FMapLevelHitDelegate OnMapLevelHit;
 
 protected:
 

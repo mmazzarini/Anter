@@ -24,10 +24,6 @@ public:
 
     virtual void UninitializeAnterWidget() override;
 
-    //virtual FReply NativeOnFocusReceived(const FGeometry& InGeometry, const FFocusEvent& InFocusEvent) override;
-
-   //virtual void NativeOnFocusLost(const FFocusEvent& InFocusEvent) override;
-
     virtual FReply NativeOnMouseButtonUp(const FGeometry & InGeometry, const FPointerEvent & InMouseEvent) override;
 
     //virtual FReply NativeOnKeyDown ( const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;

@@ -126,6 +126,7 @@ void AAnterMenuPawn::NavigateToNextMarker(const FString& InStartingMarkerTag)
         }
         bIsMovingToMarker = true;
     }
+    OnMapLevelHit.Broadcast(InStartingMarkerTag);
 }
 
 AActor* AAnterMenuPawn::RetrieveTargetMarker(const FString& InStartingMarkerTag)
