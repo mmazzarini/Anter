@@ -30,6 +30,7 @@ class ULevelManagerComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelRestarted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerRestarted);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLevelFinished);
 
 UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameMode : public AGameModeBase
@@ -76,9 +77,13 @@ public:
     //override base function from GameModeBase. This is to restart player after death
     virtual void RestartPlayer(AController* NewPlayer) override;
 
+    void TravelToMap(FString InMapString, TArray<FString> InOptions);
+    
     FOnLevelRestarted LevelRestartedDelegate;
     
     FOnPlayerRestarted PlayerRestartedDelegate;
+
+    FOnLevelFinished LevelFinishedDelegate;
 
 protected:
 

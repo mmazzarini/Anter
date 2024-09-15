@@ -18,6 +18,7 @@ AAnterBaseLevelGameMode::AAnterBaseLevelGameMode()
 void AAnterBaseLevelGameMode::OnLevelFinished()
 {
     GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    UE_LOG(LogTemp, Warning, TEXT("GameMode: Started timer!"));
     GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnLevelFinishedTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
 }
 
@@ -40,10 +41,8 @@ void AAnterBaseLevelGameMode::OnEndLevelTimerEnded()
 
 void AAnterBaseLevelGameMode::OnLevelFinishedTimerEnded()
 {
-    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
-    FURL MapToTravelURL(TEXT("/Game/AnterGameMenu"));
-    MapToTravelURL.AddOption(TEXT("GoToMap"));
-    GetWorld()->ServerTravel(MapToTravelURL.ToString());
+    UE_LOG(LogTemp, Warning, TEXT("GameMode: Broadcasting level finished!"));
+    LevelFinishedDelegate.Broadcast();
 }
 
 void AAnterBaseLevelGameMode::OnLevelGameOver()
@@ -127,4 +126,16 @@ void AAnterBaseLevelGameMode::RestartPlayer(AController* NewPlayer)
     //Methodology: we just broadcast the restart, who needs to bind to this does that before.
     //Advantage: we leave the different objects and components (GState, LevelManager) independent and flexibly organised.
     PlayerRestartedDelegate.Broadcast();
+}
+
+void AAnterBaseLevelGameMode::TravelToMap(FString InMapString, TArray<FString> InOptions)
+{
+    UE_LOG(LogTemp, Warning, TEXT("GameMode: Travelling to map!"));
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    FURL MapToTravelURL(*InMapString);
+    for (FString Opt : InOptions)
+    {
+        MapToTravelURL.AddOption(*Opt);
+    }
+    GetWorld()->ServerTravel(MapToTravelURL.ToString());
 }

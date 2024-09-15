@@ -53,7 +53,7 @@ public:
     void SetFSMStateID(const FString& InStateID){FSMStateID = InStateID;}
 
     UFUNCTION()
-    void EndState();
+    virtual void EndState();
 
     void SetMapOfStateTransitions(const TMap<FString, FString >& InMapOfStateTransitions);
 

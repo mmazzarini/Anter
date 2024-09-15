@@ -1,5 +1,7 @@
 #include "FSMState/TravelToMapFSMState.h"
-#include "AnterGameStates/AnterBaseMenuGameState.h"
+#include "GameFramework/GameStateBase.h"
+#include "FSM/GameFSM.h"
+#include "AnterGameModes/AnterBaseLevelGameMode.h"
 
 UTravelToMapFSMState::UTravelToMapFSMState(const FObjectInitializer& ObjectInitializer)
 :Super(ObjectInitializer)
@@ -7,14 +9,21 @@ UTravelToMapFSMState::UTravelToMapFSMState(const FObjectInitializer& ObjectIniti
 }
 
 void UTravelToMapFSMState::StartState()
-{
+{ 
     Super::StartState();
     
     if(GetOwnerFSM() != nullptr && GetOwnerFSM()->GetOwnerComponent() != nullptr)
     {
-        if(AAnterBaseMenuGameState* GameState = Cast<AAnterBaseMenuGameState>(GetOwnerFSM()->GetOwnerComponent()))
+        if (AGameStateBase* GameState = Cast<AGameStateBase>(GetOwnerFSM()->GetOwnerComponent()))
         {
-            GameState->GetWorld()->ServerTravel(LevelName);
+            AAnterBaseLevelGameMode* LevelGameMode = Cast<AAnterBaseLevelGameMode>(GameState->AuthorityGameMode);
+            {
+                if (LevelGameMode != nullptr)
+                {
+                    UE_LOG(LogTemp, Warning, TEXT("FSMState: Im calling travel on GameMode!"));
+                    LevelGameMode->TravelToMap(LevelName, TravelOptions);
+                }
+            }
         }
     }
 }

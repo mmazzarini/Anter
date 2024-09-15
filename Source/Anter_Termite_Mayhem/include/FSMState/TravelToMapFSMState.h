@@ -32,4 +32,7 @@ protected:
     //Internal map of state transitions. Filled by FSM, read to communicate transition to FSM
     UPROPERTY(EditInstanceOnly)
     FString LevelName ="";
+
+    UPROPERTY(EditInstanceOnly)
+    TArray<FString> TravelOptions;
 };

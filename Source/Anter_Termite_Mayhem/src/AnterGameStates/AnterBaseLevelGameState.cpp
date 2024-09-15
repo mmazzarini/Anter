@@ -17,6 +17,17 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
     {
         LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::BindToPlayerStates);
     }
+
+    //FSM initialization
+    if (LevelMenuFSMClass != nullptr)
+    {
+        LevelMenuFSM = NewObject<UGameFSM>(this, LevelMenuFSMClass);
+        if (LevelMenuFSM != nullptr)
+        {
+            LevelMenuFSM->InitializeFSM(this);
+        }
+    }
+
 }
 
 void AAnterBaseLevelGameState::OnGameOver()

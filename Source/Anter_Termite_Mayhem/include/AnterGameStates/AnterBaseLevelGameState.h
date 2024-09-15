@@ -1,6 +1,8 @@
 #pragma once
 
 #include "GameFramework/GameState.h"
+#include "FSM/GameFSM.h"
+
 #include "AnterBaseLevelGameState.generated.h"
 
 /* Game State base class for platform levels, to represent their state from creation to end
@@ -41,6 +43,16 @@ public:
     ELevelCompletionState GetLevelCompletionState(){return LevelCompletion;}
 
     FOnGameStateDeathReached OnDeathReached;
+
+protected:
+
+    //private internal reference to MenuFSM.
+    //The FSM must contain states for menu - options - map
+
+    UGameFSM* LevelMenuFSM;
+
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UGameFSM> LevelMenuFSMClass;
 
 private:
 
