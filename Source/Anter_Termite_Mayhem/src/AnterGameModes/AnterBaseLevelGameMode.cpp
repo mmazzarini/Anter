@@ -17,7 +17,8 @@ AAnterBaseLevelGameMode::AAnterBaseLevelGameMode()
 
 void AAnterBaseLevelGameMode::OnLevelFinished()
 {
-    GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnEndLevelTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnLevelFinishedTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
 }
 
 void AAnterBaseLevelGameMode::OnEndLevelTimerEnded()
@@ -37,8 +38,17 @@ void AAnterBaseLevelGameMode::OnEndLevelTimerEnded()
     }
 }
 
+void AAnterBaseLevelGameMode::OnLevelFinishedTimerEnded()
+{
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
+    FURL MapToTravelURL(TEXT("/Game/AnterGameMenu"));
+    MapToTravelURL.AddOption(TEXT("GoToMap"));
+    GetWorld()->ServerTravel(MapToTravelURL.ToString());
+}
+
 void AAnterBaseLevelGameMode::OnLevelGameOver()
 {
+    GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
     GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnLevelGameOverTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
 }
 

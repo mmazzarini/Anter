@@ -57,7 +57,7 @@ class ANTER_TERMITE_MAYHEM_API UGameFSM : public UObject
 public:
 
     //Base function initializer
-    virtual void InitializeFSM(UObject* ContextObject);
+    virtual void InitializeFSM(UObject* ContextObject, const FString InInitialState = FString(TEXT("")));
 
     //State getter 
     UFUNCTION()

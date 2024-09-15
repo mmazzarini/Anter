@@ -19,7 +19,15 @@ void AAnterBaseMenuGameState::HandleBeginPlay()
         AnterMenuFSM = NewObject<UGameFSM>(this,AnterMenuFSMClass);
         if(AnterMenuFSM != nullptr)
         {
-            AnterMenuFSM->InitializeFSM(this);
+            FString MapOption = FString("");
+            if (GetWorld() != nullptr)
+            {
+                if (FString* FoundOptionStr = GetWorld()->URL.Op.FindByKey("GoToMap"))
+                {
+                    MapOption = *FoundOptionStr;
+                }
+            }
+            AnterMenuFSM->InitializeFSM(this, MapOption);
         }
     }
 }

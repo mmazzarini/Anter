@@ -52,6 +52,9 @@ public:
     void OnEndLevelTimerEnded();
 
     UFUNCTION()
+    void OnLevelFinishedTimerEnded();
+
+    UFUNCTION()
     void OnLevelGameOver();
 
     UFUNCTION()

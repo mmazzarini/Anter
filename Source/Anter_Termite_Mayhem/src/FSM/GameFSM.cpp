@@ -15,12 +15,12 @@ UGameFSM::~UGameFSM()z
 }
 */
 
-void UGameFSM::InitializeFSM(UObject* ContextObject)
+void UGameFSM::InitializeFSM(UObject* ContextObject, const FString InInitialState /*=FString(TEXT(""))*/)
 {
     CurrentState.Reset();
     RegisterFSMStates();
     //SetupFSMStates();
-    SetCurrentState(InitialStateString);
+    SetCurrentState((InInitialState != TEXT("")) ? InInitialState : InitialStateString);
     if(ContextObject != nullptr)
     {
         OwnerComponent = ContextObject;
