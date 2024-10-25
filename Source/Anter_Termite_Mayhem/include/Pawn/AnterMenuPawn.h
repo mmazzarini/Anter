@@ -5,6 +5,7 @@
 #include "AnterMenuPawn.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMapLevelHitDelegate, FString, LevelName);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMapLevelSelectedDelegate, FString, LevelName);
 
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterMenuPawn : public APaperCharacter
@@ -41,6 +42,8 @@ public:
 
     FMapLevelHitDelegate OnMapLevelHit;
 
+    FMapLevelSelectedDelegate OnMapLevelSelected;
+
 protected:
 
     AActor* RetrieveTargetMarker(const FString& InStartingMarkerTag);
@@ -62,5 +65,8 @@ private:
     bool bIsMovingToMarker = false;
 
     TWeakObjectPtr<AActor> MarkerRef;
+
+    //String storing the current pointed level name that the marker refers to.
+    FString CurrentMarkerTag;
 
 };

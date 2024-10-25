@@ -33,6 +33,7 @@ protected:
     UPROPERTY(EditInstanceOnly)
     FString LevelName ="";
 
-    UPROPERTY(EditInstanceOnly)
+    UPROPERTY(EditInstanceOnly, Category="Travel Options")
     TArray<FString> TravelOptions;
+
 };

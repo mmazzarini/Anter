@@ -87,8 +87,7 @@ public:
 
 protected:
 
-    /*Protected variable for LevelManager*/
-    //ULevelManagerComponent* LevelManager;
+    void UpdateLevelStats();
 
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<ULevelManagerComponent> LevelManagerClass;
@@ -101,5 +100,4 @@ protected:
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     ULevelManagerComponent* LevelManager;
-
 };

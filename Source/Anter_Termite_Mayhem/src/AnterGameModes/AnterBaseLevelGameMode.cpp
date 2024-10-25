@@ -8,6 +8,7 @@
 #include "GameFramework/PlayerController.h"
 #include "SceneActors/Items/LevelGoal.h"
 #include "SceneActors/Items/LevelCheckpoint.h"
+#include "SceneActors/Managers/LevelInfoManager.h"
 
 AAnterBaseLevelGameMode::AAnterBaseLevelGameMode()
 {
@@ -18,7 +19,8 @@ AAnterBaseLevelGameMode::AAnterBaseLevelGameMode()
 void AAnterBaseLevelGameMode::OnLevelFinished()
 {
     GetWorldTimerManager().ClearTimer(EndLevelTimerHandle);
-    UE_LOG(LogTemp, Warning, TEXT("GameMode: Started timer!"));
+    UE_LOG(LogTemp, Warning, TEXT("GameMode: Started timer because of level finished!"));
+    UpdateLevelStats();
     GetWorldTimerManager().SetTimer(EndLevelTimerHandle, this, &AAnterBaseLevelGameMode::OnLevelFinishedTimerEnded, NumSecondsForLevelEnd, false, NumSecondsForLevelEnd);
 }
 
@@ -138,4 +140,12 @@ void AAnterBaseLevelGameMode::TravelToMap(FString InMapString, TArray<FString> I
         MapToTravelURL.AddOption(*Opt);
     }
     GetWorld()->ServerTravel(MapToTravelURL.ToString());
+}
+
+void AAnterBaseLevelGameMode::UpdateLevelStats()
+{
+    if (ULevelInfoManager* LevelInfoManager = ULevelInfoManager::Get(this))
+    {
+        LevelInfoManager->SetCurrentLevelComplete();
+    }
 }

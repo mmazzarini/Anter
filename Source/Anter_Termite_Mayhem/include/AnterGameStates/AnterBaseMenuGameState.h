@@ -18,14 +18,18 @@ class ANTER_TERMITE_MAYHEM_API AAnterBaseMenuGameState : public AGameStateBase
 
 public:
 
-    //TODO Implement it!!
+    AAnterBaseMenuGameState(const FObjectInitializer& ObjectInitializer);
+
     virtual void HandleBeginPlay() override;
+
+    void Tick(float DeltaSeconds) override;
 
 private:
 
     //private internal reference to MenuFSM.
     //The FSM must contain states for menu - options - map
     
+    UPROPERTY()
     UGameFSM* AnterMenuFSM;
 
     UPROPERTY(EditDefaultsOnly)

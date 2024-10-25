@@ -47,6 +47,8 @@ void AAnterMenuPawn::MoveToNextMarker()
         {
             bIsMovingToMarker = false;
             SetActorLocation(MarkerRef->GetActorLocation() + FVector(0.0f,0.0f,100.f));
+
+            OnMapLevelHit.Broadcast(CurrentMarkerTag);
         }
         else
         {
@@ -106,6 +108,10 @@ void AAnterMenuPawn::HandleLevelSelected()
     {
         if(AMenuMapMarker* CastedMapMarker = Cast<AMenuMapMarker>(MarkerRef.Get()))
         {
+            if (CastedMapMarker->Tags.Num() > 0)
+            {
+                OnMapLevelSelected.Broadcast(CastedMapMarker->Tags[0].ToString());
+            }
             if(!bIsMovingToMarker && !(CastedMapMarker->GetLevelPath().Equals("")))
             {
                 GetWorld()->ServerTravel(CastedMapMarker->GetLevelPath());
@@ -116,6 +122,7 @@ void AAnterMenuPawn::HandleLevelSelected()
 
 void AAnterMenuPawn::NavigateToNextMarker(const FString& InStartingMarkerTag)
 {
+    CurrentMarkerTag = InStartingMarkerTag;
     MarkerRef = RetrieveTargetMarker(InStartingMarkerTag);
     if(MarkerRef != nullptr)
     {
@@ -126,7 +133,6 @@ void AAnterMenuPawn::NavigateToNextMarker(const FString& InStartingMarkerTag)
         }
         bIsMovingToMarker = true;
     }
-    OnMapLevelHit.Broadcast(InStartingMarkerTag);
 }
 
 AActor* AAnterMenuPawn::RetrieveTargetMarker(const FString& InStartingMarkerTag)

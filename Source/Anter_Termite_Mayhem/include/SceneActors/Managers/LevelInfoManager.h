@@ -1,21 +1,22 @@
 #pragma once
 
-#include "GameFramework/Actor.h"
+#include "CoreMinimal.h"
+#include "UObject/Object.h"
 
 #include "LevelInfoManager.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType, Blueprintable)
 struct FLevelInfo
 {
-    GENERATED_BODY()
+    GENERATED_USTRUCT_BODY()
     
-    UPROPERTY(SaveGame)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     bool bLevelComplete = false;
 
-    UPROPERTY(SaveGame)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     int32 NumberCollectibles = 0;
 
-    UPROPERTY(SaveGame)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
     int32 NumDeaths = 0;
 };
 
@@ -24,19 +25,33 @@ struct FLevelInfo
 */
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API ALevelInfoManager : public AActor 
+class ANTER_TERMITE_MAYHEM_API ULevelInfoManager : public UObject 
 {
     GENERATED_BODY()
 
 public:
+    
+    //Static public getter method for Level Manager. 
+    static ULevelInfoManager* Get(UObject* WorldContextObject);
 
-    TMap<FString,FLevelInfo> GetLevelsMap() const;
+    //Initialization method for Level Info Manager. Right now, it may be useless
+    void Init();
+
+    //Sets completion info about a level.
+    void SetCurrentLevelComplete();
+
+    const TMap<FString,FLevelInfo>& GetLevelsMap() const;
 
     void SetLevelsMap(const TMap<FString,FLevelInfo>& InLevelsMap);
 
+    void SetCurrentLevelName(const FString& InLevelName);
+
 protected:
 
-    UPROPERTY(SaveGame)
+    UPROPERTY(EditAnywhere, SaveGame)
     TMap<FString,FLevelInfo> LevelInfoMap;
 
+private:
+
+    FString CurrentLevelName;
 };

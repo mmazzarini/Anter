@@ -2,6 +2,13 @@
 
 #include "GameFramework/GameUserSettings.h"
 
+AAnterBaseMenuGameState::AAnterBaseMenuGameState(const FObjectInitializer& ObjectInitializer)
+    :
+    Super(ObjectInitializer)
+{
+    PrimaryActorTick.bCanEverTick = true;
+}
+
 void AAnterBaseMenuGameState::HandleBeginPlay()
 {
     Super::HandleBeginPlay();
@@ -30,4 +37,9 @@ void AAnterBaseMenuGameState::HandleBeginPlay()
             AnterMenuFSM->InitializeFSM(this, MapOption);
         }
     }
+}
+
+void AAnterBaseMenuGameState::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
 }

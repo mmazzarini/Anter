@@ -9,7 +9,7 @@ ULevelProgressionSaveGame::ULevelProgressionSaveGame()
 
 void ULevelProgressionSaveGame::InitializeSaveGameForSave()
 {
-    if(ALevelInfoManager* LevelInfoManager = Cast<ALevelInfoManager>(UGameplayStatics::GetActorOfClass(this,ALevelInfoManager::StaticClass())))
+    if(ULevelInfoManager* LevelInfoManager = ULevelInfoManager::Get(this))
     {
         LevelInfoMap = LevelInfoManager->GetLevelsMap();
     }
@@ -17,7 +17,7 @@ void ULevelProgressionSaveGame::InitializeSaveGameForSave()
 
 void ULevelProgressionSaveGame::InitializeSaveGameForLoad()
 {
-    if(ALevelInfoManager* LevelInfoManager = Cast<ALevelInfoManager>(UGameplayStatics::GetActorOfClass(this,ALevelInfoManager::StaticClass())))
+    if(ULevelInfoManager* LevelInfoManager = ULevelInfoManager::Get(this))
     {
         LevelInfoManager->SetLevelsMap(LevelInfoMap);
     }
