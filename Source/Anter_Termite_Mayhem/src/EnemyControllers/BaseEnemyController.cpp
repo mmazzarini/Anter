@@ -2,8 +2,17 @@
 #include "SceneActors/Enemies/BaseEnemy.h"
 #include "EngineUtils.h"
 
+ABaseEnemyController::ABaseEnemyController()
+    :
+    Super()
+{
+        PrimaryActorTick.bCanEverTick = true;
+}
+
 void ABaseEnemyController::BeginPlay()
 {
+    Super::BeginPlay();
+
     APawn* ControlledPawn = GetPawn();
     if(ControlledPawn != nullptr)
     {

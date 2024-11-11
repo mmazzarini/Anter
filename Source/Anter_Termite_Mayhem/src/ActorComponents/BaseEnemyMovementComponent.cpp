@@ -1,5 +1,7 @@
 #include "ActorComponents/BaseEnemyMovementComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Actor.h"
+#include <ActorComponents/JumpComponent.h>
 
 UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 {
@@ -13,6 +15,15 @@ void UBaseEnemyMovementComponent::Initialize()
     SetMovement(InitialMovementGeometry);
     SetSpeed(InitialMovementSpeed);
     OwnerEnemy = GetOwner();
+}
+
+void UBaseEnemyMovementComponent::BeginPlay()
+{
+    Super::BeginPlay();
+    if (UJumpComponent* OwnerJumpComponent = Cast<UJumpComponent>(GetOwner()->GetComponentByClass(UJumpComponent::StaticClass())))
+    {
+        OwnerJumpComponent->OnJumpRequested.AddUObject(this, &UBaseEnemyMovementComponent::AddImpulse);
+    }
 }
 
 void UBaseEnemyMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
@@ -42,6 +53,7 @@ void UBaseEnemyMovementComponent::ResetSpeed()
 {
     SetSpeed(BackupSpeed);
 }
+
 void UBaseEnemyMovementComponent::UpdateMovement()
 {
     if(OwnerEnemy != nullptr)
@@ -58,7 +70,27 @@ void UBaseEnemyMovementComponent::OnCollided(UPrimitiveComponent* OverlappedComp
 
 }
 
+void UBaseEnemyMovementComponent::AddImpulse(FVector InInpulse)
+{
+    if (OwnerEnemy != nullptr)
+    {
+        if (UCharacterMovementComponent* EnemyMovement = Cast<UCharacterMovementComponent>(OwnerEnemy->GetComponentByClass(UCharacterMovementComponent::StaticClass())))
+        {
+            EnemyMovement->AddImpulse(InInpulse);
+        }
+    }
+}
+
 void UBaseEnemyMovementComponent::InvertSpeed()
 {
     InternalMovementSpeed = -InternalMovementSpeed;
+}
+
+void UBaseEnemyMovementComponent::DestroyComponent(bool bPromoteChildren)
+{
+    if (UJumpComponent* OwnerJumpComponent = Cast<UJumpComponent>(GetOwner()->GetComponentByClass(UJumpComponent::StaticClass())))
+    {
+        OwnerJumpComponent->OnJumpRequested.RemoveAll(this);
+    }
+    Super::DestroyComponent(bPromoteChildren);
 }

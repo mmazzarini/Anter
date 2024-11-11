@@ -25,6 +25,8 @@ public:
 
     void Initialize();
 
+    void BeginPlay() override;
+
     virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction) override;
 
     virtual void SetMovement(FVector2D InGeometryVector);
@@ -44,9 +46,14 @@ public:
     UFUNCTION()
     void OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
+    UFUNCTION()
+    void AddImpulse(FVector InInpulse);
+
     FOnMovementUpdatedDelegate OnMovementUpdated;
 
     const float GetInnerSpeed() const {return InternalMovementSpeed;}
+
+    void DestroyComponent(bool bPromoteChildren) override;
 
 protected:
 

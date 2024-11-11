@@ -26,11 +26,11 @@ void UAnterMovementSupportComponent::HandleSlide()
 {
     if(Anter != nullptr && Anter->GetCanJump() && bCanSlideInternal)
     {
+        SlideImpulse = FVector::XAxisVector * InternalMovementDirection * SlideMovementMultiplier;
         if(AnterMovement != nullptr)
         {
-            FVector SlideImpulse = FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier;
-            AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
-            SlideStopThreshold = AnterMovement->Velocity.X;
+            //AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
+            SlideStopThreshold = abs(AnterMovement->Velocity.X);
         }
         Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementDurationTime, false, SlideMovementDurationTime);
         bCanSlideInternal = false;
@@ -44,30 +44,22 @@ void UAnterMovementSupportComponent::EndSlide()
     {
 
         // TODO: MUST decide which threshold to evaluate: design-tuned via fraction-like multiplier to SlideStopThreshold.
-        if(Anter->GetCanJump() || abs(AnterMovement->Velocity.X) <= abs(SlideStopThreshold*SlideStopThresholdFraction))
+        if(Anter->GetCanJump())// || abs(AnterMovement->Velocity.X) <= abs(SlideStopThreshold*SlideStopThresholdFraction))
         {
-            // Completely remove slide.
-            //Evaluate: if there is no input then velocity is set to 0, else divide below threshold.
-            if(InternalMovementDirection == 0.0f)
-            {
-                AnterMovement->Velocity.X = 0.0f;
-            }
-            else if(AnterMovement->Velocity.X*InternalMovementDirection > 0.0f)
-            {
-                //I.e. if we are moving in the direction of initial slide impulse
-                AnterMovement->Velocity.X /= SlideStopThreshold*SlideStopThresholdFraction;
-            }
-
-            // We can reset the slide movement boolean
             bCanSlideInternal = true;
         }
         else
         {
             //Remove slide partially, because it is in air, but reset timer
-            AnterMovement->Velocity.X /= SlideMovementAirDivider;
-            Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementAirDurationTime, false, SlideMovementAirDurationTime);
+            SlideImpulse /= SlideMovementAirDivider;
+            Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSecondSlide, SlideMovementAirDurationTime, false, SlideMovementAirDurationTime);
         }
     }
+}
+
+void UAnterMovementSupportComponent::EndSecondSlide()
+{
+    bCanSlideInternal = true;
 }
 
 void UAnterMovementSupportComponent::SetMovementDirection(float InAxisValue)
@@ -86,5 +78,10 @@ void UAnterMovementSupportComponent::TickComponent(float DeltaTime, enum ELevelT
         }
 
         Anter->AddActorWorldOffset(FVector::UpVector*VerticalShift);
+    }
+
+    if (!bCanSlideInternal)
+    {
+        Anter->AddActorWorldOffset(SlideImpulse);
     }
 }

@@ -1,4 +1,5 @@
 #include "SceneActors/Enemies/BaseEnemy.h"
+#include "SceneActors/Platforms/BasePlatform.h"
 #include "AIController.h"
 #include "Navigation/PathFollowingComponent.h"
 #include "SceneActors/Enemies/BaseEnemyBoundary.h"
@@ -74,6 +75,8 @@ void ABaseEnemy::BeginPlay()
     }
     //We set this at the beginning
     CurrentPivotPositions = PivotPositions;
+
+    ResetGravity();
 }
 
 void ABaseEnemy::Tick(float DeltaSeconds)
@@ -114,11 +117,25 @@ void ABaseEnemy::HandleCollision(const FCollisionGeometry& InCollisionGeometry, 
     {
         HandleDamage(OtherActor);
     }
+
+    if (ABasePlatform* CurrentPlatform = Cast<ABasePlatform>(OtherActor))
+    {
+        FVector EnemyCentre;
+        FVector EnemySize;
+        GetActorBounds(true, EnemyCentre, EnemySize, false);
+        if (BaseEnemyMesh != nullptr)
+        {
+            if (InCollisionGeometry.TopDist.Z >= -(EnemySize.Z))
+            {
+                NullifyGravity();
+                SetActorLocation(InCollisionGeometry.PlatformSurfaceCentre + EnemySize.Z / 2.f);
+            }
+        }
+    }
 }
    
 void ABaseEnemy::SetBindings()
 { 
-
     if(BaseEnemyMesh !=nullptr && BaseEnemyCollisionSupport != nullptr)
     {
         BaseEnemyMesh->OnComponentBeginOverlap.AddDynamic(BaseEnemyCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
@@ -181,6 +198,30 @@ void ABaseEnemy::ResetMovement()
         SetActorLocation(CurrentPivotPositions[0]);
         StartToMove();
     }
+}
+
+void ABaseEnemy::ResetGravity()
+{
+    if (bShouldHaveGravity)
+    {
+        if (UCharacterMovementComponent* EnemyMovement = Cast<UCharacterMovementComponent>(GetComponentByClass(UCharacterMovementComponent::StaticClass())))
+        {
+            EnemyMovement->GravityScale = EnemyGravityScale;
+        }
+    }
+}
+
+void ABaseEnemy::NullifyGravity()
+{
+    if (bShouldHaveGravity)
+    {
+        if (UCharacterMovementComponent* EnemyMovement = Cast<UCharacterMovementComponent>(GetComponentByClass(UCharacterMovementComponent::StaticClass())))
+        {
+            EnemyMovement->GravityScale = 0.0f;
+            EnemyMovement->Velocity.Z = 0.0f;
+        }
+    }
+    OnGravityNullified.Broadcast();
 }
 
 void ABaseEnemy::HandleDamage(AActor* InDamagingActor)

@@ -32,7 +32,7 @@ void UHealthComponent::UpdateHealth(float InNewHealth)
     }
     if(GEngine != nullptr)
     {
-        GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("New Health: ") + FString::SanitizeFloat(CoreHealth));
+        //GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("New Health: ") + FString::SanitizeFloat(CoreHealth));
     }
     //Then check if pawn is dead
     CheckDeath();

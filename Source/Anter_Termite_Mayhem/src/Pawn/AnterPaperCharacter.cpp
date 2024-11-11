@@ -611,7 +611,7 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
     AnterHitStatus = EAnterHitableStatus::CanBeHit;
     if(GEngine != nullptr)
     {
-        GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Can be hit again!"));
+        //GEngine->AddOnScreenDebugMessage(-1,5.0f,FColor::Red,TEXT("Anter Can be hit again!"));
     }
     if(AnterMesh != nullptr && DefaultMaterial != nullptr)
     {

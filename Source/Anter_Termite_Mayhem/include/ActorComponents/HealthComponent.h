@@ -46,6 +46,7 @@ public:
     UFUNCTION()
     virtual void CheckDeath(); 
 
+    UFUNCTION(BlueprintCallable)
     float GetCoreHealth(){return CoreHealth;}
 
     //Delegate to notify other objects of death reached

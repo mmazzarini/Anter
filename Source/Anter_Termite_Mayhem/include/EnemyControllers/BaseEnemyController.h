@@ -12,6 +12,8 @@ class ANTER_TERMITE_MAYHEM_API ABaseEnemyController : public AAIController
 
 public:
 
+    ABaseEnemyController();
+
     void BeginPlay() override;
 
     void Tick(float DeltaSeconds) override;

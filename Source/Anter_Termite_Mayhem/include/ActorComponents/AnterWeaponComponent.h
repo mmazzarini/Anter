@@ -48,6 +48,9 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 
         bool CanShoot(){return bCanShoot;}
 
+        UFUNCTION(BlueprintCallable)
+        float GetAmmosCounter() const;
+
 protected:
 
     UPROPERTY(EditDefaultsOnly)

@@ -24,6 +24,8 @@ public:
 
     void EndSlide();
 
+    void EndSecondSlide();
+
     void SetMovementDirection(float InAxisValue);
 
     virtual void BeginPlay() override;
@@ -76,5 +78,8 @@ protected:
 
     //boolean to control slide internal start with true
     bool bCanSlideInternal = true;
+
+    //Slide value
+    FVector SlideImpulse;
 
 };

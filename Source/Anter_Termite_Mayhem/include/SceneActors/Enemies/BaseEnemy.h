@@ -19,6 +19,8 @@ set by user on Blueprint defaults.
 Can be derived to obtain all the specified enemies.
 */
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGravityNullified);
+
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API ABaseEnemy : public APaperCharacter, public ISceneActorInterface, public IEnemyInterface
 {
@@ -83,6 +85,12 @@ public:
 
     void ResetMovement();
 
+    void ResetGravity();
+
+    void NullifyGravity();
+
+    FOnGravityNullified OnGravityNullified;
+
 protected:
 
     void SetBindings();
@@ -120,4 +128,10 @@ protected:
     //Set externally by manager to configure if enemy shoots
     UPROPERTY(EditDefaultsOnly)
     bool bCanShoot;
+
+    UPROPERTY(EditDefaultsOnly)
+    bool bShouldHaveGravity = false;
+
+    UPROPERTY(EditDefaultsOnly, meta = (EditCondition = "bShouldHaveGravity = true"))
+    float EnemyGravityScale = 0.0f;
 };
