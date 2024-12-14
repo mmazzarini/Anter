@@ -18,6 +18,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/PlayerState.h"
 #include "SceneActors/Enemies/BaseEnemy.h"
+#include "SceneActors/Items/LevelCheckpoint.h"
 #include "Materials/MaterialInterface.h"
 #include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 #include "SceneActors/Items/AnterBaseAnt.h"
@@ -52,7 +53,9 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
     AnterFloorHanging = CreateDefaultSubobject<UAnterFloorHangingComponent>(TEXT("AnterFloorHanging"));
     AnterFloorHanging->SetupAttachment(RootComponent);
-
+    
+    AnterSuck = CreateDefaultSubobject<USuckComponent>(TEXT("AnterSuckComponent"));
+    AnterSuck->SetupAttachment(RootComponent);
 } 
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
@@ -133,6 +136,12 @@ void AAnterPaperCharacter::SetBindings()
         AnterMesh->OnComponentBeginOverlap.AddDynamic(AnterCollisionSupport,&UCollisionSupportComponent::ProcessCollisionGeometry);
         AnterMesh->OnComponentEndOverlap.AddDynamic(this,&AAnterPaperCharacter::OnColliderUnhit);
     }
+
+    if (AnterSuck != nullptr)
+    {
+        AnterSuck->OnMaxSuckReached.AddDynamic(this, &AAnterPaperCharacter::OnSuckMaxReached);
+        AnterSuck->OnSuckValueUpdate.AddDynamic(this, &AAnterPaperCharacter::OnSuckValueUpdated);
+    }
 }
 
 void AAnterPaperCharacter::SetupGravity()
@@ -148,7 +157,7 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
 {   
     Super::SetupPlayerInputComponent(InInputComponent);
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if((InInputComponent != nullptr))
+    if(InInputComponent != nullptr)
     {
         InInputComponent->BindAxis("RightMovement",this,&AAnterPaperCharacter::HandleRightMovement);
         InInputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
@@ -169,81 +178,95 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
             InInputComponent->BindAction("Slide",IE_Pressed,AnterMovementSupport,&UAnterMovementSupportComponent::HandleSlide);
             InInputComponent->BindAxis("RightMovement",AnterMovementSupport,&UAnterMovementSupportComponent::SetMovementDirection);
         }
-    }
 
+        //Add anthill sucking input
+        if(AnterSuck != nullptr)
+        {
+            InInputComponent->BindAction("Suck", IE_Pressed, AnterSuck, &USuckComponent::StartIncreaseSuckingDuration);
+            InInputComponent->BindAction("Suck", IE_Released, AnterSuck, &USuckComponent::ResetSucking);
+        }
+    }
 }
 
 void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
 {
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    if(AnterMovement != nullptr)
+    if (AnterMovement != nullptr && AnterSuck != nullptr)
     {
-        FVector MovementVectorX = FVector(InAxisValue*AnterGeometron.X,0.0f,0.0f);
-        FVector MovementVectorZ = FVector(0.0f,0.0f,InAxisValue*AnterGeometron.Z);
-        if(InAxisValue != 0.0f)
+        if (!AnterSuck->GetIsSucking())
         {
-            //Input is given by the player
-
-            if((InAxisValue >0.0f && bIsRightUnlocked) || (InAxisValue <0.0f && bIsLeftUnlocked) || (AnterMovement->Velocity.X >0.0f && bIsRightUnlocked) || (AnterMovement->Velocity.X <0.0f && bIsLeftUnlocked))
+            FVector MovementVectorX = FVector(InAxisValue * AnterGeometron.X, 0.0f, 0.0f);
+            FVector MovementVectorZ = FVector(0.0f, 0.0f, InAxisValue * AnterGeometron.Z);
+            if (InAxisValue != 0.0f)
             {
-                if(AnterGeometron.Z == 0.0f)
+                //Input is given by the player
+
+                if ((InAxisValue > 0.0f && bIsRightUnlocked) || (InAxisValue < 0.0f && bIsLeftUnlocked) || (AnterMovement->Velocity.X > 0.0f && bIsRightUnlocked) || (AnterMovement->Velocity.X < 0.0f && bIsLeftUnlocked))
                 {
-                    LastVelocityX = AnterMovement->Velocity.X;
-                    AddMovementInput(MovementVectorX,MovementMultiplier);
+                    if (AnterGeometron.Z == 0.0f)
+                    {
+                        LastVelocityX = AnterMovement->Velocity.X;
+                        AddMovementInput(MovementVectorX, MovementMultiplier);
+                    }
+                    else
+                    {
+                        AnterMovement->Velocity.X = 0.0f;
+                        AnterMovement->Velocity.Z = 0.0f;
+                        FVector NewLocation = GetActorLocation() + (MovementVectorX.X + MovementVectorZ.Z) * MovementMultiplier;
+                        SetActorLocation(NewLocation);
+                        LastVelocityX = MovementVectorX.X;
+                    }
+                }
+                else
+                {
+                    AnterMovement->Velocity.X = 0.0f;
+                    if (AnterGeometron.Z != 0.0f)
+                    {
+                        AnterMovement->Velocity.Z = 0.0f;
+                    }
+                }
+
+                /* Update Weapon component */
+                if (InAxisValue != 0.0f)
+                {
+                    UpdateWeaponDirection(InAxisValue);
+                }
+            }
+
+            else
+            {
+                //The player gives no input: handling braking and slowing down
+                if (AnterGeometron.Z == 0.0f)
+                {
+                    AddMovementInput(FVector(-1.0f * AnterMovement->Velocity.X * FrictionScale * AnterGeometron.X, 0.0f, 0.0f));
+
+                    //X braking
+                    if (abs(AnterMovement->Velocity.X) >= VelocityThreshold)
+                    {
+                        AnterMovement->AddImpulse(FVector(0.0f, 0.0f, +1.0f * AnterMovement->Velocity.Z * abs(AnterGeometron.Z) * ZBrake));
+                    }
+                    else
+                    {
+                        AnterMovement->Velocity.X = 0.0f;
+                    }
                 }
                 else
                 {
                     AnterMovement->Velocity.X = 0.0f;
                     AnterMovement->Velocity.Z = 0.0f;
-                    FVector NewLocation = GetActorLocation() + (MovementVectorX.X + MovementVectorZ.Z)*MovementMultiplier;
-                    SetActorLocation(NewLocation);
-                    LastVelocityX = MovementVectorX.X;
+                    if (LastVelocityX >= VelocityThreshold)
+                    {
+                        FVector NewLocation = GetActorLocation() + (FVector::RightVector.X * AnterGeometron.X + FVector::UpVector.Z * AnterGeometron.Z) * LastVelocityX;
+                        SetActorLocation(NewLocation);
+                        LastVelocityX /= 2.0f;
+                    }
                 }
-            }
-            else
-            {
-                AnterMovement->Velocity.X = 0.0f;
-                if(AnterGeometron.Z != 0.0f)
-                {
-                    AnterMovement->Velocity.Z = 0.0f;
-                }
-            }        
-
-            /* Update Weapon component */
-            if(InAxisValue != 0.0f)
-            {
-                UpdateWeaponDirection(InAxisValue);
             }
         }
-
         else
         {
-            //The player gives no input: handling braking and slowing down
-            if(AnterGeometron.Z == 0.0f)
-            {
-                AddMovementInput(FVector(-1.0f*AnterMovement->Velocity.X*FrictionScale*AnterGeometron.X,0.0f,0.0f));
-
-                //X braking
-                if(abs(AnterMovement->Velocity.X) >= VelocityThreshold)
-                {
-                    AnterMovement->AddImpulse(FVector(0.0f,0.0f,+1.0f*AnterMovement->Velocity.Z*abs(AnterGeometron.Z)*ZBrake));
-                }
-                else
-                {
-                    AnterMovement->Velocity.X = 0.0f; 
-                }
-            }
-            else
-            {
-                AnterMovement->Velocity.X = 0.0f;
-                AnterMovement->Velocity.Z = 0.0f;
-                if(LastVelocityX >= VelocityThreshold)
-                {
-                    FVector NewLocation = GetActorLocation() + (FVector::RightVector.X*AnterGeometron.X + FVector::UpVector.Z*AnterGeometron.Z)*LastVelocityX;
-                    SetActorLocation(NewLocation);
-                    LastVelocityX /= 2.0f;
-                }
-            }
+            AnterMovement->Velocity.X = 0.0f;
+            AnterMovement->Velocity.Z = 0.0f;
         }
     }
 }
@@ -346,6 +369,19 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
             HandleCrateVerticalCollision(AnterCrate);
             return;
         }
+
+        if (ALevelCheckpoint* AnterCheckpoint = Cast<ALevelCheckpoint>(OtherActor))
+        {
+            if (AnterSuck != nullptr)
+            {
+                if (!AnterCheckpoint->GetIsActivated())
+                {
+                    AnterSuck->SetCanSuck(true);
+                    AddCandidateCheckpoint(AnterCheckpoint);
+                    return;
+                }
+            }
+        }
     }
 }   
 
@@ -390,6 +426,17 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
             {
                 SetLeftMovementFree(true);
             }
+        }
+    }
+
+    //Check suck
+    if (ALevelCheckpoint* AnterCheckpoint = Cast<ALevelCheckpoint>(OtherActor))
+    {
+        if (AnterSuck != nullptr)
+        {
+            AnterSuck->SetCanSuck(false);
+            RemoveCandidateCheckpoint();
+            return;
         }
     }
 }
@@ -645,3 +692,31 @@ void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovemen
         SetCanJump(false);
     }
 }
+
+void AAnterPaperCharacter::OnSuckMaxReached()
+{
+    if (CandidateCheckpoint.IsValid())
+    {
+        CandidateCheckpoint->ActivateCheckpoint();
+        RemoveCandidateCheckpoint();
+    }
+}
+
+void AAnterPaperCharacter::OnSuckValueUpdated(float InSuckingValue)
+{
+    if (CandidateCheckpoint != nullptr)
+    {
+        CandidateCheckpoint->UpdateCheckpointSuckProgress(InSuckingValue);
+    }
+}
+
+void AAnterPaperCharacter::AddCandidateCheckpoint(ALevelCheckpoint* InCheckpoint)
+{
+    CandidateCheckpoint = InCheckpoint;
+}
+
+void AAnterPaperCharacter::RemoveCandidateCheckpoint()
+{
+    CandidateCheckpoint.Reset();
+}
+

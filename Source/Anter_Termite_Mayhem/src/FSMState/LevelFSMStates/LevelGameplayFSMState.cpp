@@ -2,6 +2,8 @@
 #include "GameFramework/GameStateBase.h"
 #include "FSM/GameFSM.h"
 #include "AnterGameModes/AnterBaseLevelGameMode.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerControllers/AnterPlayerController.h"
 
 void ULevelGameplayFSMState::StartState()
 {
@@ -19,8 +21,12 @@ void ULevelGameplayFSMState::StartState()
                     LevelGameMode->LevelFinishedDelegate.AddDynamic(this, &ULevelGameplayFSMState::OnLevelFinished);
                 }
             }
+            if (AAnterPlayerController* AnterPC = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
+            {
+                AnterPC->OnLevelPaused.AddDynamic(this, &ULevelGameplayFSMState::OnLevelPaused);
+            }
         }
-    }
+    } 
 }
 
 void ULevelGameplayFSMState::EndState()
@@ -37,4 +43,9 @@ void ULevelGameplayFSMState::OnLevelFinished()
 {
     UE_LOG(LogTemp, Warning, TEXT("Level FSMState: travelling to map!"));
     TransitionToState(LevelFinishedStateID);
+}
+
+void ULevelGameplayFSMState::OnLevelPaused()
+{
+    TransitionToState(LevelPausedTransition);
 }

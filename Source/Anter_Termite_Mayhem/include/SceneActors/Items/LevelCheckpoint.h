@@ -23,13 +23,14 @@ public:
 
     ALevelCheckpoint();
 
-    void BeginPlay() override;
-
-    void SetBindings();
-
-    void OnCheckpointActivated();
+    void ActivateCheckpoint();
 
     FCheckpointActivatedDelegate OnActivatedCheckpointDelegate;
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateCheckpointSuckProgress(float InPercentage);
+
+    bool GetIsActivated() const;
 
 protected:
 
@@ -38,9 +39,6 @@ protected:
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBoxComponent* LevelBox;
-
-    UFUNCTION()
-    void OnCollidedWithActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
     bool bIsActivated = false;
 

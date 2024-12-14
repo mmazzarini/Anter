@@ -2,7 +2,7 @@
 
 #include "FSMState/GameFSMState.h"
 
-#include "LevelGameplayFSMState.generated.h"
+#include "LevelPauseFSMState.generated.h"
 
 class AAnterBaseLevelGameMode;
 
@@ -16,7 +16,7 @@ class AAnterBaseLevelGameMode;
 */
 
 UCLASS()
-class ANTER_TERMITE_MAYHEM_API ULevelGameplayFSMState : public UGameFSMState
+class ANTER_TERMITE_MAYHEM_API ULevelPauseFSMState : public UGameFSMState
 {
     GENERATED_BODY()
 
@@ -24,23 +24,12 @@ public:
 
     void StartState() override;
 
+	void OnActionExecuted(FString InTriggerName) override;
+
 	void EndState() override;
 
 protected:
 
-	UFUNCTION()
-	void OnLevelFinished();
-
-	UFUNCTION()
-	void OnLevelPaused();
-
-	UPROPERTY(EditInstanceOnly)
-	FString LevelFinishedStateID = "";
-
-	UPROPERTY(EditInstanceOnly)
-	FString LevelPausedTransition = "";
-
-private:
-
-	AAnterBaseLevelGameMode* LevelGameMode;
+	UPROPERTY(EditDefaultsOnly)
+	FString BackToGameName = "Back";
 };

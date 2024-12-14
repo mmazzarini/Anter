@@ -8,6 +8,7 @@
 #include "ActorComponents/AnterMovementSupportComponent.h"
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "ActorComponents/CollisionSupportComponent.h"
+#include "ActorComponents/SuckComponent.h"
 #include "ActorComponents/AnterFloorHangingComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -23,6 +24,7 @@ class UCharacterMovementComponent;
 class UMaterialInteface;
 class AAnterBaseAnt;
 class AAnterBaseCrate;
+class ALevelCheckpoint;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -155,37 +157,40 @@ public:
 
     float GetInputGravityScale(){return InputGravityScale;}
 
-/* Anter Components */
+    /* Anter Components */
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UAnterMovementSupportComponent* AnterMovementSupport;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UAnterMovementSupportComponent* AnterMovementSupport;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-USpringArmComponent* Spring;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    USpringArmComponent* Spring;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UCameraComponent* Camera;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UCameraComponent* Camera;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UStaticMeshComponent* AnterMesh;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UStaticMeshComponent* AnterMesh;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UHealthComponent* AnterHealth;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UHealthComponent* AnterHealth;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UAnterWeaponComponent* AnterWeapon;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UAnterWeaponComponent* AnterWeapon;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UBoxComponent* AnterBox;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UBoxComponent* AnterBox;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UCollisionSupportComponent* AnterCollisionSupport;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UCollisionSupportComponent* AnterCollisionSupport;
 
-UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
-UAnterFloorHangingComponent* AnterFloorHanging;
+    UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
+    UAnterFloorHangingComponent* AnterFloorHanging;
 
-/*delegate for pawn hit event*/
-FAnterHitDelegate AnterHit;
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    USuckComponent* AnterSuck;
+
+    /*delegate for pawn hit event*/
+    FAnterHitDelegate AnterHit;
 
 protected:
 
@@ -195,107 +200,119 @@ protected:
     //Kick for collding an actor that damages Anter
     void HandleKick(FVector InKickToReceive, UCharacterMovementComponent* InAnterMovement);
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float MovementMultiplier = 100.0f;
+    UFUNCTION()
+    void OnSuckMaxReached();
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float ZAscendingMultiplier = 100.0f;
+    UFUNCTION()
+    void OnSuckValueUpdated(float InSuckingValue);
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float ZDiscendingMultiplier = 60.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float MovementMultiplier = 100.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float ZBrake = 1000.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float ZAscendingMultiplier = 100.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Jump")
-float JumpScale = 100.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float ZDiscendingMultiplier = 60.0f;
 
-/*Jump scale corrector to handle jump correction when rising*/
-UPROPERTY(EditAnywhere, Category = "Anter Jump")
-float AscendingJumpScaleMultiplier = 3.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float ZBrake = 1000.0f;
 
-/*Jump scale corrector to handle jump correction when falling*/
-UPROPERTY(EditAnywhere, Category = "Anter Jump")
-float DescendingJumpScaleMultiplier = 6.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Jump")
+    float JumpScale = 100.0f;
 
-/*Kick additional vertical corrector to avoid jump side-effects if hit horizontally*/
-UPROPERTY(EditAnywhere, Category = "Anter Jump")
-float KickVerticalScaleAddition = 10.0f;
+    /*Jump scale corrector to handle jump correction when rising*/
+    UPROPERTY(EditAnywhere, Category = "Anter Jump")
+    float AscendingJumpScaleMultiplier = 3.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float FrictionScale = 0.5f;
+    /*Jump scale corrector to handle jump correction when falling*/
+    UPROPERTY(EditAnywhere, Category = "Anter Jump")
+    float DescendingJumpScaleMultiplier = 6.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float VelocityThreshold = 0.1f;
+    /*Kick additional vertical corrector to avoid jump side-effects if hit horizontally*/
+    UPROPERTY(EditAnywhere, Category = "Anter Jump")
+    float KickVerticalScaleAddition = 10.0f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Movement")
-float InputGravityScale = 1.2f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float FrictionScale = 0.5f;
 
-UPROPERTY(EditAnywhere, Category = "Anter Jump")
-float ZVelocityThresholdToJump = -1.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float VelocityThreshold = 0.1f;
 
-UPROPERTY(EditAnywhere, Category = "Platform collision")
-float VerticalImpenetrabilityFactor = 3.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float InputGravityScale = 1.2f;
 
-UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
-float VerticalTolerance = 0.0f;
+    UPROPERTY(EditAnywhere, Category = "Anter Jump")
+    float ZVelocityThresholdToJump = -1.0f;
 
-UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
-float HorizontalTolerance = 0.0f;
+    UPROPERTY(EditAnywhere, Category = "Platform collision")
+    float VerticalImpenetrabilityFactor = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
+    float VerticalTolerance = 0.0f;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
+    float HorizontalTolerance = 0.0f;
 
 private:
 
-UPROPERTY()
-bool bCanAnterJump = false;
+    void AddCandidateCheckpoint(ALevelCheckpoint* InCheckpoint);
 
-UPROPERTY()
-bool bIsFalling = true;
+    void RemoveCandidateCheckpoint();
 
-UPROPERTY()
-bool bIsLeftUnlocked = true;
+    UPROPERTY() 
+    bool bCanAnterJump = false;
 
-UPROPERTY()
-bool bIsRightUnlocked = true;
+    UPROPERTY()
+    bool bIsFalling = true;
 
-UPROPERTY()
-float LastVelocityX;
+    UPROPERTY()
+    bool bIsLeftUnlocked = true;
 
-//Array of information about vertical collisions with platforms
-TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
+    UPROPERTY()
+    bool bIsRightUnlocked = true;
 
-FGeometron AnterGeometron;
+    UPROPERTY()
+    float LastVelocityX;
 
-UPROPERTY()
-FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
-UPROPERTY()
-FVector AnterSize = FVector(0.0f,0.0f,0.0f);
+    //Array of information about vertical collisions with platforms
+    TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
 
-UPROPERTY()
-bool bIsAnterColliding = false;
+    FGeometron AnterGeometron;
 
-//Default: can be hit by enemies. After being hit, it changes to cannot until a timer changes
-EAnterHitableStatus AnterHitStatus = EAnterHitableStatus::CanBeHit;
+    UPROPERTY()
+    FVector AnterCentre = FVector(0.0f,0.0f,0.0f);
+    UPROPERTY()
+    FVector AnterSize = FVector(0.0f,0.0f,0.0f);
 
-UPROPERTY(EditDefaultsOnly)
-float UnhittableTimerDuration = 1.0f;
+    UPROPERTY()
+    bool bIsAnterColliding = false;
 
-FTimerDelegate UnhittableTimerDelegate;
+    //Default: can be hit by enemies. After being hit, it changes to cannot until a timer changes
+    EAnterHitableStatus AnterHitStatus = EAnterHitableStatus::CanBeHit;
 
-FTimerHandle UnhittableTimerHandle;
+    UPROPERTY(EditDefaultsOnly)
+    float UnhittableTimerDuration = 1.0f;
 
-UPROPERTY(EditDefaultsOnly)
-UMaterialInterface* FlickeringMaterial;
+    FTimerDelegate UnhittableTimerDelegate;
 
-/*Internal default material*/
-UMaterialInterface* DefaultMaterial;
+    FTimerHandle UnhittableTimerHandle;
 
-EAnterVerticalMotionStatus VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
+    UPROPERTY(EditDefaultsOnly)
+    UMaterialInterface* FlickeringMaterial;
 
-/*Subclass for lethal objects*/
+    /*Internal default material*/
+    UMaterialInterface* DefaultMaterial;
 
-//You die as you touch it
-UPROPERTY(EditDefaultsOnly)
-TSubclassOf<AActor> LethalInstantActorClass;
+    EAnterVerticalMotionStatus VerticalMotionStatus = EAnterVerticalMotionStatus::NormalStatus;
+
+    /*Subclass for lethal objects*/
+
+    //You die as you touch it
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<AActor> LethalInstantActorClass;
+
+    TWeakObjectPtr<ALevelCheckpoint> CandidateCheckpoint;
 
 };
 

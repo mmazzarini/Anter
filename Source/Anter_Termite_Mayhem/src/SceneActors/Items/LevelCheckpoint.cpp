@@ -11,30 +11,13 @@ ALevelCheckpoint::ALevelCheckpoint()
     LevelBox->SetupAttachment(RootComponent);
 }
 
-void ALevelCheckpoint::BeginPlay()
-{
-    Super::BeginPlay();
-    SetBindings();
-}
-
-void ALevelCheckpoint::OnCheckpointActivated()
+void ALevelCheckpoint::ActivateCheckpoint()
 {
     bIsActivated = true;
     OnActivatedCheckpointDelegate.Broadcast(this);
 }
 
-void ALevelCheckpoint::SetBindings()
+bool ALevelCheckpoint::GetIsActivated() const
 {
-    if(LevelMesh !=nullptr)
-    {
-        LevelMesh->OnComponentBeginOverlap.AddDynamic(this,&ALevelCheckpoint::OnCollidedWithActor);
-    }
-}
-
-void ALevelCheckpoint::OnCollidedWithActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-    if(AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(OtherActor))
-    {
-        OnCheckpointActivated();
-    }
+    return bIsActivated;
 }
