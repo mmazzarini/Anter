@@ -11,7 +11,7 @@ ALevelCheckpoint::ALevelCheckpoint()
     LevelBox->SetupAttachment(RootComponent);
 }
 
-void ALevelCheckpoint::ActivateCheckpoint()
+void ALevelCheckpoint::Activate()
 {
     bIsActivated = true;
     OnActivatedCheckpointDelegate.Broadcast(this);
@@ -21,3 +21,9 @@ bool ALevelCheckpoint::GetIsActivated() const
 {
     return bIsActivated;
 }
+
+void ALevelCheckpoint::UpdateSuckProgress(float InPercentage)
+{   
+    UpdateOnScreenSuckPercent(InPercentage);
+}
+

@@ -23,6 +23,7 @@
 #include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 #include "SceneActors/Items/AnterBaseAnt.h"
 #include "SceneActors/Items/AnterBaseCrate.h"
+#include "SceneActors/SuckableActorInterface.h"
 
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
@@ -370,14 +371,14 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
             return;
         }
 
-        if (ALevelCheckpoint* AnterCheckpoint = Cast<ALevelCheckpoint>(OtherActor))
+        if (ISuckableActorInterface* AnterSuckableActor = Cast<ISuckableActorInterface>(OtherActor))
         {
             if (AnterSuck != nullptr)
             {
-                if (!AnterCheckpoint->GetIsActivated())
+                if (!AnterSuckableActor->GetIsActivated())
                 {
                     AnterSuck->SetCanSuck(true);
-                    AddCandidateCheckpoint(AnterCheckpoint);
+                    AddCandidateSuckableActor(AnterSuckableActor);
                     return;
                 }
             }
@@ -430,12 +431,12 @@ void AAnterPaperCharacter::OnColliderUnhit(UPrimitiveComponent* OverlappedCompon
     }
 
     //Check suck
-    if (ALevelCheckpoint* AnterCheckpoint = Cast<ALevelCheckpoint>(OtherActor))
+    if (ISuckableActorInterface* AnterSuckableActor = Cast<ISuckableActorInterface>(OtherActor))
     {
         if (AnterSuck != nullptr)
         {
             AnterSuck->SetCanSuck(false);
-            RemoveCandidateCheckpoint();
+            RemoveCandidateSuckableActor();
             return;
         }
     }
@@ -695,28 +696,28 @@ void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovemen
 
 void AAnterPaperCharacter::OnSuckMaxReached()
 {
-    if (CandidateCheckpoint.IsValid())
+    if (CandidateSuckableActor.IsValid())
     {
-        CandidateCheckpoint->ActivateCheckpoint();
-        RemoveCandidateCheckpoint();
+        CandidateSuckableActor->Activate();
+        RemoveCandidateSuckableActor();
     }
 }
 
 void AAnterPaperCharacter::OnSuckValueUpdated(float InSuckingValue)
 {
-    if (CandidateCheckpoint != nullptr)
+    if (CandidateSuckableActor != nullptr)
     {
-        CandidateCheckpoint->UpdateCheckpointSuckProgress(InSuckingValue);
+        CandidateSuckableActor->UpdateSuckProgress(InSuckingValue);
     }
 }
 
-void AAnterPaperCharacter::AddCandidateCheckpoint(ALevelCheckpoint* InCheckpoint)
+void AAnterPaperCharacter::AddCandidateSuckableActor(ISuckableActorInterface* InCheckpoint)
 {
-    CandidateCheckpoint = InCheckpoint;
+    CandidateSuckableActor = InCheckpoint;
 }
 
-void AAnterPaperCharacter::RemoveCandidateCheckpoint()
+void AAnterPaperCharacter::RemoveCandidateSuckableActor()
 {
-    CandidateCheckpoint.Reset();
+    CandidateSuckableActor.Reset();
 }
 

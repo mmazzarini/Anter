@@ -17,6 +17,7 @@ void UAnterWeaponComponent::ShootLaser()
     AActor* OwnerActor = GetOwner(); //AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(GetOwner());
     if(OwnerActor != nullptr)
     {
+
         if(bCanShoot == true)
         {
             FVector AnterPosition = OwnerActor->GetTransform().GetTranslation();

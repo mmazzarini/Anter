@@ -15,6 +15,7 @@
 #include "Components/BoxComponent.h"
 #include "SceneActors/SceneActorInterface.h"
 #include "TimerManager.h"
+#include "UObject/WeakInterfacePtr.h"
 
 #include "AnterPaperCharacter.generated.h"
 
@@ -25,6 +26,7 @@ class UMaterialInteface;
 class AAnterBaseAnt;
 class AAnterBaseCrate;
 class ALevelCheckpoint;
+class ISuckableActorInterface;
 
 UENUM(BlueprintType)
 enum class EPlatformCollisionType : uint8
@@ -256,9 +258,9 @@ protected:
 
 private:
 
-    void AddCandidateCheckpoint(ALevelCheckpoint* InCheckpoint);
+    void AddCandidateSuckableActor(ISuckableActorInterface* InCheckpoint);
 
-    void RemoveCandidateCheckpoint();
+    void RemoveCandidateSuckableActor();
 
     UPROPERTY() 
     bool bCanAnterJump = false;
@@ -312,7 +314,7 @@ private:
     UPROPERTY(EditDefaultsOnly)
     TSubclassOf<AActor> LethalInstantActorClass;
 
-    TWeakObjectPtr<ALevelCheckpoint> CandidateCheckpoint;
+    TWeakInterfacePtr<ISuckableActorInterface> CandidateSuckableActor;
 
 };
 

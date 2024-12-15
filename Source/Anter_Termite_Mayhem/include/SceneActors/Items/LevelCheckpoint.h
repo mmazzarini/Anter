@@ -3,7 +3,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
-
+#include "SceneActors/SuckableActorInterface.h"
 #include "LevelCheckpoint.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckpointActivatedDelegate, ALevelCheckpoint*, CurrentCheckpointPtr);
@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCheckpointActivatedDelegate, ALevel
 //implementation otherwise is similar to LevelGoal
 
 UCLASS(Blueprintable,BlueprintType)
-class ANTER_TERMITE_MAYHEM_API ALevelCheckpoint : public AActor
+class ANTER_TERMITE_MAYHEM_API ALevelCheckpoint : public AActor, public ISuckableActorInterface
 {
     
     GENERATED_BODY()
@@ -23,23 +23,23 @@ public:
 
     ALevelCheckpoint();
 
-    void ActivateCheckpoint();
+    virtual void Activate() override;
 
     FCheckpointActivatedDelegate OnActivatedCheckpointDelegate;
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void UpdateCheckpointSuckProgress(float InPercentage);
+    virtual bool GetIsActivated() const override;
 
-    bool GetIsActivated() const;
+    void UpdateSuckProgress(float InPercentage) override;
 
 protected:
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void UpdateOnScreenSuckPercent(float InPercentage);
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UStaticMeshComponent* LevelMesh;
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBoxComponent* LevelBox;
-
-    bool bIsActivated = false;
 
 };
