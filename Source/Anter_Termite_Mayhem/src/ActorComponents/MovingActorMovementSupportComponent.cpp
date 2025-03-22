@@ -130,6 +130,16 @@ void UMovingActorMovementSupportComponent::SetLoopBehavior(EEnemyLoopBehavior In
     LoopBehavior = InLoopBehavior;
 }
 
+const EEnemyLoopBehavior UMovingActorMovementSupportComponent::GetLoopBehavior() const
+{
+    return LoopBehavior;
+}
+
+void UMovingActorMovementSupportComponent::SetIsMovementActive(bool InMovementActive)
+{
+    bIsMovementActive = InMovementActive; 
+}
+
 void UMovingActorMovementSupportComponent::ResetMovement()
 {
     CurrentPivotPositions = PivotPositions;

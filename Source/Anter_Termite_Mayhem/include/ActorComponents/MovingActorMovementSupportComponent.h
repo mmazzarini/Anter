@@ -43,8 +43,6 @@ public:
 
     void AdjustVelocity();
 
-    //virtual void HandleCollision(const FCollisionGeometry& CollisionGeometry, AActor* OtherActor) override; //float InMovementSpeed){} 
-
     //Setter method for PivotDistanceThreshold
     void SetPivotDistanceThreshold(float InPivotDistanceThreshold){PivotDistanceThreshold = InPivotDistanceThreshold;}
 
@@ -53,7 +51,9 @@ public:
 
     void SetLoopBehavior(EEnemyLoopBehavior InLoopBehavior);
 
-    void SetIsMovementActive(bool InMovementActive){bIsMovementActive = InMovementActive;}
+    const EEnemyLoopBehavior GetLoopBehavior() const;
+
+    void SetIsMovementActive(bool InMovementActive);
 
     bool GetIsMovementActive(){return bIsMovementActive;}
 

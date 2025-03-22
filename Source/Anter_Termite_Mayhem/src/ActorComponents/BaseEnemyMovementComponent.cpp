@@ -7,7 +7,6 @@ UBaseEnemyMovementComponent::UBaseEnemyMovementComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
     PrimaryComponentTick.bStartWithTickEnabled = true;  
-    //RegisterComponent();
 }
 
 void UBaseEnemyMovementComponent::Initialize()
@@ -62,12 +61,6 @@ void UBaseEnemyMovementComponent::UpdateMovement()
         FVector NewPosition = OwnerEnemy->GetActorLocation() + InputMovement3D*InternalMovementSpeed;
         OwnerEnemy->SetActorLocation(NewPosition);
     }
-    //    OnMovementUpdated.Broadcast(InternalMovementGeometry,InternalMovementSpeed);
-}
-
-void UBaseEnemyMovementComponent::OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
-{
-
 }
 
 void UBaseEnemyMovementComponent::AddImpulse(FVector InInpulse)

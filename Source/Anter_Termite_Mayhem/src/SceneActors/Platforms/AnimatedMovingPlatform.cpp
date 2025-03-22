@@ -2,6 +2,12 @@
 #include "ActorComponents/MovingActorMovementSupportComponent.h"
 #include "ActorComponents/BaseEnemyMovementComponent.h"
 
+AAnimatedMovingPlatform::AAnimatedMovingPlatform()
+{
+    PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bTickEvenWhenPaused = true;
+}
+
 void AAnimatedMovingPlatform::BeginPlay()
 {
     Super::BeginPlay();
@@ -17,6 +23,12 @@ void AAnimatedMovingPlatform::BeginPlay()
     {
         ActorBaseMotion->PauseSpeed();
     }
+
+    BounceTimeLineComp = Cast<UTimelineComponent>(AddComponentByClass(UTimelineComponent::StaticClass(), false, GetActorTransform(), false));
+    IdleTimeLineComp = Cast<UTimelineComponent>(AddComponentByClass(UTimelineComponent::StaticClass(), false, GetActorTransform(), false));
+    BindTimelineFunctions();
+
+    InitialPlatformLocation = GetActorLocation();
 }
 
 void AAnimatedMovingPlatform::Tick(float DeltaTime)
@@ -24,13 +36,11 @@ void AAnimatedMovingPlatform::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if(CandidateCollision != nullptr)
     {
-        if(ActorMovement != nullptr && ActorMovement->GetIsMovementActive() == false)
+        if(ActorMovement != nullptr && !(ActorMovement->GetIsMovementActive()) && !GetIsPlaying())
         {
-            ActorMovement->SetIsMovementActive(true);
-            if(ActorBaseMotion != nullptr)
-            {
-                ActorBaseMotion->ResetSpeed();
-            }
+            //Start animations only if it was not playing loop
+            StartShakeAnimation();
+            SetIsPlaying(true);
         }
     }
 }
@@ -44,15 +54,109 @@ void AAnimatedMovingPlatform::OnMovementComplete()
     if(ActorBaseMotion != nullptr)
     {
         ActorBaseMotion->PauseSpeed();
+
+        //TO BE CONTINUED HERE: WE NEED TO SET THE GO BACK TO POSITION ACTION AFTER IDLE ANIMATION
+        //if(ActorMovement->Get)
+        if (ActorMovement->GetLoopBehavior() == EEnemyLoopBehavior::LoopsAtArrive)
+        {
+            StartIdleAnimation();
+        }
     }
 }
-/*
-Todo
-We need to implement:
-- collision system to bind with pawn collision event
-- wirh collision, you check if the motion has started or not (we need other event)
-- we need animations to bind and to proceed
-- we need a control to reset state to starting state after or the loop has been executed.
 
-- DOUBT:Do we need to control the logic for looping back?
-*/
+bool AAnimatedMovingPlatform::GetIsPlaying()
+{
+    return bIsPlayingAnimation;
+}
+
+void AAnimatedMovingPlatform::SetIsPlaying(bool bInPlaying)
+{
+    bIsPlayingAnimation = bInPlaying;
+}
+
+void AAnimatedMovingPlatform::StartIdleAnimation()
+{
+    if (IdleTimeLineComp != nullptr)
+    {
+        IdleTimeLineComp->Play();
+    }
+}
+
+void AAnimatedMovingPlatform::StartShakeAnimation()
+{
+    if (BounceTimeLineComp != nullptr)
+    {
+        BounceTimeLineComp->Play();
+    }
+}
+
+void AAnimatedMovingPlatform::ResetMotionAfterAnimation() const
+{
+    if (ActorMovement != nullptr)
+    {
+        ActorMovement->SetIsMovementActive(true);
+    }
+    if (ActorBaseMotion != nullptr)
+    {
+        ActorBaseMotion->ResetSpeed();
+    }
+}
+
+void AAnimatedMovingPlatform::SetupTimelineAnimation(UTimelineComponent* InTimelineComp, UCurveFloat* InCurve, FOnTimelineFloat& InExecTimeline, FOnTimelineEventStatic& InEndedTimeline)
+{
+    if (InTimelineComp != nullptr)
+    {
+        InTimelineComp->AddInterpFloat(InCurve, InExecTimeline);
+        InTimelineComp->SetTimelineFinishedFunc(InEndedTimeline);
+    }
+    ActorVerticalPivot = GetActorLocation().Z;
+}
+
+void AAnimatedMovingPlatform::BindTimelineFunctions()
+{
+    VerticalTimelineFunc.BindUFunction(this, FName("OnVerticalDisplacementFloatUpdated"));
+    BounceAnimationFinishedFunc.BindUFunction(this, FName("OnBounceAnimationFinished"));
+    IdleTimelineFunc.BindUFunction(this, FName("OnIdleDisplacementFloatUpdated"));
+    IdleAnimationFinishedFunc.BindUFunction(this, FName("OnIdleAnimationFinished"));
+    SetupTimelineAnimation(BounceTimeLineComp, VerticalCurve, VerticalTimelineFunc, BounceAnimationFinishedFunc);
+    SetupTimelineAnimation(IdleTimeLineComp, IdleCurve, IdleTimelineFunc, IdleAnimationFinishedFunc);
+}
+
+void AAnimatedMovingPlatform::OnVerticalDisplacementFloatUpdated(float InDisplacement)
+{
+    float NewZ = ActorVerticalPivot + InDisplacement;
+    FVector BouncePosition = FVector(GetActorLocation().X, GetActorLocation().Y, NewZ);
+    SetActorLocation(BouncePosition);
+    GEngine->AddOnScreenDebugMessage(-1, 4.f, FColor::Red, FString(TEXT("NewZ: ") + FString::SanitizeFloat(NewZ) + TEXT(": NewPosZ: ") + FString::SanitizeFloat(GetActorLocation().Z)));
+}
+
+void AAnimatedMovingPlatform::OnBounceAnimationFinished()
+{
+    if (BounceTimeLineComp != nullptr)
+    {
+        BounceTimeLineComp->SetPlaybackPosition(0.0f,false, false);
+        BounceTimeLineComp->Stop();
+    }
+    ResetMotionAfterAnimation();
+}
+
+void AAnimatedMovingPlatform::OnIdleDisplacementFloatUpdated(float InDisplacement)
+{
+    //Do nothing - or implement otherwise
+}
+
+void AAnimatedMovingPlatform::OnIdleAnimationFinished()
+{
+    if (IdleTimeLineComp != nullptr)
+    {
+        IdleTimeLineComp->SetPlaybackPosition(0.0f, false, false);
+        IdleTimeLineComp->Stop();
+    }
+
+    SetActorLocation(InitialPlatformLocation);
+    if (ActorMovement != nullptr)
+    {
+        ActorMovement->ResetMovement();
+        SetIsPlaying(false);
+    }
+}

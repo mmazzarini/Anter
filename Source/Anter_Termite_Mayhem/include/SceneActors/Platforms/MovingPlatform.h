@@ -18,7 +18,7 @@ public:
 
     void UpdateMovement();
 
-    void Setup();
+    virtual void Setup();
 
 protected:
 

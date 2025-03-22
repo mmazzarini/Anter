@@ -11,6 +11,7 @@ void AMovingActorManager::BeginPlay()
     CreateActor();
     FillActorPositions();
     InjectActorBehavior();
+    SetupActor();
     SetBindings();
 }
 

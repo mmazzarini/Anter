@@ -13,6 +13,7 @@ UAnterFloorHangingComponent::UAnterFloorHangingComponent()
 
 void UAnterFloorHangingComponent::BeginPlay()
 {
+    Super::BeginPlay();
     Anter = Cast<AAnterPaperCharacter>(GetOwner());
 }
 

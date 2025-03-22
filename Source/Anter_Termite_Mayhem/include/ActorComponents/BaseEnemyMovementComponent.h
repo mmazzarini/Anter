@@ -39,13 +39,6 @@ public:
 
     virtual void UpdateMovement();
 
-    /*
-    Wrapper function to handle collisions notified by external components.
-    Can be bound to a Broadcaster to be executed.
-    */
-    UFUNCTION()
-    void OnCollided(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
-
     UFUNCTION()
     void AddImpulse(FVector InInpulse);
 

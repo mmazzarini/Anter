@@ -3,7 +3,6 @@
 
 ABasePlatform::ABasePlatform()
 {
-
     //PlatformBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PlatformBox"));
     //RootComponent = PlatformBox;
 
@@ -17,8 +16,6 @@ ABasePlatform::ABasePlatform()
     }    
 }
 
-
-PRAGMA_DISABLE_OPTIMIZATION
 void ABasePlatform::BeginPlay()
 {   
     UStaticMesh* InnerMesh = PlatformMesh->GetStaticMesh();
@@ -42,4 +39,3 @@ void ABasePlatform::BeginPlay()
 
     Super::BeginPlay();
 }
-PRAGMA_ENABLE_OPTIMIZATION
