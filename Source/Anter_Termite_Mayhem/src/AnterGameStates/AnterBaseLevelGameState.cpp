@@ -9,7 +9,7 @@ void AAnterBaseLevelGameState::HandleBeginPlay()
     Super::HandleBeginPlay();
 
     /*override: after calling Super:: we bind the player state to the Pawn delegates*/
-    BindToPlayerStates();
+    BindToPlayerStatesInternal();
 
     SetLevelCompletionState(ELevelCompletionState::LevelStarted);
     
@@ -71,6 +71,8 @@ void AAnterBaseLevelGameState::OnLevelCompleted()
 
 void AAnterBaseLevelGameState::BindToPlayerStates()
 {
+    UnbindFromPawnDelegates();
+
     if(PlayerArray.Num() > 0)
     {
         if(AAnterLevelPlayerState* CurrPlayerState = Cast<AAnterLevelPlayerState>(PlayerArray[0]))
@@ -81,6 +83,33 @@ void AAnterBaseLevelGameState::BindToPlayerStates()
                 CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnGameOver);
                 CurrPlayerState->OnPlayerLevelGoalReachedDelegate.AddDynamic(this,&AAnterBaseLevelGameState::OnLevelCompleted);
             }
+        }
+    }
+}
+
+void AAnterBaseLevelGameState::BindToPlayerStatesInternal()
+{
+    if (PlayerArray.Num() > 0)
+    {
+        if (AAnterLevelPlayerState* CurrPlayerState = Cast<AAnterLevelPlayerState>(PlayerArray[0]))
+        {
+            CurrPlayerState->BindToPawnDelegates();
+            if (!CurrPlayerState->OnPlayerStateDeathDelegate.IsBound())
+            {
+                CurrPlayerState->OnPlayerStateDeathDelegate.AddDynamic(this, &AAnterBaseLevelGameState::OnGameOver);
+                CurrPlayerState->OnPlayerLevelGoalReachedDelegate.AddDynamic(this, &AAnterBaseLevelGameState::OnLevelCompleted);
+            }
+        }
+    }
+}
+
+void AAnterBaseLevelGameState::UnbindFromPawnDelegates()
+{
+    if (PlayerArray.Num() > 0)
+    {
+        if (AAnterLevelPlayerState* CurrPlayerState = Cast<AAnterLevelPlayerState>(PlayerArray[0]))
+        {
+            CurrPlayerState->UnbindFromPawnDelegates();
         }
     }
 }

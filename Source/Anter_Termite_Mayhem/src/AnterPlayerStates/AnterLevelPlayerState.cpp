@@ -31,7 +31,33 @@ void AAnterLevelPlayerState::BindToPawnDelegates()
         }
 
     }
+}
 
+void AAnterLevelPlayerState::UnbindFromPawnDelegates()
+{
+    if (GetPawn() != nullptr)
+    {
+        if (AAnterPaperCharacter* AnterPawn = Cast<AAnterPaperCharacter>(GetPawn()))
+        {
+            UHealthComponent* AnterHealth = Cast<UHealthComponent>(AnterPawn->FindComponentByClass(UHealthComponent::StaticClass()));
+            if (AnterHealth != nullptr)
+            {
+                AnterHealth->OnHealthUpdated.RemoveDynamic(this, &AAnterLevelPlayerState::OnHealthUpdated);
+                AnterHealth->OnDeathReached.RemoveDynamic(this, &AAnterLevelPlayerState::OnDeathReached);
+            }
+        }
+    }
+
+    TArray<AActor*> LevelGoals;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), ALevelGoal::StaticClass(), LevelGoals);
+    if (LevelGoals.Num() > 0)
+    {
+        ALevelGoal* LevelGoal = Cast<ALevelGoal>(LevelGoals[0]);
+        if (LevelGoal != nullptr)
+        {
+            LevelGoal->LevelGoalReached.RemoveDynamic(this, &AAnterLevelPlayerState::OnLevelGoalReached);
+        }
+    }
 }
 
 void AAnterLevelPlayerState::OnDeathReached()

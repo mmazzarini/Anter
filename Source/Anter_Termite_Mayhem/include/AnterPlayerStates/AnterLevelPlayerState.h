@@ -22,6 +22,8 @@ public:
 
     void BindToPawnDelegates();
 
+    void UnbindFromPawnDelegates();
+
     UFUNCTION()
     void OnDeathReached();
 

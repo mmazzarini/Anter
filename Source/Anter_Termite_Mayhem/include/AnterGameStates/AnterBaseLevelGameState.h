@@ -46,6 +46,10 @@ public:
 
 protected:
 
+    void BindToPlayerStatesInternal();
+
+    void UnbindFromPawnDelegates();
+
     //private internal reference to MenuFSM.
     //The FSM must contain states for menu - options - map
 
