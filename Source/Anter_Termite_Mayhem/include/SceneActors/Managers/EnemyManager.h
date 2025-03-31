@@ -42,6 +42,8 @@ public:
 
 protected:
 
+    void UnbindFromEnemy();
+
     //EnemyPositions represents the array of enemy pivot positions, calculated relative to the Manager ActorLocation 
     UPROPERTY(EditAnywhere)
     TArray<FVector> EnemyPositions;

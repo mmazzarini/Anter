@@ -48,7 +48,7 @@ void ABaseEnemy::UpdateMovement()
         StartToMove();
     }
 
-    if(ensure(CurrentPivotPositions.Num()))
+    if(CurrentPivotPositions.Num())
     {
         FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
         float EnemyPivotDist = FVector::Dist(GetActorLocation(),CurrentPositionToReach);

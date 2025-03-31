@@ -81,6 +81,7 @@ void AMovingActorManager::SetupActor()
 
 void AMovingActorManager::RefreshActor()
 {
+    UnbindFromActor();
     CreateActor();
     FillActorPositions();
     InjectActorBehavior();
@@ -101,16 +102,24 @@ void AMovingActorManager::SetBindings()
 
 void AMovingActorManager::OnActorDeath()
 {
+    UnbindFromActor();
     if(MovingActor != nullptr)
     {
-        UHealthComponent* MovingActorHealth = Cast<UHealthComponent>(MovingActor->FindComponentByClass(UHealthComponent::StaticClass()));
-        if(MovingActorHealth != nullptr)
-        {
-            if(MovingActorHealth->OnDeathReached.IsBound())
-            {
-                MovingActorHealth->OnDeathReached.RemoveDynamic(this,&AMovingActorManager::OnActorDeath);
-            }
-        }
         MovingActor->Destroy();
     }    
+}
+
+void AMovingActorManager::UnbindFromActor()
+{
+    if (MovingActor != nullptr)
+    {
+        UHealthComponent* MovingActorHealth = Cast<UHealthComponent>(MovingActor->FindComponentByClass(UHealthComponent::StaticClass()));
+        if (MovingActorHealth != nullptr)
+        {
+            if (MovingActorHealth->OnDeathReached.IsBound())
+            {
+                MovingActorHealth->OnDeathReached.RemoveDynamic(this, &AMovingActorManager::OnActorDeath);
+            }
+        }
+    }
 }

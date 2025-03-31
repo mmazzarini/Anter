@@ -14,7 +14,6 @@ void ULevelManagerComponent::BeginPlay()
 {
     Super::BeginPlay();
     SetupLevelElements();
-    //BindToLevelRestartPoints();
     //This binds all managers to delegate from game mode
     BindManagers();
 }

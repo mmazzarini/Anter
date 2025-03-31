@@ -15,14 +15,6 @@ void AEnemyManager::BeginPlay()
     FillActorPositions();
     InjectActorBehavior();
     SetBindings();
-
-    /*
-    if(AAnterBaseLevelGameMode* LevelGMode = Cast<AAnterBaseLevelGameMode>(UGameplayStatics::GetGameMode(this)))
-    {
-        LevelGMode->PlayerRestartedDelegate.AddDynamic(this,&AEnemyManager::SetBindings);
-    }
-    */
-
 }
 
 void AEnemyManager::FillActorPositions()
@@ -61,17 +53,9 @@ void AEnemyManager::SetBindings()
 
 void AEnemyManager::OnEnemyDeath()
 {
-
-    if(Enemy != nullptr)
+    UnbindFromEnemy();
+    if (Enemy != nullptr)
     {
-        UHealthComponent* EnemyHealth = Cast<UHealthComponent>(Enemy->FindComponentByClass(UHealthComponent::StaticClass()));
-        if(EnemyHealth != nullptr)
-        {
-            if(EnemyHealth->OnDeathReached.IsBound())
-            {
-                EnemyHealth->OnDeathReached.RemoveDynamic(this,&AEnemyManager::OnEnemyDeath);
-            }
-        }
         Enemy->Destroy();
     }    
 }
@@ -99,11 +83,27 @@ void AEnemyManager::CreateActor()
 
 void AEnemyManager::RefreshActor()
 {
+    UnbindFromEnemy();
     CreateActor();
     FillActorPositions();
     InjectActorBehavior();
     SetBindings();
     ResetActorMovement();
+}
+
+void AEnemyManager::UnbindFromEnemy()
+{
+    if (Enemy != nullptr)
+    {
+        UHealthComponent* EnemyHealth = Cast<UHealthComponent>(Enemy->FindComponentByClass(UHealthComponent::StaticClass()));
+        if (EnemyHealth != nullptr)
+        {
+            if (EnemyHealth->OnDeathReached.IsBound())
+            {
+                EnemyHealth->OnDeathReached.RemoveDynamic(this, &AEnemyManager::OnEnemyDeath);
+            }
+        }
+    }
 }
 
 void AEnemyManager::ResetActorMovement()
