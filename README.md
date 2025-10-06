@@ -1,5 +1,5 @@
 # Anter
-Github repo for a personal platform game developed in Unreal Engine 4.
+Github repo for a 2D platform game developed in Unreal Engine 4.
 
 Info: 
 
