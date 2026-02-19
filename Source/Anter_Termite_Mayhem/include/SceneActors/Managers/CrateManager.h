@@ -1,11 +1,11 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "SceneUtilities/SceneStructs.h"
 
 #include "CrateManager.generated.h"
 
 /*
+#include "SceneUtilities/SceneStructs.h"
 Manager class for crates. It is used to manage crate spawning and destruction state in between checkpoints 
 */
 

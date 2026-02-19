@@ -1,5 +1,6 @@
 #include "ActorComponents/AnterMovementSupportComponent.h"
 #include "Pawn/AnterPaperCharacter.h"
+#include "GameConstants/GameConstants.h"
 
 UAnterMovementSupportComponent::UAnterMovementSupportComponent()
 {
@@ -14,6 +15,7 @@ void UAnterMovementSupportComponent::BeginPlay()
     if(Anter != nullptr)
     {
        AnterMovement = Cast<UCharacterMovementComponent>(Anter->FindComponentByClass(UCharacterMovementComponent::StaticClass()));
+       Anter->OnActorGeometryCommunication.AddDynamic(this, &UAnterMovementSupportComponent::OnAnterGeometryChanged);
     }   
 }
 
@@ -26,11 +28,11 @@ void UAnterMovementSupportComponent::HandleSlide()
 {
     if(Anter != nullptr && Anter->GetCanJump() && bCanSlideInternal)
     {
-        SlideImpulse = FVector::XAxisVector * InternalMovementDirection * SlideMovementMultiplier;
+        SlideImpulse = InternalMovementDirection * SlideMovementMultiplier;
         if(AnterMovement != nullptr)
         {
             //AnterMovement->AddImpulse(FVector::XAxisVector*InternalMovementDirection*SlideMovementMultiplier);
-            SlideStopThreshold = abs(AnterMovement->Velocity.X);
+            SlideStopThreshold = AnterMovement->Velocity.Size();
         }
         Anter->GetWorldTimerManager().SetTimer(SlideTimerHandle, this, &UAnterMovementSupportComponent::EndSlide, SlideMovementDurationTime, false, SlideMovementDurationTime);
         bCanSlideInternal = false;
@@ -64,7 +66,9 @@ void UAnterMovementSupportComponent::EndSecondSlide()
 
 void UAnterMovementSupportComponent::SetMovementDirection(float InAxisValue)
 {
-    InternalMovementDirection = (InAxisValue > 0.0f) ? (1.0f) : ((InAxisValue < 0.0f) ? -1.0f : 0.0f);
+    InternalMovementDirection.X = (InAxisValue > 0.0f) ? (GeometryX) : ((InAxisValue < 0.0f) ? -GeometryX : 0.0f);
+    InternalMovementDirection.Y = 0.0f;
+    InternalMovementDirection.Z = (InAxisValue > 0.0f) ? (GeometryZ) : ((InAxisValue < 0.0f) ? -GeometryZ : 0.0f);
 }
 
 void UAnterMovementSupportComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
@@ -84,4 +88,10 @@ void UAnterMovementSupportComponent::TickComponent(float DeltaTime, enum ELevelT
     {
         Anter->AddActorWorldOffset(SlideImpulse);
     }
+}
+
+void UAnterMovementSupportComponent::OnAnterGeometryChanged(float XGeom, float ZGeom)
+{
+    GeometryX = XGeom;
+	GeometryZ = ZGeom;
 }

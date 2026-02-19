@@ -1,0 +1,45 @@
+Definiamo l'algoritmo per il platforming obliquo.
+
+Siamo consapevoli che, in caso di piattaforme dritte, l'algoritmo deve collassare al vecchio sistema.
+
+Inoltre, l'algoritmo deve essere eseguito a tick time.
+
+Wrapparlo in una component che possa comunicarlo all'owning actor, che poi si gestisce le cose come vuole ok.
+
+IDEA
+
+RetT AnterComponent::Tick()
+{
+     CallToAlgo();
+     ProcessRayCastResults();
+
+}
+
+RetT AnterComponent::CallToAlgo()
+{
+      Calcola RayCastVerticale down -> Stora in HitInfo verticale down
+      Calcola RayCastOrizzontale front -> Stora in HitInfo orizzontale front       
+      Calcola RayCastOrizzontale back -> Stora in HitInfo orizzontale back
+}
+
+RetT AnterComponent::ProcessRayCastResults()
+{
+      Se nessuno dei raycast ha successo, non devi ritornare nulla.
+
+      Se il raycast orizzontale ha successo, e la piattaforma ha una geometria orizzontale: blocca (sia front sia back), perché stiamo incontrando un muro.
+	Blocca significa che ritorni true penso. Cioè ritorni block. Secondo me serve un enum. Cioè blocchi la direzione specifica dell'enum
+
+      Se il raycast ha successo verticalmente, ritorna true, con enum blocking. In più, fornisci informazioni sulla geometry della piattaforma.
+      
+      Ovviamente io raycasto verticalmente sempre sul pixel nella zona orizzonalmente a metà. Cioè la linea del raycast taglia a specchio verticalemnte il cubo.
+      Preciso preciso, quindi. 
+      
+}
+
+
+enum:
+   EBlockedMovementStatus (da usare come bitmask):
+	None,
+	BlockedVertically,
+	BlockedHorizontallyFront,
+	BlockedHorizontallyBack

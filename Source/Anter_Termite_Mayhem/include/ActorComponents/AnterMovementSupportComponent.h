@@ -34,6 +34,10 @@ public:
 
     
 protected:
+
+    UFUNCTION()
+    void OnAnterGeometryChanged(float XGeom, float ZGeom);
+
     UPROPERTY(EditDefaultsOnly)
     FVector PositionVector = FVector(0.0f,0.0f,0.0f);
 
@@ -70,7 +74,7 @@ protected:
 
     UCharacterMovementComponent* AnterMovement = nullptr;
 
-    float InternalMovementDirection = 1.0f; //Can assume only -1.0f,0.0f,1.0f
+    FVector InternalMovementDirection;
 
     FTimerDelegate SlideTimerDelegate;
 
@@ -81,5 +85,9 @@ protected:
 
     //Slide value
     FVector SlideImpulse;
+
+    float GeometryX = 1.0f;
+
+	float GeometryZ = 0.0f;
 
 };

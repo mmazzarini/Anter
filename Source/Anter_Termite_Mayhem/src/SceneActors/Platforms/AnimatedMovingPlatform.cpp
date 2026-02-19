@@ -32,16 +32,11 @@ void AAnimatedMovingPlatform::BeginPlay()
 }
 
 void AAnimatedMovingPlatform::Tick(float DeltaTime)
-{   
+{    
     Super::Tick(DeltaTime);
     if(CandidateCollision != nullptr)
     {
-        if(ActorMovement != nullptr && !(ActorMovement->GetIsMovementActive()) && !GetIsPlaying())
-        {
-            //Start animations only if it was not playing loop
-            StartShakeAnimation();
-            SetIsPlaying(true);
-        }
+        OnStartShakeAnimation();
     }
 }
 
@@ -64,14 +59,19 @@ void AAnimatedMovingPlatform::OnMovementComplete()
     }
 }
 
-bool AAnimatedMovingPlatform::GetIsPlaying()
+bool AAnimatedMovingPlatform::GetIsEngaged()
 {
-    return bIsPlayingAnimation;
+    return bIsEngaged;
 }
 
-void AAnimatedMovingPlatform::SetIsPlaying(bool bInPlaying)
+void AAnimatedMovingPlatform::SetIsEngaged(bool bInPlaying)
 {
-    bIsPlayingAnimation = bInPlaying;
+    bIsEngaged = bInPlaying;
+}
+
+void AAnimatedMovingPlatform::BlueprintStartShakeAnimation()
+{
+    StartShakeAnimation();
 }
 
 void AAnimatedMovingPlatform::StartIdleAnimation()
@@ -82,12 +82,27 @@ void AAnimatedMovingPlatform::StartIdleAnimation()
     }
 }
 
+void AAnimatedMovingPlatform::StopTimeline()
+{
+    if (IdleTimeLineComp != nullptr)
+    {
+        IdleTimeLineComp->SetPlaybackPosition(0.0f, false, false);
+        IdleTimeLineComp->Stop();
+    }
+}
+
 void AAnimatedMovingPlatform::StartShakeAnimation()
 {
     if (BounceTimeLineComp != nullptr)
     {
         BounceTimeLineComp->Play();
     }
+    SetIsEngaged(true);
+}
+
+void AAnimatedMovingPlatform::OnStartShakeAnimation()
+{
+    // Implement in derived classes
 }
 
 void AAnimatedMovingPlatform::ResetMotionAfterAnimation() const
@@ -122,6 +137,14 @@ void AAnimatedMovingPlatform::BindTimelineFunctions()
     SetupTimelineAnimation(IdleTimeLineComp, IdleCurve, IdleTimelineFunc, IdleAnimationFinishedFunc);
 }
 
+void AAnimatedMovingPlatform::ResetActorMovement()
+{
+    if (ActorMovement != nullptr)
+    {
+        ActorMovement->ResetMovement();
+    }
+}
+
 void AAnimatedMovingPlatform::OnVerticalDisplacementFloatUpdated(float InDisplacement)
 {
     float NewZ = ActorVerticalPivot + InDisplacement;
@@ -147,16 +170,11 @@ void AAnimatedMovingPlatform::OnIdleDisplacementFloatUpdated(float InDisplacemen
 
 void AAnimatedMovingPlatform::OnIdleAnimationFinished()
 {
-    if (IdleTimeLineComp != nullptr)
-    {
-        IdleTimeLineComp->SetPlaybackPosition(0.0f, false, false);
-        IdleTimeLineComp->Stop();
-    }
+    StopTimeline();
 
     SetActorLocation(InitialPlatformLocation);
-    if (ActorMovement != nullptr)
-    {
-        ActorMovement->ResetMovement();
-        SetIsPlaying(false);
-    }
+
+    ResetActorMovement();
+
+    SetIsEngaged(false);
 }

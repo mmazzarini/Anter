@@ -40,6 +40,7 @@ void UAnterFloorHangingComponent::DetachFromUpsideDownPlatform()
             {
                 //Reset Gravity
                 AnterMovement->GravityScale = Anter->GetInputGravityScale();
+                AnterMovement->Velocity.Z = Anter->GetFloorDetachingKick();
             }
         }
         Anter->SetVerticalMotionStatus(EAnterVerticalMotionStatus::NormalStatus);
@@ -60,7 +61,7 @@ void UAnterFloorHangingComponent::AttemptRayCastByLineTrace()
             //Check raycast
             if(Anter->GetWorld()->LineTraceMultiByObjectType(ObjectsHit,RayTraceStart,RayTraceEnd,ObjectParams))
             {
-                for(FHitResult ObjectHit : ObjectsHit)
+                for(const FHitResult& ObjectHit : ObjectsHit)
                 {
                     //Check if hit object was of specified type 
                     if(ObjectHit.Actor.IsValid() && ObjectHit.Actor.Get() != nullptr && ObjectHit.Actor.Get() != Anter)

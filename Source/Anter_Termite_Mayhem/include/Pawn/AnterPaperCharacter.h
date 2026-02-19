@@ -13,6 +13,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "SceneActors/SceneActorInterface.h"
 #include "TimerManager.h"
 #include "UObject/WeakInterfacePtr.h"
@@ -55,20 +56,21 @@ enum class EAnterVerticalMotionStatus : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnterHitDelegate, float, DamageValue);
 
-//Little structure to be referenced by Pawn in order to impose its local geometry while moving
-
-struct FGeometron
-{
-    float X = 1.0f;
-    float Z = 0.0f;
-};
-
 /*
 *
 * Anter Paper Character class, representing the entity of the main character in the game
 * Components are attached and refernced by the Pawn
 *
 */
+
+/*
+    TODO List
+    1 - we need to move all control-related stuff to some controller component in the PlayerController!
+        If we need to switch controls, we have a mess to deal with. Instead, by just changing the controller we
+        can easily modularize it
+    2 - we need to have a behavior for diagonal motion, maybe, or we need to move it to some specific component.
+*/
+
 
 UCLASS(BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter, public ISceneActorInterface
@@ -101,9 +103,9 @@ public:
 
     void HandleAnt(AAnterBaseAnt* InAnt);
 
-    void SetLeftMovementFree(bool InUnlocked){bIsLeftUnlocked = InUnlocked;}
+    void SetLeftMovementFree(bool InUnlocked);
 
-    void SetRightMovementFree(bool InUnlocked){bIsRightUnlocked = InUnlocked;}
+    void SetRightMovementFree(bool InUnlocked);
 
     //UFUNCTION()
     //void OnColliderHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
@@ -121,6 +123,8 @@ public:
     UFUNCTION()
     void SetIsFalling(bool InIsFalling);
 
+    const bool GetIsFalling() const;
+
     UFUNCTION()
     void RegisterPlatformCollision(AActor* InPlatformToAdd, EPlatformCollisionType InPlatformCollisionType);
 
@@ -132,7 +136,7 @@ public:
 
     void AdjustVelocity();
 
-    void ImposeGeometry(float InAngle);
+    void ImposeGeometry(const float InX, const float InZ);
 
     void ResetGeometron();
 
@@ -159,6 +163,10 @@ public:
 
     float GetInputGravityScale(){return InputGravityScale;}
 
+    float GetFloorDetachingKick() { return FloorDetachingKick; }
+
+    virtual void ProcessRayCastGeometry(const FGeometron& InGeometron, bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack) override;
+
     /* Anter Components */
 
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
@@ -182,6 +190,9 @@ public:
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UBoxComponent* AnterBox;
 
+    UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+    UCapsuleComponent* AnterCapsule;
+
     UPROPERTY(BlueprintReadOnly,VisibleAnywhere)
     UCollisionSupportComponent* AnterCollisionSupport;
 
@@ -193,6 +204,8 @@ public:
 
     /*delegate for pawn hit event*/
     FAnterHitDelegate AnterHit;
+
+    FActorGeometryChangeDelegate OnActorGeometryCommunication;
 
 protected:
 
@@ -210,6 +223,9 @@ protected:
 
     UPROPERTY(EditAnywhere, Category = "Anter Movement")
     float MovementMultiplier = 100.0f;
+
+    UPROPERTY(EditAnywhere, Category = "Anter Movement")
+    float DiagonalMovementMultiplier = 100.0f;
 
     UPROPERTY(EditAnywhere, Category = "Anter Movement")
     float ZAscendingMultiplier = 100.0f;
@@ -244,6 +260,9 @@ protected:
     UPROPERTY(EditAnywhere, Category = "Anter Movement")
     float InputGravityScale = 1.2f;
 
+    UPROPERTY(EditAnywhere, Category = "Anter Movement", meta = (ClampMax = "0.0"))
+    float FloorDetachingKick = -500.0f;
+
     UPROPERTY(EditAnywhere, Category = "Anter Jump")
     float ZVelocityThresholdToJump = -1.0f;
 
@@ -255,6 +274,13 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, Category = "Platform collision")
     float HorizontalTolerance = 0.0f;
+
+    //DEBUG FEATURE: WE CAN DEACTIVATE IT IN THE FUTURE. We are currently transitioning to raycast collision system.
+    UPROPERTY(EditDefaultsOnly)
+    bool bTurnOffPlatformCollisions = false;
+
+    UPROPERTY(EditDefaultsOnly)
+    bool bProcessUnhit = true;
 
 private:
 
@@ -280,7 +306,7 @@ private:
     //Array of information about vertical collisions with platforms
     TArray<TPair<AActor*,EPlatformCollisionType>> RegisteredVerticalPlatformCollisions;
 
-    FGeometron AnterGeometron;
+    FGeometron AnterGeometron{ 1.0f, 0.0f };
 
     UPROPERTY()
     FVector AnterCentre = FVector(0.0f,0.0f,0.0f);

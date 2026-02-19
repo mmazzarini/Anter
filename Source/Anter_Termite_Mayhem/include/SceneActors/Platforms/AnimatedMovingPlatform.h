@@ -10,7 +10,7 @@ class AAnterPaperCharacter;
 class UMovingActorMovementSupportComponent;
 class UBaseEnemyMovementComponent;
 
-UCLASS(Blueprintable,BlueprintType)
+UCLASS(Abstract, Blueprintable,BlueprintType)
 class ANTER_TERMITE_MAYHEM_API AAnimatedMovingPlatform : public AMovingPlatform
 {
     GENERATED_BODY()
@@ -23,24 +23,16 @@ public:
 
     void Tick(float DeltaSeconds) override;
 
-    UFUNCTION()
-    void OnMovementComplete();
+    UFUNCTION(BlueprintCallable)
+    bool GetIsEngaged();
 
-    bool GetIsPlaying();
-
-    void SetIsPlaying(bool bInPlaying);
-
-    /* Geometrical configuration of movement */
-    TWeakObjectPtr<UMovingActorMovementSupportComponent> ActorMovement;
-
-    /* Dynamical movement component */
-    TWeakObjectPtr<UBaseEnemyMovementComponent> ActorBaseMotion;    
+    void SetIsEngaged(bool bInPlaying);
 
 protected:
 
     void StartIdleAnimation();
 
-    void StartShakeAnimation();
+    void StopTimeline();
 
     void ResetMotionAfterAnimation() const;
 
@@ -49,6 +41,8 @@ protected:
     void BindTimelineFunctions();
 
     void UnbindTimelineFunctions(){}
+
+    void ResetActorMovement();
 
     UFUNCTION()
     void OnVerticalDisplacementFloatUpdated(float InDisplacement);
@@ -61,6 +55,19 @@ protected:
 
     UFUNCTION()
     void OnIdleAnimationFinished();
+
+    UFUNCTION()
+    void OnMovementComplete();
+
+    virtual void OnStartShakeAnimation();
+
+    void StartShakeAnimation();
+
+    /* Geometrical configuration of movement */
+    TWeakObjectPtr<UMovingActorMovementSupportComponent> ActorMovement;
+
+    /* Dynamical movement component */
+    TWeakObjectPtr<UBaseEnemyMovementComponent> ActorBaseMotion;
 
     //Curve vector
     UPROPERTY(EditAnywhere)
@@ -87,11 +94,18 @@ protected:
     FOnTimelineEventStatic IdleAnimationFinishedFunc;
 
     // Bool to register the full animations-movement loop.
-    // - - N.B. This is not equivalent to some Timeline's Playing state. It is more general instead and it includes the Timeline step.
-    bool bIsPlayingAnimation = false;
+    // - - N.B. This is not simply equivalent to some Timeline's Playing state. It is more general instead and it includes the Timeline step.
+    bool bIsEngaged = false;
 
     UPROPERTY(BlueprintReadOnly)
     float ActorVerticalPivot;
+
+protected:
+
+    //Method to call the Shake Animation
+    //Call it only from bp, e.g. from any behavior tree attached to this actor.
+    UFUNCTION(BlueprintCallable)
+    void BlueprintStartShakeAnimation();
 
     FVector InitialPlatformLocation;
 };

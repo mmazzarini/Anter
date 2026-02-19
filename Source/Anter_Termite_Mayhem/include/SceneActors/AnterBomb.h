@@ -18,8 +18,8 @@ UCLASS(BlueprintType,Blueprintable)
 class ANTER_TERMITE_MAYHEM_API AAnterBomb : public AAnterFire, public ISceneActorInterface
 {
     GENERATED_BODY()
-
-    public:
+    
+public:
     
     AAnterBomb();
 
@@ -34,6 +34,8 @@ class ANTER_TERMITE_MAYHEM_API AAnterBomb : public AAnterFire, public ISceneActo
     virtual void SetMovementToRight(FVector InMovementDirection);
 
     void HandleDamage(AActor* OtherActor) override {};
+
+    virtual void ProcessRayCastGeometry(const FGeometron& InGeometron, bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack) {}
 
 protected:
 

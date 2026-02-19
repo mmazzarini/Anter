@@ -45,7 +45,8 @@ enum class EHealthHarmlessType : uint8
     EnemyLaserDamage,
     AnterDamage,
     EnemyDamage,
-    CrateDamage
+    CrateDamage,
+    SqueezingDamage
 };
 
 /*

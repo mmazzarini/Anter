@@ -51,7 +51,7 @@ void UMovingActorMovementSupportComponent::UpdateMovement()
         {
             StartToMove();
         }
-        if(OwningActor != nullptr)
+        if(OwningActor != nullptr && CurrentPivotPositions.Num())
         {
             FVector CurrentPositionToReach = CurrentPivotPositions[PivotArrayIndex];
             float PivotDist = FVector::Dist(OwningActor->GetActorLocation(),CurrentPositionToReach);
