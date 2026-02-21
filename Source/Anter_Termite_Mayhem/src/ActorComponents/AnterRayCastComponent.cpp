@@ -101,7 +101,7 @@ void UAnterRayCastComponent::HorizontalFrontRayCast()
 void UAnterRayCastComponent::SendGeometryAndFlags()
 {
     FGeometron OwnerGeometry{ RotatedNormal.X, RotatedNormal.Z };
-    OwnerActorInterfacePtr->ProcessRayCastGeometry(OwnerGeometry, bHitVertically, bHitHorizontallyFront, bHitHorizontallyBack);
+    OwnerActorInterfacePtr->ProcessRayCastGeometry(bHitVertically, bHitHorizontallyFront, bHitHorizontallyBack, OwnerGeometry, ImpactPoint);
 }
 
 void UAnterRayCastComponent::ProcessHorizontallyBlockingGeometry(const TArray<FHitResult>& ObjectsHit, bool bFront)
@@ -136,6 +136,7 @@ void UAnterRayCastComponent::ProcessVerticallyBlockingGeometry(const TArray<FHit
                 if (OtherActor->IsA(CollidingActorClass))
                 {
                     RotatedNormal = ObjectHit.ImpactNormal.RotateAngleAxis(90, FVector::RightVector);
+                    ImpactPoint = ObjectHit.ImpactPoint;
                     //RotatedNormal = OtherActor->GetTransform().GetRotation().RotateVector(FVector::ForwardVector);
                     bHitVertically = true;
                     break;

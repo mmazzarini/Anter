@@ -165,7 +165,7 @@ public:
 
     float GetFloorDetachingKick() { return FloorDetachingKick; }
 
-    virtual void ProcessRayCastGeometry(const FGeometron& InGeometron, bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack) override;
+    virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint) override;
 
     /* Anter Components */
 

@@ -720,7 +720,7 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
 
 }
 
-void AAnterPaperCharacter::ProcessRayCastGeometry(const FGeometron& InGeometron, bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack)
+void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint)
 {
     ImposeGeometry(InGeometron.X, InGeometron.Z);
     if (bHitHorizontallyFront) 
@@ -763,8 +763,8 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(const FGeometron& InGeometron,
         {
             SetActorRotation({ 0.0f, 0.0f, 0.0f });
         }
-        FVector NewLocation = GetActorLocation() + FVector::UpVector * (AnterSize.Z / 2.0f * InGeometron.Z * VerticalImpenetrabilityFactor);
-        //SetActorLocation(NewLocation);
+        FVector NewLocation = FVector(GetActorLocation().X, GetActorLocation().Y, ImpactPoint.Z + AnterSize.Z);
+        SetActorLocation(NewLocation);
     } 
     else
     {

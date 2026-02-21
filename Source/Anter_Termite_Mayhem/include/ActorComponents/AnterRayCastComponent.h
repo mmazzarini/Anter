@@ -61,4 +61,5 @@ private:
 	bool bBlockedHorizontallyFront = false;
 	bool bBlockedHorizontallyBack = false;
 	FVector RotatedNormal = FVector(1.0f, 0.0f, 0.0f);
+	FVector ImpactPoint;
 };
