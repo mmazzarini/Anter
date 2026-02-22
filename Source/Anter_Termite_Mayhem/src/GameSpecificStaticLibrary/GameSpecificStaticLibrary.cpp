@@ -11,6 +11,6 @@ bool UGameSpecificStaticLibrary::IsHealthDamageType(AActor* InDamagedActor, AAct
     {
         return (Health->GetTypesOfDamageAvailable().Contains(Damage->GetTypeOfDamage()));
     }
-    //Default return: false
+
     return false;
 }

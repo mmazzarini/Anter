@@ -71,14 +71,12 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     SetActorLocation(FVector(GetActorLocation().X, 0.0f, GetActorLocation().Z));
     ConstrainJump();
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    /*
     if (AnterMovement != nullptr)
     {
         GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Anter movement in z: %f"), AnterMovement->Velocity.Z));
     }
-    */
 }
-    
+
 void AAnterPaperCharacter::OnDeathEvent()
 {
     if(AnterHealth != nullptr)

@@ -150,7 +150,7 @@ public:
 
     virtual void PossessedBy(AController* NewController) override;
 
-    void HandleCrateVerticalCollision(AAnterBaseCrate* InAnterCrate);
+    bool HandleCrateVerticalCollision(const AAnterBaseCrate* InAnterCrate);
 
     UFUNCTION()
     void OnUnhittableTimerEnded();
@@ -165,7 +165,7 @@ public:
 
     float GetFloorDetachingKick() { return FloorDetachingKick; }
 
-    virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint) override;
+    virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit) override;
 
     /* Anter Components */
 
