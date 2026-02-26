@@ -27,9 +27,7 @@ void AMovingPlatform::UpdateMovement()
         });
         if(CandidateCollision != nullptr && CandidateCollision->Value == EPlatformCollisionType::IsVerticallyColliding)
         {
-            //FIX ME PORCODDIO DEVI METTERE LA ZERO VERTICAL VELOCITY SENNO' STO STRONZO TI GALLEGGIA
-            //COME UN PEZZO DI MERDA NELLO SCARCICO DEL CESSO
-            //MA INSOMMA UN MINIMO DI CRITERIO QUANDO FAI LE COSE!!
+            //FIX ME!!
             // :)
             AnterRef->AddActorWorldOffset(NewPosition-OldPosition);
         }

@@ -78,7 +78,7 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     }
     */
 }
-    
+   
 void AAnterPaperCharacter::OnDeathEvent()
 {
     if(AnterHealth != nullptr)
@@ -176,7 +176,6 @@ void AAnterPaperCharacter::SetupPlayerInputComponent(UInputComponent* InInputCom
         InInputComponent->BindAction("Jump",IE_Pressed,this,&AAnterPaperCharacter::HandleJump);
         if(AnterWeapon != nullptr)
         {
-            //InInputComponent->BindAxis("RightMovement",AnterWeapon,&UAnterWeaponComponent::OnOwnerMoving);
             InInputComponent->BindAction("Fire",IE_Pressed, AnterWeapon, &UAnterWeaponComponent::ShootLaser);   
         }
 
