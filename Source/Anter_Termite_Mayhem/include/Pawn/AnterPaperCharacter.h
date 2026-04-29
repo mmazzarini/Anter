@@ -79,6 +79,9 @@ class ANTER_TERMITE_MAYHEM_API AAnterPaperCharacter : public APaperCharacter, pu
     
 public:
 
+    /*DEBUG*/
+    virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
+
     AAnterPaperCharacter();
 
     //Basic ticker

@@ -26,6 +26,36 @@
 #include "SceneActors/Items/AnterBaseCrate.h"
 #include "SceneActors/SuckableActorInterface.h"
 
+//DEBUG
+#include "Engine/Canvas.h"
+#include "DisplayDebugHelpers.h"
+
+void AAnterPaperCharacter::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
+{
+    Super::DisplayDebug(Canvas, DebugDisplay, YL, YPos);
+
+    if (DebugDisplay.IsDisplayOn("ANTER"))
+    {
+        FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
+        DisplayDebugManager.DrawString(FString::Printf(TEXT(" + + + + + ANTER + + + + +")));
+
+        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+        if (AnterMovement != nullptr)
+        {
+            DisplayDebugManager.DrawString(FString::Printf(TEXT("VELOCITY: X: %f Z: %f"), AnterMovement->Velocity.X, AnterMovement->Velocity.Z));
+            DisplayDebugManager.DrawString(FString::Printf(TEXT("LASTVELOCITY X: %f"), LastVelocityX));
+            if (AnterMovement->Velocity.Z > 0.0f)
+            {
+                DisplayDebugManager.SetDrawColor(FColor::Red);
+                DisplayDebugManager.DrawString(FString::Printf(TEXT("VELOCITY Z > 0!!")));
+                DisplayDebugManager.SetDrawColor(FColor::White);
+            }
+        }
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("GEOMETRON: X: %f Z: %f"), AnterGeometron.X, AnterGeometron.Z));
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("POSITION: X: %f Z: %f"), GetActorLocation().X, GetActorLocation().Z));
+    }
+}
+
 AAnterPaperCharacter::AAnterPaperCharacter()
 {
 
@@ -46,9 +76,6 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
     AnterWeapon = CreateDefaultSubobject<UAnterWeaponComponent>(TEXT("AnterWeapon"));
     AnterWeapon->SetupAttachment(RootComponent);
-
-    //AnterBox = CreateDefaultSubobject<UBoxComponent>(TEXT("AnterBox"));
-    //AnterBox->SetupAttachment(RootComponent);
 
     AnterCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("AnterCapsule"));
     AnterCapsule->SetupAttachment(RootComponent);
@@ -71,12 +98,6 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     SetActorLocation(FVector(GetActorLocation().X, 0.0f, GetActorLocation().Z));
     ConstrainJump();
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-    /*
-    if (AnterMovement != nullptr)
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Anter movement in z: %f"), AnterMovement->Velocity.Z));
-    }
-    */
 }
    
 void AAnterPaperCharacter::OnDeathEvent()
@@ -224,9 +245,6 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                     {
                         AnterMovement->Velocity.X = MovementVectorX.X * DiagonalMovementMultiplier;
                         AnterMovement->Velocity.Z = MovementVectorZ.Z * DiagonalMovementMultiplier;
-                        //AddMovementInput(FVector(MovementVectorX.X, 0.0f, MovementVectorZ.Z), MovementMultiplier);
-                        //FVector NewLocation = GetActorLocation() + (MovementVectorX.X + MovementVectorZ.Z) * MovementMultiplier;
-                        //SetActorLocation(NewLocation);
                         LastVelocityX = MovementVectorX.X;
                     }
                 }
@@ -270,7 +288,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                     if (LastVelocityX >= VelocityThreshold)
                     {
                         FVector OldLoc = GetActorLocation();
-                        FVector NewLocation = GetActorLocation() + (FVector::ForwardVector.X * AnterGeometron.X + FVector::UpVector.Z * AnterGeometron.Z) * LastVelocityX;
+                        FVector NewLocation = GetActorLocation() + (FVector::ForwardVector.X * AnterGeometron.X + FVector::UpVector.Z * AnterGeometron.Z);
                         SetActorLocation(NewLocation);
                         LastVelocityX /= 2.0f;
                     }
@@ -352,17 +370,6 @@ void AAnterPaperCharacter::HandleCollision(const FCollisionGeometry& CollisionGe
         return;
     }
        
-    //Then we check if it is platform
-    /*
-    ABasePlatform* Platform = Cast<ABasePlatform>(OtherActor);
-        if(Platform != nullptr && !bTurnOffPlatformCollisions)
-        {     
-            //Colliding object was a platform
-            HandlePlatform(CollisionGeometry,Platform);
-            return;
-        }
-    */
-
     //Else we check for Ant collectible
     AAnterBaseAnt* AntCollectible = Cast<AAnterBaseAnt>(OtherActor);
     if(AntCollectible != nullptr)
@@ -541,6 +548,8 @@ void AAnterPaperCharacter::ImposeGeometry(const float InX, const float InZ)
 {
     AnterGeometron.X = InX;
     AnterGeometron.Z = InZ;
+    if (abs(AnterGeometron.X) < 0.001f) AnterGeometron.X = 0.f;
+    if (abs(AnterGeometron.Z) < 0.001f) AnterGeometron.Z = 0.f;
     OnActorGeometryCommunication.Broadcast(AnterGeometron.X, AnterGeometron.Z);
 }
 
@@ -550,9 +559,7 @@ void AAnterPaperCharacter::ResetGeometron()
 }
 
 void AAnterPaperCharacter::HandlePlatform(const FCollisionGeometry& CollisionGeometry, AActor* Platform)
-{
-    //if(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)/FMath::Abs(FVector::DotProduct(CollisionGeometry.TopDist,CollisionGeometry.RotatedNormal)) >= VerticalTolerance)
-    
+{    
     if(CollisionGeometry.TopDist.Z >= -(AnterSize.Z) && VerticalMotionStatus == EAnterVerticalMotionStatus::NormalStatus)
     {
         /* Impact was from top: pawn is standing on platform. */ 
