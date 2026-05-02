@@ -42,5 +42,11 @@ void AMovingPlatform::Setup()
         OldPosition = GetActorLocation();
         NewPosition = GetActorLocation();
         ActorMovement->ResetMovement();
+        PrimaryActorTick.AddPrerequisite(AnterRef.Get(), AnterRef->PrimaryActorTick);
+
+        if (UActorComponent* AnterComp = AnterRef->GetComponentByClass(ComponentToFollowClass))
+        {
+            PrimaryActorTick.AddPrerequisite(AnterComp, AnterComp->PrimaryComponentTick);
+        }
     }
 }

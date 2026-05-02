@@ -22,6 +22,9 @@ public:
 
 protected:
 
+    UPROPERTY(EditDefaultsOnly)
+    TSubclassOf<UActorComponent> ComponentToFollowClass;
+
     FVector OldPosition;
 
     FVector NewPosition;
