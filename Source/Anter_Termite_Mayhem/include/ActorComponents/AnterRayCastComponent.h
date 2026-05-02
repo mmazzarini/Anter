@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta=(ClampMin = "0.6", ClampMax="1.0"))
 	float GeometryScalarProductTolerance = 0.6f;
 
+	UPROPERTY(EditDefaultsOnly)
+	FVector FrontOffset = FVector(32.0f, 0.0f, 0.0f);
+
 private:
 
 	bool bHitVertically = false;
@@ -63,4 +66,6 @@ private:
 	FVector RotatedNormal = FVector(1.0f, 0.0f, 0.0f);
 	FVector ImpactPoint;
 	TWeakObjectPtr<AActor> HitActorRef;
+
+	TWeakObjectPtr <AActor> OwnerActorWeakRef;
 };

@@ -25,6 +25,7 @@ void ABasePlatform::BeginPlay()
         
         if(PlatformBody != nullptr)
         {
+            /*
             FKAggregateGeom AggregateGeom = PlatformBody->AggGeom;
             FKBoxElem PlatformMeshBox = AggregateGeom.BoxElems[0];
             const FName MyName = PlatformMeshBox.GetName();
@@ -33,6 +34,7 @@ void ABasePlatform::BeginPlay()
             {
 
             }
+            */
         }
         
     }

@@ -11,6 +11,8 @@ void UAnterRayCastComponent::BeginPlay()
 {
     Super::BeginPlay();
     RegisterInterfaceOwnerCharacter();
+    //We tick after pawn tick - we dont interfere with tick ops at pawn.
+    PrimaryComponentTick.AddPrerequisite(OwnerActorWeakRef.Get(), OwnerActorWeakRef->PrimaryActorTick);
 }
 
 void UAnterRayCastComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -22,13 +24,14 @@ void UAnterRayCastComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 void UAnterRayCastComponent::RegisterInterfaceOwnerCharacter()
 {
     OwnerActorInterfacePtr = Cast<ISceneActorInterface>(GetOwner());
+    OwnerActorWeakRef = Cast<AActor>(OwnerActorInterfacePtr);
 }
 
 void UAnterRayCastComponent::RayCast()
 {
     ResetRayCastFlags();
 
-    if (OwnerActorInterfacePtr != nullptr)
+    if (OwnerActorInterfacePtr != nullptr && OwnerActorWeakRef.IsValid())
     {
         VerticalRayCast();
         HorizontalFrontRayCast();
@@ -49,15 +52,33 @@ void UAnterRayCastComponent::ResetRayCastFlags()
 
 void UAnterRayCastComponent::VerticalRayCast()
 {
-    if (AActor* OwnerActor = Cast<AActor>(OwnerActorInterfacePtr))
+    //#TODO Optimization - maybe caching OwnerActor at begin play?
+    TArray<FHitResult> ObjectsHit;
+    FVector RayTraceStart = OwnerActorWeakRef->GetActorLocation();
+    OwnerActorWeakRef->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
+    FVector RayTraceEnd = RayTraceStart - FVector::UpVector * OwnerActorSize.Z*VerticalSizeCorrection; //Some size we get from owner
+    FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
+    //Check raycast
+    if (OwnerActorWeakRef->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
     {
-        TArray<FHitResult> ObjectsHit;
-        FVector RayTraceStart = OwnerActor->GetActorLocation();
-        OwnerActor->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
-        FVector RayTraceEnd = RayTraceStart - FVector::UpVector * OwnerActorSize.Z*VerticalSizeCorrection; //Some size we get from owner
-        FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
-        //Check raycast
-        if (OwnerActor->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
+        ProcessVerticallyBlockingGeometry(ObjectsHit);
+    }
+    //If was not hit vertically, process from the front border
+    if (!bHitVertically)
+    {
+        RayTraceStart += FrontOffset;
+        RayTraceEnd += FrontOffset;
+        if (OwnerActorWeakRef->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
+        {
+            ProcessVerticallyBlockingGeometry(ObjectsHit);
+        }
+    }
+    //If it was still not hit vertically, process from the back 
+    if (!bHitVertically)
+    {
+        RayTraceStart -= 2.f*FrontOffset;
+        RayTraceEnd -= 2.f*FrontOffset;
+        if (OwnerActorWeakRef->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
         {
             ProcessVerticallyBlockingGeometry(ObjectsHit);
         }
@@ -66,35 +87,29 @@ void UAnterRayCastComponent::VerticalRayCast()
 
 void UAnterRayCastComponent::HorizontalBackRayCast()
 {
-    if (AActor* OwnerActor = Cast<AActor>(OwnerActorInterfacePtr))
+    TArray<FHitResult> ObjectsHit;
+    FVector RayTraceStart = OwnerActorWeakRef->GetActorLocation();
+    OwnerActorWeakRef->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
+    FVector RayTraceEnd = RayTraceStart - FVector(OwnerActorSize.X * HorizontalSizeCorrection, 0.0f, 0.0f); //Some size we get from owner
+    FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
+    //Check raycast
+    if (OwnerActorWeakRef->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
     {
-        TArray<FHitResult> ObjectsHit;
-        FVector RayTraceStart = OwnerActor->GetActorLocation();
-        OwnerActor->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
-        FVector RayTraceEnd = RayTraceStart - FVector(OwnerActorSize.X * HorizontalSizeCorrection, 0.0f, 0.0f); //Some size we get from owner
-        FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
-        //Check raycast
-        if (OwnerActor->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
-        {
-            ProcessHorizontallyBlockingGeometry(ObjectsHit, false);
-        }
+        ProcessHorizontallyBlockingGeometry(ObjectsHit, false);
     }
 }
 
 void UAnterRayCastComponent::HorizontalFrontRayCast()
 {
-    if (AActor* OwnerActor = Cast<AActor>(OwnerActorInterfacePtr))
+    TArray<FHitResult> ObjectsHit;
+    FVector RayTraceStart = OwnerActorWeakRef->GetActorLocation();
+    OwnerActorWeakRef->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
+    FVector RayTraceEnd = RayTraceStart + FVector(OwnerActorSize.X * HorizontalSizeCorrection, 0.0f, 0.0f); //Some size we get from owner
+    FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
+    //Check raycast
+    if (OwnerActorWeakRef->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
     {
-        TArray<FHitResult> ObjectsHit;
-        FVector RayTraceStart = OwnerActor->GetActorLocation();
-        OwnerActor->GetActorBounds(true, OwnerActorCentre, OwnerActorSize, false);
-        FVector RayTraceEnd = RayTraceStart + FVector(OwnerActorSize.X * HorizontalSizeCorrection, 0.0f, 0.0f); //Some size we get from owner
-        FCollisionObjectQueryParams ObjectParams(ECollisionChannel::ECC_WorldDynamic);
-        //Check raycast
-        if (OwnerActor->GetWorld()->LineTraceMultiByObjectType(ObjectsHit, RayTraceStart, RayTraceEnd, ObjectParams))
-        {
-            ProcessHorizontallyBlockingGeometry(ObjectsHit, true);
-        }
+        ProcessHorizontallyBlockingGeometry(ObjectsHit, true);
     }
 }
 

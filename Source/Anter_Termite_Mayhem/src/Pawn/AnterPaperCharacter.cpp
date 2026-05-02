@@ -92,6 +92,10 @@ AAnterPaperCharacter::AAnterPaperCharacter()
 
 void AAnterPaperCharacter::Tick(float DeltaTime)
 {
+    Super::Tick(DeltaTime);
+    
+    //empty platform collisions cache
+    RegisteredVerticalPlatformCollisions.Empty();
     AdjustVelocity();
     //Ensure no displacement from Y = 0 plane
     FVector LocationTemp = GetActorLocation();
@@ -731,6 +735,11 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
 
 }
 
+TArray<TPair<AActor*, EPlatformCollisionType>> AAnterPaperCharacter::GetResigsteredPlatformCollisions()
+{
+    return RegisteredVerticalPlatformCollisions;
+}
+
 void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit)
 {
     ImposeGeometry(InGeometron.X, InGeometron.Z);
@@ -754,6 +763,8 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
     
     if (bHitVertically)
     {
+        RegisteredVerticalPlatformCollisions.Add(TPair<AActor*, EPlatformCollisionType>(const_cast<AActor*>(ActorHit), EPlatformCollisionType::IsVerticallyColliding));
+
         if (const AAnterBaseCrate* AnterCrate = Cast<AAnterBaseCrate>(ActorHit))
         {
             //HandlePlatform(CollisionGeometry,AnterCrate);

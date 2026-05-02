@@ -158,7 +158,7 @@ public:
     UFUNCTION()
     void OnUnhittableTimerEnded();
 
-    TArray<TPair<AActor*,EPlatformCollisionType>> GetResigsteredPlatformCollisions(){return RegisteredVerticalPlatformCollisions;}
+    TArray<TPair<AActor*, EPlatformCollisionType>> GetResigsteredPlatformCollisions();
 
     void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus){VerticalMotionStatus = InVerticalMotionStatus;}
 
