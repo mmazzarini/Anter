@@ -158,6 +158,9 @@ public:
     UFUNCTION()
     void OnUnhittableTimerEnded();
 
+    UFUNCTION()
+    void OnJumpLockedRestored();
+
     TArray<TPair<AActor*, EPlatformCollisionType>> GetResigsteredPlatformCollisions();
 
     void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus){VerticalMotionStatus = InVerticalMotionStatus;}
@@ -169,6 +172,8 @@ public:
     float GetFloorDetachingKick() { return FloorDetachingKick; }
 
     virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit) override;
+
+    const bool IsLockedAfterJump() const;
 
     /* Anter Components */
 
@@ -329,6 +334,12 @@ private:
 
     FTimerHandle UnhittableTimerHandle;
 
+    FTimerHandle InitialJumpLockTimerHandle;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Jump")
+    float InitialJumpLockTimerDuration = 0.01f;
+
+
     UPROPERTY(EditDefaultsOnly)
     UMaterialInterface* FlickeringMaterial;
 
@@ -344,6 +355,8 @@ private:
     TSubclassOf<AActor> LethalInstantActorClass;
 
     TWeakInterfacePtr<ISuckableActorInterface> CandidateSuckableActor;
+
+    bool bLockAfterJump = false;
 
 };
 

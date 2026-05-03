@@ -102,6 +102,13 @@ void AAnterPaperCharacter::Tick(float DeltaTime)
     SetActorLocation(FVector(GetActorLocation().X, 0.0f, GetActorLocation().Z));
     ConstrainJump();
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+    if (bLockAfterJump == true)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("TICK END frame=%llu vel=%s dt=%f"),
+            GFrameCounter,
+            *AnterMovement->Velocity.ToString(),
+            DeltaTime);
+    }
 }
    
 void AAnterPaperCharacter::OnDeathEvent()
@@ -315,6 +322,7 @@ void AAnterPaperCharacter::HandleJump()
         if(bCanAnterJump == true)
         {
             ProcessJump(JumpScale, AnterMovement);
+
         }
     }
 }
@@ -735,6 +743,11 @@ void AAnterPaperCharacter::OnUnhittableTimerEnded()
 
 }
 
+void AAnterPaperCharacter::OnJumpLockedRestored()
+{
+    bLockAfterJump = false;
+}
+
 TArray<TPair<AActor*, EPlatformCollisionType>> AAnterPaperCharacter::GetResigsteredPlatformCollisions()
 {
     return RegisteredVerticalPlatformCollisions;
@@ -763,8 +776,6 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
     
     if (bHitVertically)
     {
-        RegisteredVerticalPlatformCollisions.Add(TPair<AActor*, EPlatformCollisionType>(const_cast<AActor*>(ActorHit), EPlatformCollisionType::IsVerticallyColliding));
-
         if (const AAnterBaseCrate* AnterCrate = Cast<AAnterBaseCrate>(ActorHit))
         {
             //HandlePlatform(CollisionGeometry,AnterCrate);
@@ -774,29 +785,33 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
             }
         }
 
-        UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
-        if (AnterMovement != nullptr)
+        if (!bLockAfterJump)
         {
-            if (AnterMovement->Velocity.Z < 0.0f || GetIsFalling() == true)
+            RegisteredVerticalPlatformCollisions.Add(TPair<AActor*, EPlatformCollisionType>(const_cast<AActor*>(ActorHit), EPlatformCollisionType::IsVerticallyColliding));
+
+            UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
+            if (AnterMovement != nullptr)
             {
-                SetIsFalling(false);
-                SetCanJump(true);
-                AnterMovement->GravityScale = 0.0f;
+                if (AnterMovement->Velocity.Z < 0.0f || GetIsFalling() == true)
+                {
+                    SetIsFalling(false);
+                    SetCanJump(true);
+                    AnterMovement->GravityScale = 0.0f;
 
-                AnterMovement->Velocity.Z = 0.0f;
+                    AnterMovement->Velocity.Z = 0.0f;
+                }
             }
+            if (InGeometron.X != 0.0f)
+            {
+                SetActorRotation({ FMath::Atan(InGeometron.Z / InGeometron.X), 0.0f, 0.0f });
+            }
+            else
+            {
+                SetActorRotation({ 0.0f, 0.0f, 0.0f });
+            }
+            FVector NewLocation = FVector(GetActorLocation().X, GetActorLocation().Y, ImpactPoint.Z + AnterSize.Z);
+            SetActorLocation(NewLocation);
         }
-        if (InGeometron.X != 0.0f)
-        {
-            SetActorRotation({FMath::Atan(InGeometron.Z / InGeometron.X), 0.0f, 0.0f });
-        }
-        else
-        {
-            SetActorRotation({ 0.0f, 0.0f, 0.0f });
-        }
-        FVector NewLocation = FVector(GetActorLocation().X, GetActorLocation().Y, ImpactPoint.Z + AnterSize.Z);
-        SetActorLocation(NewLocation);
-
     } 
     else
     {
@@ -811,15 +826,21 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
     }
 }
 
+const bool AAnterPaperCharacter::IsLockedAfterJump() const
+{
+    return bLockAfterJump;
+}
+
 void AAnterPaperCharacter::ProcessJump(float InJumpValue, UCharacterMovementComponent* InAnterMovement)
 {
     FVector JumpVector = FVector(0.0f,0.0f,InJumpValue);
-    //We kick the pawn on the vertical direction with a JumpVector and using its movement component
-    if(InAnterMovement != nullptr)
-    {
-        InAnterMovement->AddImpulse(JumpVector);
-    }
+
     SetCanJump(false);
+    ensure(InAnterMovement);
+    InAnterMovement->Velocity.Z = InJumpValue;
+
+    bLockAfterJump = true;
+    GetWorldTimerManager().SetTimer(InitialJumpLockTimerHandle, this, &AAnterPaperCharacter::OnJumpLockedRestored, InitialJumpLockTimerDuration, false, 0.0f);
 }
 
 void AAnterPaperCharacter::HandleKick(FVector InKickToReceive, UCharacterMovementComponent* InAnterMovement)
