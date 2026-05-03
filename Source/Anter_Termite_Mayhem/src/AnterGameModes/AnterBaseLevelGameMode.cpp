@@ -83,7 +83,7 @@ void AAnterBaseLevelGameMode::StartPlay()
     {
         GEngine->SetMaxFPS(60);
     }
-    */
+
 }
 
 void AAnterBaseLevelGameMode::StartLevel()
