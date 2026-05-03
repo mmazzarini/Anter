@@ -91,7 +91,7 @@ void UAnterMovementSupportComponent::TickComponent(float DeltaTime, enum ELevelT
 }
 
 void UAnterMovementSupportComponent::OnAnterGeometryChanged(float XGeom, float ZGeom)
-{
+{[]
     GeometryX = XGeom;
 	GeometryZ = ZGeom;
 }
