@@ -28,7 +28,7 @@ void UBaseEnemyMovementComponent::BeginPlay()
 void UBaseEnemyMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-    UpdateMovement();
+    UpdateMovement(DeltaTime);
 }
 
 void UBaseEnemyMovementComponent::SetMovement(FVector2D InGeometryVector)
@@ -53,12 +53,12 @@ void UBaseEnemyMovementComponent::ResetSpeed()
     SetSpeed(BackupSpeed);
 }
 
-void UBaseEnemyMovementComponent::UpdateMovement()
+void UBaseEnemyMovementComponent::UpdateMovement(float DeltaTime)
 {
     if(OwnerEnemy != nullptr)
     {
         FVector InputMovement3D = FVector(InternalMovementGeometry.X,0.0f,InternalMovementGeometry.Y);
-        FVector NewPosition = OwnerEnemy->GetActorLocation() + InputMovement3D*InternalMovementSpeed;
+        FVector NewPosition = OwnerEnemy->GetActorLocation() + InputMovement3D*InternalMovementSpeed* DeltaTime;
         OwnerEnemy->SetActorLocation(NewPosition);
     }
 }

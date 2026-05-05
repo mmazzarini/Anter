@@ -37,7 +37,7 @@ public:
 
     virtual void ResetSpeed();
 
-    virtual void UpdateMovement();
+    virtual void UpdateMovement(float DeltaTime);
 
     UFUNCTION()
     void AddImpulse(FVector InInpulse);
@@ -50,7 +50,7 @@ public:
 
 protected:
 
-    UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn = "true"))
     float InitialMovementSpeed;
 
     UPROPERTY(EditDefaultsOnly,BlueprintReadWrite)
