@@ -3,6 +3,37 @@
 #include "PlayerControllers/AnterPlayerController.h"
 #include "AnterGameModes/AnterBaseLevelGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "FSMState/GameFSMState.h"
+
+//DEBUG
+#include "Engine/Canvas.h"
+#include "DisplayDebugHelpers.h"
+
+void AAnterBaseLevelGameState::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
+{  
+    Super::DisplayDebug(Canvas, DebugDisplay, YL, YPos);
+    if (DebugDisplay.IsDisplayOn("FSM"))
+    {
+        FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
+        DisplayDebugManager.SetDrawColor(FColor::Red);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT(" + + + + + FSM + + + + +")));
+        DisplayDebugManager.SetDrawColor(FColor::White);
+        if (LevelMenuFSM != nullptr)
+        {
+            DisplayDebugManager.DrawString(FString::Printf(TEXT("Current FSM: %s"), *LevelMenuFSM->GetName()));
+            if (UGameFSMState* CurrentFSMState = LevelMenuFSM->GetCurrentState())
+            {
+                DisplayDebugManager.DrawString(FString::Printf(TEXT("Current State: %s"), *CurrentFSMState->GetName()));
+            }
+    
+        }
+        else
+        {
+            DisplayDebugManager.DrawString(FString::Printf(TEXT("No FSM Currently available")));
+        }
+    }
+
+}
 
 void AAnterBaseLevelGameState::HandleBeginPlay()
 {

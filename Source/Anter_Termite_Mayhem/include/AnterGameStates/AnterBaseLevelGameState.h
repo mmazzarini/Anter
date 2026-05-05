@@ -27,6 +27,10 @@ class ANTER_TERMITE_MAYHEM_API AAnterBaseLevelGameState : public AGameStateBase
 
 public:
 
+    /*DEBUG*/
+    virtual void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos) override;
+    //
+
     virtual void HandleBeginPlay() override;
 
     UFUNCTION()
@@ -53,6 +57,7 @@ protected:
     //private internal reference to MenuFSM.
     //The FSM must contain states for menu - options - map
 
+    UPROPERTY()
     UGameFSM* LevelMenuFSM;
 
     UPROPERTY(EditDefaultsOnly)
@@ -60,6 +65,7 @@ protected:
 
 private:
 
+    UPROPERTY()
     AActor* GameOverCameraActor;
 
     ELevelCompletionState LevelCompletion = ELevelCompletionState::LevelWaitingToStart;
