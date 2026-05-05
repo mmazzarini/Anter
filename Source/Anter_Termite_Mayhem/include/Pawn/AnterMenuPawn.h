@@ -20,7 +20,7 @@ public:
 
     void SetupPlayerInputComponent(UInputComponent* InInputComponent) override;
 
-    void MoveToNextMarker();
+    void MoveToNextMarker(float DeltaTime);
 
     //Movement functions
     void HandleMoveDown();

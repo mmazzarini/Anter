@@ -20,7 +20,7 @@ void AAnterMenuPawn::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
     if(bIsMovingToMarker)
     {
-        MoveToNextMarker();
+        MoveToNextMarker(DeltaTime);
     }
 }
 
@@ -37,7 +37,7 @@ void AAnterMenuPawn::SetupPlayerInputComponent(UInputComponent* InInputComponent
     }
 }
 
-void AAnterMenuPawn::MoveToNextMarker()
+void AAnterMenuPawn::MoveToNextMarker(float DeltaTime)
 {
     if(MarkerRef.IsValid())
     {
@@ -52,7 +52,7 @@ void AAnterMenuPawn::MoveToNextMarker()
         }
         else
         {
-            SetActorLocation(GetActorLocation() + DistToMarkerXY/DistToMarkerXY.Size()*NavigationSpeed);
+            SetActorLocation(GetActorLocation() + DistToMarkerXY/DistToMarkerXY.Size()*NavigationSpeed* DeltaTime);
         }
     }
 }
