@@ -19,7 +19,7 @@ void UGameFSM::InitializeFSM(UObject* ContextObject, const FString InInitialStat
 {
     CurrentState.Reset();
     RegisterFSMStates();
-    SetCurrentState((InInitialState != TEXT("")) ? InInitialState : InitialStateString);
+    SetCurrentState((!InInitialState.IsEmpty()) ? InInitialState : InitialStateString);
     if(ContextObject != nullptr)
     {
         OwnerComponent = ContextObject;
@@ -27,7 +27,7 @@ void UGameFSM::InitializeFSM(UObject* ContextObject, const FString InInitialStat
     StartFSM();
 }
 
-void UGameFSM::SetCurrentState(FString InStateID)\
+void UGameFSM::SetCurrentState(FString InStateID)
 {
 
     UGameFSMState** FoundState = InternalArrayOfStates.FindByPredicate([=](UGameFSMState* FSMState)

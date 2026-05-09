@@ -15,6 +15,7 @@ void AAnterBaseMenuGameState::HandleBeginPlay()
 
     if(GEngine != nullptr)
     {
+      /* HACK - - THIS IS TEMP, TO HAVE RESOLUTION SET UP FOR DEV PURPOSES */
       GEngine->GetGameUserSettings()->SetScreenResolution(FIntPoint(640, 480));
       GEngine->GetGameUserSettings()->SetFullscreenMode(EWindowMode::Windowed);
       FIntPoint MyResolution = GEngine->GetGameUserSettings()->GetScreenResolution();
