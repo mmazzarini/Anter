@@ -1,10 +1,31 @@
 #include "ActorComponents/AnterRayCastComponent.h"
 #include "Pawn/AnterPaperCharacter.h"
 
+//DEBUG
+#include "Engine/Canvas.h"
+#include "DisplayDebugHelpers.h"
+
 UAnterRayCastComponent::UAnterRayCastComponent()
 {
     PrimaryComponentTick.bCanEverTick = true;
     PrimaryComponentTick.bStartWithTickEnabled = true;
+}
+
+void UAnterRayCastComponent::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos)
+{
+    if (DebugDisplay.IsDisplayOn("PLATFORMRAYCAST"))
+    {
+        FDisplayDebugManager& DisplayDebugManager = Canvas->DisplayDebugManager;
+        DisplayDebugManager.DrawString(FString::Printf(TEXT(" + + + + + DEBUG RAYCAST + + + + +")));
+        DisplayDebugManager.SetDrawColor(FColor::Red);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("HIT FRONT: %s"), (bHitHorizontallyFront ? TEXT("YES") : TEXT("NO"))));
+        DisplayDebugManager.SetDrawColor(FColor::White);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("HIT BACK: %s"),  (bHitHorizontallyBack  ? TEXT("YES") : TEXT("NO"))));
+        DisplayDebugManager.SetDrawColor(FColor::Red);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("HIT VERTICALLY: %s"), (bHitVertically ? TEXT("YES") : TEXT("NO"))));
+        DisplayDebugManager.SetDrawColor(FColor::White);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("VERTICAL SIGN: %f"), (VerticalRayCastSignCorrection*1.0f)));
+    }
 }
 
 void UAnterRayCastComponent::BeginPlay()

@@ -328,7 +328,7 @@ private:
     FTimerHandle InitialJumpLockTimerHandle;
 
     UPROPERTY(EditDefaultsOnly, Category = "Jump")
-    float InitialJumpLockTimerDuration = 0.01f;
+    float InitialJumpLockTimerDuration = 0.1f;
 
 
     UPROPERTY(EditDefaultsOnly)

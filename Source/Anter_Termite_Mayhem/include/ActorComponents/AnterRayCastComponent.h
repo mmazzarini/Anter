@@ -14,6 +14,8 @@ class ANTER_TERMITE_MAYHEM_API UAnterRayCastComponent : public USceneComponent
 
 public: 
 
+	void DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos);
+
 	void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

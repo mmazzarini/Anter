@@ -25,6 +25,7 @@
 #include "SceneActors/Items/AnterBaseAnt.h"
 #include "SceneActors/Items/AnterBaseCrate.h"
 #include "SceneActors/SuckableActorInterface.h"
+#include "ActorComponents/AnterRayCastComponent.h"
 
 //DEBUG
 #include "Engine/Canvas.h"
@@ -57,8 +58,13 @@ void AAnterPaperCharacter::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo
         DisplayDebugManager.SetDrawColor(FColor::Green);
         DisplayDebugManager.DrawString(FString::Printf(TEXT("V STATUS: %s"), *UEnum::GetValueAsString(VerticalMotionStatus)));
         DisplayDebugManager.SetDrawColor(FColor::Red);
-        DisplayDebugManager.DrawString(FString::Printf(TEXT("Is Falling: %s"), GetIsFalling() ? TEXT("1") : TEXT("0")));
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("Can Jump: %s"), bCanAnterJump ? TEXT("YES") : TEXT("NO")));
         DisplayDebugManager.SetDrawColor(FColor::White);
+    }
+
+    if (UAnterRayCastComponent* RayCast = FindComponentByClass<UAnterRayCastComponent>())
+    {
+        RayCast->DisplayDebug(Canvas, DebugDisplay, YL, YPos);
     }
 }
 
@@ -261,7 +267,10 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                     else
                     {
                         AnterMovement->Velocity.X = MovementVectorX.X * DiagonalMovementMultiplier;
-                        AnterMovement->Velocity.Z = MovementVectorZ.Z * DiagonalMovementMultiplier;
+                        if (bCanAnterJump)
+                        {
+                            AnterMovement->Velocity.Z = MovementVectorZ.Z * DiagonalMovementMultiplier;
+                        }
                         LastVelocityX = MovementVectorX.X;
                     }
                 }
@@ -301,7 +310,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                 else
                 {
                     AnterMovement->Velocity.X = 0.0f;
-                    AnterMovement->Velocity.Z = 0.0f;
+                    //AnterMovement->Velocity.Z = 0.0f;
                     if (LastVelocityX >= VelocityThreshold)
                     {
                         FVector OldLoc = GetActorLocation();
@@ -492,7 +501,7 @@ void AAnterPaperCharacter::ConstrainJump()
     UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
     if(AnterMovement != nullptr)
     {
-        if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump)
+        if(AnterMovement->Velocity.Z < ZVelocityThresholdToJump && AnterGeometron.Z == 0.0f)
         {
             SetCanJump(false);
         }
