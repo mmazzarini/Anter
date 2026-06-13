@@ -10,6 +10,16 @@ This Interface can be inherited to specify behaviours of scene actors, such as m
 other interactive functionalities 
 */
 
+//Describing upside down movement 
+UENUM(BlueprintType)
+enum class EAnterVerticalMotionStatus : uint8
+{   
+    None,
+    NormalStatus,
+    MovingTowardsUp,
+    HangingUpsideDown
+};
+
 
 //Little structure to be referenced by Pawn in order to impose its local geometry while moving
 USTRUCT()
@@ -44,6 +54,9 @@ public:
 
     UFUNCTION()
     virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit) = 0;
+
+    UFUNCTION()
+    virtual EAnterVerticalMotionStatus GetVerticalMotionStatus() const { return EAnterVerticalMotionStatus::None; }
 
 protected:
 

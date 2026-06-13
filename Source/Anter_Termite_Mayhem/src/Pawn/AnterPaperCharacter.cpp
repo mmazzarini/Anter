@@ -52,7 +52,13 @@ void AAnterPaperCharacter::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo
             }
         }
         DisplayDebugManager.DrawString(FString::Printf(TEXT("GEOMETRON: X: %f Z: %f"), AnterGeometron.X, AnterGeometron.Z));
+        DisplayDebugManager.SetDrawColor(FColor::Cyan);
         DisplayDebugManager.DrawString(FString::Printf(TEXT("POSITION: X: %f Z: %f"), GetActorLocation().X, GetActorLocation().Z));
+        DisplayDebugManager.SetDrawColor(FColor::Green);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("V STATUS: %s"), *UEnum::GetValueAsString(VerticalMotionStatus)));
+        DisplayDebugManager.SetDrawColor(FColor::Red);
+        DisplayDebugManager.DrawString(FString::Printf(TEXT("Is Falling: %s"), GetIsFalling() ? TEXT("1") : TEXT("0")));
+        DisplayDebugManager.SetDrawColor(FColor::White);
     }
 }
 
@@ -239,7 +245,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
     {
         if (!AnterSuck->GetIsSucking())
         {
-            FVector MovementVectorX = FVector(InAxisValue * AnterGeometron.X, 0.0f, 0.0f);
+            FVector MovementVectorX = FVector(InAxisValue * abs(AnterGeometron.X), 0.0f, 0.0f);
             FVector MovementVectorZ = FVector(0.0f, 0.0f, InAxisValue * AnterGeometron.Z);
             if (InAxisValue != 0.0f)
             {
@@ -280,7 +286,7 @@ void AAnterPaperCharacter::HandleRightMovement(float InAxisValue)
                 //The player gives no input: handling braking and slowing down
                 if (AnterGeometron.Z == 0.0f)
                 {
-                    AddMovementInput(FVector(-1.0f * AnterMovement->Velocity.X * FrictionScale * AnterGeometron.X, 0.0f, 0.0f));
+                    AddMovementInput(FVector(-1.0f * AnterMovement->Velocity.X * FrictionScale * abs(AnterGeometron.X), 0.0f, 0.0f));
 
                     //X braking
                     if (abs(AnterMovement->Velocity.X) >= VelocityThreshold)
@@ -753,6 +759,26 @@ TArray<TPair<AActor*, EPlatformCollisionType>> AAnterPaperCharacter::GetResigste
     return RegisteredVerticalPlatformCollisions;
 }
 
+void AAnterPaperCharacter::SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus)
+{
+    VerticalMotionStatus = InVerticalMotionStatus;
+}
+
+EAnterVerticalMotionStatus AAnterPaperCharacter::GetVerticalMotionStatus() const
+{
+    return VerticalMotionStatus;
+}
+
+float AAnterPaperCharacter::GetInputGravityScale()
+{
+    return InputGravityScale;
+}
+
+float AAnterPaperCharacter::GetFloorDetachingKick()
+{
+    return FloorDetachingKick;
+}
+
 void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit)
 {
     ImposeGeometry(InGeometron.X, InGeometron.Z);
@@ -792,14 +818,26 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
             UCharacterMovementComponent* AnterMovement = Cast<UCharacterMovementComponent>(FindComponentByClass<UCharacterMovementComponent>());
             if (AnterMovement != nullptr)
             {
-                if (AnterMovement->Velocity.Z < 0.0f || GetIsFalling() == true)
+                if ( (VerticalMotionStatus == EAnterVerticalMotionStatus::NormalStatus &&
+                    (AnterMovement->Velocity.Z < 0.0f || GetIsFalling() == true)) ||
+                    
+                    (VerticalMotionStatus > EAnterVerticalMotionStatus::NormalStatus)
+                   )
                 {
                     SetIsFalling(false);
-                    SetCanJump(true);
+                    SetCanJump(VerticalMotionStatus > EAnterVerticalMotionStatus::NormalStatus ?
+                        false : true);
                     AnterMovement->GravityScale = 0.0f;
 
                     AnterMovement->Velocity.Z = 0.0f;
+
+                    if (VerticalMotionStatus == EAnterVerticalMotionStatus::MovingTowardsUp)
+                    {
+                        VerticalMotionStatus = EAnterVerticalMotionStatus::HangingUpsideDown;
+                    }
                 }
+                
+
             }
             if (InGeometron.X != 0.0f)
             {
@@ -809,7 +847,9 @@ void AAnterPaperCharacter::ProcessRayCastGeometry(bool bHitVertically, bool bHit
             {
                 SetActorRotation({ 0.0f, 0.0f, 0.0f });
             }
-            FVector NewLocation = FVector(GetActorLocation().X, GetActorLocation().Y, ImpactPoint.Z + AnterSize.Z);
+            float VerticalMotionSign = VerticalMotionStatus > EAnterVerticalMotionStatus::NormalStatus ?
+                -1.f : 1.f;
+            FVector NewLocation = FVector(GetActorLocation().X, GetActorLocation().Y, ImpactPoint.Z + VerticalMotionSign*AnterSize.Z);
             SetActorLocation(NewLocation);
         }
     } 

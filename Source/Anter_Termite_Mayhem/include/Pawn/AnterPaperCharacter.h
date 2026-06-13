@@ -45,15 +45,6 @@ enum class EAnterHitableStatus : uint8
     CannotBeHit
 };
 
-//Describing upside down movement 
-UENUM(BlueprintType)
-enum class EAnterVerticalMotionStatus : uint8
-{
-    NormalStatus,
-    MovingTowardsUp,
-    HangingUpsideDown
-};
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FAnterHitDelegate, float, DamageValue);
 
 /*
@@ -163,13 +154,13 @@ public:
 
     TArray<TPair<AActor*, EPlatformCollisionType>> GetResigsteredPlatformCollisions();
 
-    void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus){VerticalMotionStatus = InVerticalMotionStatus;}
+    void SetVerticalMotionStatus(EAnterVerticalMotionStatus InVerticalMotionStatus);
 
-    EAnterVerticalMotionStatus GetVerticalMotionStatus() const {return VerticalMotionStatus;}
+    EAnterVerticalMotionStatus GetVerticalMotionStatus() const override;
 
-    float GetInputGravityScale(){return InputGravityScale;}
+    float GetInputGravityScale();
 
-    float GetFloorDetachingKick() { return FloorDetachingKick; }
+    float GetFloorDetachingKick();
 
     virtual void ProcessRayCastGeometry(bool bHitVertically, bool bHitHorizontallyFront, bool bHitHorizontallyBack, const FGeometron& InGeometron, const FVector& ImpactPoint, const AActor* ActorHit) override;
 

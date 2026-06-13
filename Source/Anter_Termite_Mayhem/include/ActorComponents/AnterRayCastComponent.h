@@ -5,6 +5,8 @@
 
 #include "AnterRayCastComponent.generated.h"
 
+enum class EAnterVerticalMotionStatus : uint8;
+
 UCLASS(Blueprintable, BlueprintType)
 class ANTER_TERMITE_MAYHEM_API UAnterRayCastComponent : public USceneComponent
 {
@@ -66,6 +68,10 @@ private:
 	FVector RotatedNormal = FVector(1.0f, 0.0f, 0.0f);
 	FVector ImpactPoint;
 	TWeakObjectPtr<AActor> HitActorRef;
-
 	TWeakObjectPtr <AActor> OwnerActorWeakRef;
+	EAnterVerticalMotionStatus CachedOwningActorVerticalMotionStatus;
+	float VerticalRayCastSignCorrection;
+
+	FVector RayTraceStart = FVector(0.0f, 0.0f, 0.0f);
+	FVector RayTraceEnd = FVector(0.0f, 0.0f, 0.0f);
 };
