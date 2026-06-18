@@ -11,6 +11,7 @@ The GameSpecificStaticLibrary is the class encapsulating all these.
 class UHealthComponent;
 class UDamageComponent;
 class AActor;
+class APlayerController;
 
 UCLASS()
 class ANTER_TERMITE_MAYHEM_API UGameSpecificStaticLibrary : public UObject 
@@ -21,5 +22,7 @@ class ANTER_TERMITE_MAYHEM_API UGameSpecificStaticLibrary : public UObject
 public:
 
     static bool IsHealthDamageType(AActor* InDamagedActor, AActor* InDamagingActor);
+    
+    static bool IsInScreen(const APlayerController* InPlayerController, const FVector& InLocation, float InMultiplier);
 
 };

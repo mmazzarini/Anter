@@ -1,3 +1,7 @@
+REM UE4.27 BROKEN GenerateProjectFiles workaround
+REM Uses VS2022-built UnrealBuildTool directly
+REM Default GenerateProjectFiles uses an old MSBuild and fails with Missing UnrealBuildTool.exe
+
 @echo off
 set UPROJECT=%~dp0Anter_Termite_Mayhem.uproject
 set UBT="C:\Program Files\Epic Games\UE_4.27\Engine\Binaries\DotNET\UnrealBuildTool.exe"

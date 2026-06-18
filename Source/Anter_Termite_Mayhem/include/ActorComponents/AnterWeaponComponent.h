@@ -21,7 +21,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponRecharged, uint32, NewWeapo
 //Weapon uncharged dyn multicast delegate
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponUncharged);
 
-
+class AAnterPlayerController;
 
 
 UCLASS(Blueprintable, BlueprintType)
@@ -34,6 +34,8 @@ class ANTER_TERMITE_MAYHEM_API UAnterWeaponComponent : public USceneComponent
 
         UFUNCTION(BlueprintCallable)
         virtual void ShootLaser();
+
+        void BeginPlay() override;
 
         UFUNCTION()
         void OnTimerEnded();
@@ -68,6 +70,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, Category="Sequential Fire")
     int32 MaxSequentialShots = 5;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component Within Visibility")
+    float ScreenAppearanceMultiplier = 1.2f;
+
     UFUNCTION(BlueprintCallable)
     void SetCanShoot(bool InCanShoot);
 
@@ -99,6 +104,8 @@ protected:
 private:
 
     int32 InternalSequentialShotCounter = 0;
+
+    TWeakObjectPtr<AAnterPlayerController> PlayerController;
 
 };
 

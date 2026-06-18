@@ -1,7 +1,10 @@
 #include "ActorComponents/AnterWeaponComponent.h"
 #include "Pawn/AnterPaperCharacter.h"
+#include "PlayerControllers/AnterPlayerController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 
 UAnterWeaponComponent::UAnterWeaponComponent()
 : 
@@ -15,9 +18,8 @@ void UAnterWeaponComponent::ShootLaser()
 {
     //AAnterFire* FireShot = NewObject<AAnterFire>(dGetTransientPackage(),LaserSubClass);
     AActor* OwnerActor = GetOwner(); //AAnterPaperCharacter* Anter = Cast<AAnterPaperCharacter>(GetOwner());
-    if(OwnerActor != nullptr)
+    if(OwnerActor != nullptr && PlayerController.IsValid())
     {
-
         if(bCanShoot == true)
         {
             FVector AnterPosition = OwnerActor->GetTransform().GetTranslation();
@@ -26,14 +28,17 @@ void UAnterWeaponComponent::ShootLaser()
             FirePosition.X = AnterPosition.X + WeaponSpawnRange*LaserDirection.X;
             if(!ShouldUseWeaponCounter || (ShouldUseWeaponCounter && InternalAmmosCounter > 0.0f))
             {
-                AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass,FirePosition,AnterRotation);
-                if(Fire != nullptr)
+                if (UGameSpecificStaticLibrary::IsInScreen(PlayerController.Get(), OwnerActor->GetActorLocation(), ScreenAppearanceMultiplier))
                 {
-                    Fire->SetMovementToRight(LaserDirection); 
-                    Fire->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(Fire->GetActorLocation(),Fire->GetActorLocation()+LaserDirection),ETeleportType::None);
-                    if(ShouldUseWeaponCounter)
+                    AAnterFire* Fire = GetWorld()->SpawnActor<AAnterFire>(LaserSubClass, FirePosition, AnterRotation);
+                    if (Fire != nullptr)
                     {
-                        UpdateAmmos(-Fire->GetConsumptionAmount());
+                        Fire->SetMovementToRight(LaserDirection);
+                        Fire->SetActorRotation(UKismetMathLibrary::FindLookAtRotation(Fire->GetActorLocation(), Fire->GetActorLocation() + LaserDirection), ETeleportType::None);
+                        if (ShouldUseWeaponCounter)
+                        {
+                            UpdateAmmos(-Fire->GetConsumptionAmount());
+                        }
                     }
                 }
                 SetCanShoot(false);
@@ -50,6 +55,13 @@ void UAnterWeaponComponent::ShootLaser()
             }
         }
     }
+}
+
+void UAnterWeaponComponent::BeginPlay()
+{
+    Super::BeginPlay();
+
+    PlayerController = Cast<AAnterPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 }
 
 void UAnterWeaponComponent::SetCanShoot(bool InCanShoot)

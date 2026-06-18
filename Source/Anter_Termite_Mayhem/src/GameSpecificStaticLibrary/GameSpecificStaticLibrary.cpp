@@ -1,6 +1,7 @@
 #include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 #include "ActorComponents/HealthComponent.h"
 #include "ActorComponents/DamageComponent.h"
+#include "GameFramework/PlayerController.h"
 #include "GameFramework/Actor.h"
 
 bool UGameSpecificStaticLibrary::IsHealthDamageType(AActor* InDamagedActor, AActor* InDamagingActor)
@@ -13,4 +14,22 @@ bool UGameSpecificStaticLibrary::IsHealthDamageType(AActor* InDamagedActor, AAct
     }
 
     return false;
+}
+
+bool UGameSpecificStaticLibrary::IsInScreen(const APlayerController* InPlayerController, const FVector& InLocation, float InMultiplier)
+{
+    bool bIsInScreen = false;
+    if (InPlayerController != nullptr)
+    {
+        FVector2D ScreenPos = FVector2D(0.0f, 0.0f);
+        int32 ScreenX, ScreenY;
+        InPlayerController->GetViewportSize(ScreenX, ScreenY);
+        InPlayerController->ProjectWorldLocationToScreen(InLocation, ScreenPos);
+        return (ScreenPos.X < ScreenX * InMultiplier &&
+            ScreenPos.X > -1.f * InMultiplier &&
+            ScreenPos.Y < ScreenY * InMultiplier &&
+            ScreenPos.Y > -1.f * InMultiplier);            
+    }
+
+    return bIsInScreen;
 }

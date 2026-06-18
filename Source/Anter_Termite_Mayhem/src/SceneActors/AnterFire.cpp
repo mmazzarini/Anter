@@ -1,6 +1,7 @@
 #include "SceneActors/AnterFire.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameSpecificStaticLibrary/GameSpecificStaticLibrary.h"
 
 AAnterFire::AAnterFire()
 {
@@ -51,12 +52,7 @@ void AAnterFire::CheckScreenLocation()
     if (PlayerController != nullptr) // && (Camera != nullptr))
     {
         //Get the screen location
-        int32 ScreenX, ScreenY;
-        PlayerController->GetViewportSize(ScreenX,ScreenY);
-        //Get the projection of world location on the screen
-        FVector2D ScreenPos = FVector2D(0.0f,0.0f);
-        PlayerController->ProjectWorldLocationToScreen(GetActorLocation(), ScreenPos);
-        if(ScreenPos.X>ScreenX*ScreenAppearanceMultiplier || ScreenPos.X < 0.0f)
+        if (!UGameSpecificStaticLibrary::IsInScreen(PlayerController, GetActorLocation(), ScreenAppearanceMultiplier))
         {
             Destroy();
         }
