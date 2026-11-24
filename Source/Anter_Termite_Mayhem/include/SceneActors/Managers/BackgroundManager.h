@@ -48,4 +48,9 @@ protected:
     FVector CurrentCameraLocation;
 
     FVector InitialCameraLocation;
+
+
+private:
+
+    bool bParallaxInitialized = false;
 };

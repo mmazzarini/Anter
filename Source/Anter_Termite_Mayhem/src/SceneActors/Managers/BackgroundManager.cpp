@@ -9,6 +9,7 @@ ABackgroundManager::ABackgroundManager()
 {
     PrimaryActorTick.bCanEverTick = true;
     PrimaryActorTick.bStartWithTickEnabled = true;
+    PrimaryActorTick.TickGroup = TG_PostUpdateWork;
 }
 
 void ABackgroundManager::BeginPlay()
@@ -56,7 +57,15 @@ void ABackgroundManager::Tick(float DeltaTime)
     
     if (CameraManager.IsValid())
     {
+
         CurrentCameraLocation = CameraManager->GetCameraLocation();
+
+        if (!bParallaxInitialized)
+        {
+            InitialCameraLocation = CurrentCameraLocation;
+            bParallaxInitialized = true;
+            return;
+        }
 
         for (const TPair<uint32, FBckgLayerProperties> ParallaxLevel : BackgroundLevelToParallaxes)
         {
